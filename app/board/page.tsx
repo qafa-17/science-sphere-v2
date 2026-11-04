@@ -347,7 +347,7 @@ export default function BoardPage() {
         >
           <div className={styles.motifs}>
             <figure className={styles.motif}>
-              <div className={styles.specimen}>
+              <div className={styles.specimenTag}>
                 <span className="label">specimen // ss-003-a</span>
                 <strong>THE FUTURE OF THE ANTIBIOTIC CRISIS</strong>
                 <span className="label">logged: fall 2026 &nbsp; status: contained</span>
