@@ -20,7 +20,8 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en">
-      <body>
+      {/* browser extensions like Grammarly add attributes to <body>; that is not an error */}
+      <body suppressHydrationWarning>
         <a href="#main" className="skip">
           Skip to content
         </a>
