@@ -376,3 +376,16 @@
   background: #eef2ff;
   color: #0b1a52 !important;
 }
+
+/* ---------- 06 the journey ---------- */
+.journeyWrap {
+  position: relative;
+  height: 760vh;
+  background: #050a2e;
+  color: #eef2ff;
+}
+
+/* on scrolling prototypes, a finger on the canvas still scrolls the page */
+.scrollCanvas {
+  touch-action: pan-y;
+}

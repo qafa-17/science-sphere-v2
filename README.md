@@ -26,7 +26,7 @@ When there are new changes: stop it with <kbd>Ctrl</kbd> + <kbd>C</kbd>, then `g
 ## Where things are
 
 - `/board` is the look and feel board: palettes, type, buttons, cursor, logo, heart
-- `/lab/sphere`, `/lab/sky`, `/lab/circuit` are the three landing-page prototypes; `/lab/dive` and `/lab/morph` combine them; `/lab/ascent` goes from the ocean to space
+- `/lab/sphere`, `/lab/sky`, `/lab/circuit` are the three landing-page prototypes; `/lab/dive` and `/lab/morph` combine them; `/lab/journey` goes from the sphere down to the sea
 - `lib/scenes/` the sky, sphere and circuit drawings, shared by all the prototypes
 - `/issues/3` opens Issue 3 in the flipbook reader (carried over from v1)
 - `lib/palettes.ts` the colour palettes, and which page uses which

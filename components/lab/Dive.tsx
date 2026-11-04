@@ -105,7 +105,7 @@ export default function Dive() {
   return (
     <div ref={wrapRef} className={styles.diveWrap}>
       <div className={styles.diveStage}>
-        <canvas ref={canvasRef} className={styles.canvas} aria-hidden="true" />
+        <canvas ref={canvasRef} className={`${styles.canvas} ${styles.scrollCanvas}`} aria-hidden="true" />
         <div className={styles.overlay}>
           <BootLine text="> sci_sphere.sys // prototype_04" />
         </div>
