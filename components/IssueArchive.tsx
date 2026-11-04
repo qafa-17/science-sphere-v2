@@ -12,14 +12,14 @@ const code = (n: number) => String(n).padStart(3, "0");
 const tag = (season: string) => season.replace(/\s+/g, "").toUpperCase();
 
 /**
- * The Issues page: every issue is a file in a stack, like an archive drawer,
- * read from right to left with the tabs on the left of each file.
+ * The Issues page: every issue is a file in a stack, like an archive drawer.
+ * A narrow file shows the right-hand side of its cover.
  * Scrolling fans the files out one by one. Hovering one pulls it partway out
  * so you can see its cover; clicking pulls it out of the pile and opens it in
  * the reader below.
  */
 export default function IssueArchive({ issues }: { issues: Issue[] }) {
-  // oldest first, starting next to the archive log on the right
+  // oldest first, left to right, after the archive log
   const files = useMemo(() => [...issues].sort((a, b) => a.number - b.number), [issues]);
   const wrapRef = useRef<HTMLDivElement>(null);
   const readerRef = useRef<HTMLElement>(null);
@@ -52,9 +52,12 @@ export default function IssueArchive({ issues }: { issues: Issue[] }) {
         const out = between(p, 0.08 + i * (0.6 / n), 0.08 + (i + 1) * (0.6 / n));
         return closedW + (spreadW - closedW) * out;
       });
-      const total = titleW + archiveW + widths.reduce((a, b) => a + b, 0);
-      let x = Math.max(0, (W - total) / 2);
       shown = shown.map((v, i) => v + ((hoverRef.current === i ? 1 : 0) - v) * 0.18);
+      // hovering pulls the whole file out, so the full cover shows
+      const finalW = widths.map((wd, i) => wd + Math.max(0, coverW + 24 - wd) * shown[i]);
+      const total = titleW + archiveW + finalW.reduce((a, b) => a + b, 0);
+      // keep everything centred, sliding left if a pulled-out cover needs the room
+      let x = Math.max(Math.min(0, W - total), (W - total) / 2);
 
       slots.forEach((el) => {
         const kind = el.dataset.slot!;
@@ -64,13 +67,11 @@ export default function IssueArchive({ issues }: { issues: Issue[] }) {
         else if (kind === "archive") w = archiveW;
         else {
           const i = Number(kind);
-          // hovering pulls the file out three quarters of the way
-          w = widths[i] + Math.max(0, (coverW + 24) * 0.75 - widths[i]) * shown[i];
+          w = finalW[i];
           lift = shown[i] * 22;
           if (pulledRef.current === i) lift = H * 1.15;
         }
-        // laid out right to left: the title file sits on the right, the files open toward the left
-        el.style.transform = `translate3d(${stack.clientWidth - x - w}px, ${-lift}px, 0)`;
+        el.style.transform = `translate3d(${x}px, ${-lift}px, 0)`;
         el.style.width = `${w}px`;
         el.style.setProperty("--h", `${H}px`);
         el.style.setProperty("--cover-w", `${coverW}px`);
