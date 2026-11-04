@@ -3,11 +3,27 @@ import type { ReactNode } from "react";
 import BootLine from "./BootLine";
 import styles from "./Lab.module.css";
 
-const prototypes = [
+export const prototypes = [
   { id: "sphere", n: "01", name: "Sphere" },
   { id: "sky", n: "02", name: "Pixel sky" },
   { id: "circuit", n: "03", name: "Circuit" },
+  { id: "dive", n: "04", name: "The dive" },
+  { id: "morph", n: "05", name: "Morphing" },
 ];
+
+/** The row of buttons for switching between prototypes. */
+export function Switcher({ current, hint, className = "" }: { current: string; hint: string; className?: string }) {
+  return (
+    <nav className={`${styles.switcher} ${className}`} aria-label="Prototypes">
+      {prototypes.map((p) => (
+        <Link key={p.id} href={`/lab/${p.id}`} aria-current={p.id === current ? "page" : undefined}>
+          {p.n} {p.name}
+        </Link>
+      ))}
+      <span className={styles.hint}>{hint}</span>
+    </nav>
+  );
+}
 
 /** The frame around each landing-page prototype: the title, a boot line, and a switcher. */
 export default function LabShell({
@@ -42,14 +58,7 @@ export default function LabShell({
         </div>
       </div>
 
-      <nav className={styles.switcher} aria-label="Prototypes">
-        {prototypes.map((p) => (
-          <Link key={p.id} href={`/lab/${p.id}`} aria-current={p.id === current ? "page" : undefined}>
-            {p.n} {p.name}
-          </Link>
-        ))}
-        <span className={styles.hint}>{hint}</span>
-      </nav>
+      <Switcher current={current} hint={hint} />
     </main>
   );
 }

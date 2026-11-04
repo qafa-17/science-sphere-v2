@@ -103,7 +103,7 @@
 
 @media (max-width: 700px) {
   .overlay {
-    padding: 18px 16px 110px;
+    padding: 18px 16px 150px;
   }
   .switcher {
     left: 16px;
@@ -126,4 +126,169 @@
   font-stretch: normal;
   font-weight: 600;
   letter-spacing: 0.02em;
+}
+
+/* ---------- 04 the dive ---------- */
+.diveWrap {
+  position: relative;
+  height: 560vh;
+  background: var(--space-amethyst);
+  color: var(--space-lime);
+}
+
+.diveStage {
+  position: sticky;
+  top: 56px;
+  height: calc(100svh - 56px);
+  overflow: hidden;
+}
+
+.diveTitle {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  text-align: center;
+  pointer-events: none;
+}
+
+.scrollHint {
+  margin-top: 28px;
+  animation: nudge 1.6s ease-in-out infinite;
+}
+
+@keyframes nudge {
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+.card {
+  position: absolute;
+  top: 50%;
+  width: min(380px, calc(100% - 32px));
+  margin-top: -130px;
+  padding: 24px 26px;
+  border: 1px solid rgba(230, 249, 175, 0.3);
+  border-radius: 4px;
+  background: rgba(13, 6, 48, 0.78);
+  backdrop-filter: blur(6px);
+  color: var(--space-lime);
+}
+
+.cardLeft {
+  left: 40px;
+}
+
+.cardRight {
+  right: 40px;
+}
+
+.card h2 {
+  margin: 8px 0 16px;
+  font-size: 24px;
+}
+
+.card dl {
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  gap: 8px 12px;
+  margin: 0 0 20px;
+}
+
+.card dt {
+  padding-top: 3px;
+  opacity: 0.7;
+}
+
+.card dd {
+  margin: 0;
+}
+
+.card a {
+  color: inherit;
+}
+
+.cardButton {
+  display: inline-flex;
+  align-items: center;
+  min-height: 42px;
+  padding: 0 18px;
+  border-radius: 3px;
+  background: var(--space-lime);
+  color: var(--space-amethyst) !important;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.issueList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+.issueList li {
+  padding: 8px 0;
+  border-top: 1px solid rgba(230, 249, 175, 0.2);
+}
+
+.fixedSwitcher {
+  position: fixed;
+  z-index: 5;
+}
+
+@media (max-width: 700px) {
+  .card {
+    top: auto;
+    bottom: 150px;
+    left: 16px;
+    right: 16px;
+    width: auto;
+    margin-top: 0;
+  }
+}
+
+/* ---------- 05 morphing worlds ---------- */
+.worlds {
+  position: absolute;
+  top: 24px;
+  right: 32px;
+  display: flex;
+  gap: 6px;
+  z-index: 2;
+}
+
+.worlds button {
+  padding: 6px 10px;
+  border: 1px solid rgba(230, 249, 175, 0.4);
+  border-radius: 2px;
+  background: rgba(13, 6, 48, 0.55);
+  color: var(--space-lime);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.worlds button[aria-pressed="true"] {
+  background: var(--space-lime);
+  color: var(--space-amethyst);
+}
+
+@media (max-width: 700px) {
+  .worlds {
+    top: 48px;
+    left: 16px;
+    right: auto;
+  }
 }
