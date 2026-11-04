@@ -1,0 +1,224 @@
+.page {
+  --bg: var(--sunset-honeydew);
+  --red: var(--sunset-tomato);
+  background: var(--bg);
+  overflow: hidden;
+  padding-bottom: 80px;
+}
+
+/* faint print grain, like the poster reference */
+.page {
+  position: relative;
+}
+
+.page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.25;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' seed='5'/%3E%3CfeColorMatrix values='0 0 0 0 0.4 0 0 0 0 0.42 0 0 0 0 0.38 0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.intro {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 64px 16px 24px;
+  text-align: center;
+}
+
+.title {
+  display: flex;
+  flex-direction: column;
+  font-size: clamp(56px, 9vw, 120px);
+  line-height: 0.9;
+}
+
+.small {
+  font-family: var(--font-body);
+  font-stretch: 100%;
+  font-weight: 600;
+  font-size: 0.24em;
+  letter-spacing: 0;
+  text-transform: lowercase;
+}
+
+.blurb {
+  margin: 8px 0 0;
+  font-size: 18px;
+  line-height: 1.55;
+}
+
+/* ---------- the four people ---------- */
+.people {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* the faces overlap down the page, left and right, like the poster */
+.person + .person {
+  margin-top: calc(var(--face-h) * -0.45);
+}
+
+.person {
+  --face-h: clamp(220px, 34vw, 360px);
+  --face-w: calc(var(--face-h) * 0.46);
+  position: relative;
+  height: var(--face-h);
+  display: flex;
+  align-items: flex-start;
+}
+
+/* half a face, cut by the edge of the page */
+.face {
+  position: relative;
+  flex: none;
+  width: var(--face-w);
+  height: 100%;
+  overflow: hidden;
+  display: block;
+}
+
+.face img {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: auto;
+  max-width: none;
+  filter: grayscale(1) contrast(1.05);
+  transition: transform 0.3s ease;
+}
+
+.face:hover img {
+  transform: scale(1.03);
+}
+
+.dot {
+  position: absolute;
+  left: 40%;
+  top: 60%;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border-radius: 50%;
+  background: var(--red);
+  box-shadow: 0 0 0 4px rgba(201, 54, 56, 0.18);
+}
+
+/* the thin red line from the dot to the name */
+.line {
+  position: absolute;
+  left: calc(var(--face-w) * 0.4);
+  top: calc(var(--face-h) * 0.6 - var(--face-h) * 0.62 * 0.62);
+  width: clamp(90px, 14vw, 200px);
+  height: calc(var(--face-h) * 0.62);
+  overflow: visible;
+}
+
+.line polyline {
+  fill: none;
+  stroke: var(--red);
+  stroke-width: 1.4;
+  vector-effect: non-scaling-stroke;
+}
+
+.label {
+  position: relative;
+  margin-left: calc(var(--face-w) * -0.6 + clamp(90px, 14vw, 200px) + 14px);
+  margin-top: calc(var(--face-h) * 0.6 - var(--face-h) * 0.62 * 0.62 + var(--face-h) * 0.62 * 0.18 - 14px);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.name {
+  font-size: clamp(18px, 2.2vw, 26px);
+}
+
+.role {
+  margin: 4px 0 0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.expertise {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--red);
+}
+
+.more {
+  align-self: flex-start;
+  margin-top: 10px;
+  padding: 6px 12px;
+  border: 1.5px solid var(--ink);
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.more:hover {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+/* ---------- people on the right: everything mirrored ---------- */
+.right {
+  flex-direction: row-reverse;
+}
+
+.right .face img {
+  right: auto;
+  left: 0;
+}
+
+.right .dot {
+  left: 60%;
+}
+
+.right .line {
+  left: auto;
+  right: calc(var(--face-w) * 0.4);
+  transform: scaleX(-1);
+}
+
+.right .label {
+  margin-left: 0;
+  margin-right: calc(var(--face-w) * -0.6 + clamp(90px, 14vw, 200px) + 14px);
+  align-items: flex-end;
+  text-align: right;
+}
+
+.right .more {
+  align-self: flex-end;
+}
+
+@media (max-width: 600px) {
+  .person {
+    --face-h: 220px;
+  }
+  .person + .person {
+    margin-top: 0;
+  }
+  .line {
+    width: 60px;
+  }
+  .label {
+    margin-left: calc(var(--face-w) * -0.6 + 60px + 10px);
+  }
+  .right .label {
+    margin-right: calc(var(--face-w) * -0.6 + 60px + 10px);
+  }
+}
