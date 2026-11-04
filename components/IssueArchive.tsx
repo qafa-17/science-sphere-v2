@@ -12,13 +12,14 @@ const code = (n: number) => String(n).padStart(3, "0");
 const tag = (season: string) => season.replace(/\s+/g, "").toUpperCase();
 
 /**
- * The Issues page: every issue is a file in a stack, like an archive drawer.
+ * The Issues page: every issue is a file in a stack, like an archive drawer,
+ * read from right to left with the tabs on the left of each file.
  * Scrolling fans the files out one by one. Hovering one pulls it partway out
  * so you can see its cover; clicking pulls it out of the pile and opens it in
  * the reader below.
  */
 export default function IssueArchive({ issues }: { issues: Issue[] }) {
-  // oldest first, left to right, like the files in a drawer
+  // oldest first, starting next to the archive log on the right
   const files = useMemo(() => [...issues].sort((a, b) => a.number - b.number), [issues]);
   const wrapRef = useRef<HTMLDivElement>(null);
   const readerRef = useRef<HTMLElement>(null);
@@ -68,7 +69,8 @@ export default function IssueArchive({ issues }: { issues: Issue[] }) {
           lift = shown[i] * 22;
           if (pulledRef.current === i) lift = H * 1.15;
         }
-        el.style.transform = `translate3d(${x}px, ${-lift}px, 0)`;
+        // laid out right to left: the title file sits on the right, the files open toward the left
+        el.style.transform = `translate3d(${stack.clientWidth - x - w}px, ${-lift}px, 0)`;
         el.style.width = `${w}px`;
         el.style.setProperty("--h", `${H}px`);
         el.style.setProperty("--cover-w", `${coverW}px`);

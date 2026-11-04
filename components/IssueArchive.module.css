@@ -34,7 +34,7 @@
   margin: 0;
   text-align: left;
   color: #f3efe0;
-  box-shadow: 6px 0 14px rgba(30, 28, 15, 0.28);
+  box-shadow: -6px 0 14px rgba(30, 28, 15, 0.28);
   transition: box-shadow 0.2s ease;
   will-change: transform, width;
 }
@@ -60,7 +60,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 18px 0 14px 14px;
+  padding: 18px 14px 14px 10px;
   background: var(--melon-exocarp);
   overflow: hidden;
 }
@@ -99,7 +99,7 @@
 
 .archiveBody {
   position: absolute;
-  inset: 22% 12% 10% 18%;
+  inset: 22% 18% 10% 12%;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -149,10 +149,11 @@
   --folder: 12px;
 }
 
+/* anchored to the right, so a narrow file shows the cover's right edge and opens toward its left side */
 .cover {
   position: absolute;
   top: 0;
-  left: 0;
+  right: 0;
   height: 100%;
   width: calc((var(--h) - 2 * var(--folder)) * 0.773);
   max-width: none;
@@ -162,12 +163,14 @@
 .coverPlaceholder {
   position: absolute;
   top: 0;
-  left: 0;
+  right: 0;
   height: 100%;
   width: calc((var(--h) - 2 * var(--folder)) * 0.773);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  align-items: flex-end; /* the visible side of a narrow file is now the right */
+  text-align: right;
   padding: 24px 20px;
   background: linear-gradient(160deg, rgba(255, 255, 255, 0.14), rgba(0, 0, 0, 0.25));
   font-family: var(--font-mono);
@@ -183,13 +186,13 @@
   line-height: 1;
 }
 
-/* the tab sticks out of the file's right edge, over the next file */
+/* the tab sticks out of the file's left edge, over the next file */
 .tab {
   position: absolute;
-  right: -32px;
+  left: -32px;
   width: 32px;
   padding: 14px 0;
-  border-radius: 0 10px 10px 0;
+  border-radius: 10px 0 0 10px;
   writing-mode: vertical-rl;
   font-family: var(--font-mono);
   font-size: 11px;
@@ -199,7 +202,7 @@
   color: inherit;
   background: inherit;
   z-index: 2;
-  box-shadow: 4px 2px 6px rgba(30, 28, 15, 0.22);
+  box-shadow: -4px 2px 6px rgba(30, 28, 15, 0.22);
 }
 
 .archiveFile .tab {
@@ -278,7 +281,7 @@
     display: none;
   }
   .tab {
-    right: -20px;
+    left: -20px;
     width: 20px;
     font-size: 9px;
   }
