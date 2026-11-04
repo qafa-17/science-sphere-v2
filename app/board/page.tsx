@@ -293,9 +293,9 @@ export default function BoardPage() {
             <figure className={styles.detail}>
               <div className={styles.folders}>
                 {[
-                  { n: "001", season: "FALL2025", colour: "#5F8FB4" },
-                  { n: "002", season: "WINTER2026", colour: "#857F72" },
-                  { n: "003", season: "FALL2026", colour: "#6E861B" },
+                  { n: "001", season: "FALL2025", colour: "#2E5574" },
+                  { n: "002", season: "WINTER2026", colour: "#4C473E" },
+                  { n: "003", season: "FALL2026", colour: "#3E4D0E" },
                 ].map((f) => (
                   <div key={f.n} className={styles.folder} style={{ "--tab": f.colour } as CSSProperties}>
                     <span className={styles.tab}>
