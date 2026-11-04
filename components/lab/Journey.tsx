@@ -91,7 +91,7 @@ export default function Journey() {
       ];
       const rand = seeded(4);
       banks = Array.from({ length: 7 }, (_, i) => ({
-        img: cloudBank(Math.min(w * 0.7, 900), h * 0.3, 10 + i),
+        img: cloudBank(Math.min(w * 0.85, 1100), h * 0.34, 10 + i),
         x: rand() * w - w * 0.2,
         y: h * (CLOUDS[0] + (i / 6) * (CLOUDS[1] - CLOUDS[0])),
         depth: 0.3 + rand() * 0.6,
@@ -166,8 +166,8 @@ export default function Journey() {
         if (!visible(b.y - h * 0.2, b.y + h * 0.3)) continue;
         const bw = b.img.width;
         const x = ((b.x + t * b.drift - lean * 40 * b.depth) % (w + bw)) - bw * 0.5;
-        ctx.globalAlpha = 0.92;
-        ctx.drawImage(b.img, x, b.y - h * 0.15);
+        ctx.globalAlpha = 0.97;
+        ctx.drawImage(b.img, x, b.y - h * 0.17);
       }
       ctx.globalAlpha = 1;
 

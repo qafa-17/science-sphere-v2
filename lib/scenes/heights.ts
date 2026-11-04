@@ -15,18 +15,6 @@ function canvas(w: number, h: number, scale = SCALE) {
   return { c, g };
 }
 
-/** Soft dabs of paint, like the brushwork in the cloud references. */
-function dab(g: CanvasRenderingContext2D, x: number, y: number, r: number, rgb: string, a: number) {
-  const grad = g.createRadialGradient(x, y, 0, x, y, r);
-  grad.addColorStop(0, `rgba(${rgb},${a})`);
-  grad.addColorStop(0.6, `rgba(${rgb},${a * 0.8})`);
-  grad.addColorStop(1, `rgba(${rgb},0)`);
-  g.fillStyle = grad;
-  g.beginPath();
-  g.arc(x, y, r, 0, Math.PI * 2);
-  g.fill();
-}
-
 // ---------- mountains ----------
 /**
  * One ridge of mountains as an image, w wide and h tall, its base at the
@@ -222,41 +210,82 @@ export function nightSky(w: number, h: number, seed: number) {
 }
 
 // ---------- clouds ----------
-const CLOUD_TONES = ["91,111,214", "128,144,224", "60,74,168", "167,180,240", "110,120,190", "200,210,250"];
+// tones from shadow to light, after the blue cloud paintings
+const CLOUD_DARK = ["58,70,160", "70,78,150", "84,92,170"];
+const CLOUD_MID = ["104,120,210", "122,136,222", "112,118,196"];
+const CLOUD_LIGHT = ["170,184,242", "196,206,250", "220,228,255"];
 
-/** A bank of painterly cloud, about w by h. */
+/**
+ * A bank of cloud, painted the way the references are: lots of short, crisp
+ * brush dabs, dark underneath, mid-blue in the body and pale lavender where
+ * the light hits the tops, with a flatter, wispy base.
+ */
 export function cloudBank(w: number, h: number, seed: number) {
   const { c, g } = canvas(w, h, 1);
   const rand = seeded(seed);
-  // a lumpy outline, then many soft dabs inside it, darker underneath
-  // keep everything well inside the image, so no dab is cut off by its edges
-  const lumps = Array.from({ length: 9 }, (_, i) => ({
-    x: w * (0.2 + (i / 8) * 0.6) + (rand() - 0.5) * w * 0.05,
-    y: h * (0.58 - Math.sin((i / 8) * Math.PI) * (0.14 + rand() * 0.1)),
-    r: h * (0.1 + Math.sin((i / 8) * Math.PI) * 0.14 + rand() * 0.05),
-  }));
-  for (let k = 0; k < 620; k++) {
-    const l = lumps[Math.floor(rand() * lumps.length)];
-    const a = rand() * Math.PI * 2;
-    const d = Math.sqrt(rand()) * l.r;
-    const x = l.x + Math.cos(a) * d;
-    const y = l.y + Math.sin(a) * d * 0.8;
-    const low = y / h; // lower = darker
-    const tone = low > 0.62 ? CLOUD_TONES[rand() < 0.5 ? 2 : 4] : low < 0.42 ? CLOUD_TONES[rand() < 0.5 ? 3 : 5] : CLOUD_TONES[Math.floor(rand() * 3)];
-    const r = Math.min(6 + rand() * h * 0.09, x, w - x, y, h - y);
-    if (r < 3) continue;
-    // brush dabs are a little wider than tall, and turned a touch
+  const base = h * (0.7 + rand() * 0.08);
+  // the billows: big in the middle, smaller toward the ends, all sitting on the base
+  const n = 6 + Math.floor(rand() * 4);
+  const lumps = Array.from({ length: n }, (_, i) => {
+    const k = i / (n - 1);
+    // never so tall that the top (plus a brush stroke) runs off the image
+    const r = Math.min(h * (0.16 + Math.sin(k * Math.PI) * 0.22 + rand() * 0.08), (base - h * 0.16) / 1.9);
+    return { x: w * (0.14 + k * 0.72) + (rand() - 0.5) * w * 0.05, y: base - r * (0.55 + rand() * 0.35), r };
+  });
+  const inside = (x: number, y: number) => {
+    if (y > base + h * 0.04) return false;
+    return lumps.some((l) => (x - l.x) ** 2 + ((y - l.y) / 0.92) ** 2 < l.r * l.r) || (y > base - h * 0.06 && x > w * 0.12 && x < w * 0.88);
+  };
+  const stroke = (x: number, y: number, r: number, tone: string, a: number) => {
     g.save();
     g.translate(x, y);
-    g.rotate((rand() - 0.5) * 0.6);
-    g.scale(1 + rand() * 0.6, 1);
-    dab(g, 0, 0, r, tone, 0.3 + rand() * 0.35);
+    g.rotate((rand() - 0.5) * 0.9);
+    g.fillStyle = `rgba(${tone},${a})`;
+    g.beginPath();
+    g.ellipse(0, 0, r * (1.1 + rand() * 0.7), r * (0.65 + rand() * 0.3), 0, 0, Math.PI * 2);
+    g.fill();
     g.restore();
+  };
+  g.filter = "blur(1.2px)";
+  // three passes, back to front: shadow, body, light. Big, overlapping strokes,
+  // so they merge into masses with brushy edges rather than separate blobs
+  const passes: [string[], number, number, number][] = [
+    [CLOUD_DARK, 900, 16, 0],
+    [CLOUD_MID, 1100, 13, 1],
+    [CLOUD_LIGHT, 1100, 10, 2],
+  ];
+  for (const [tones, count, size, pass] of passes) {
+    for (let i = 0; i < count; i++) {
+      const l = lumps[Math.floor(rand() * lumps.length)];
+      const ang = rand() * Math.PI * 2;
+      const d = Math.sqrt(rand()) * l.r;
+      const x = l.x + Math.cos(ang) * d;
+      const y = l.y + Math.sin(ang) * d * 0.92;
+      if (!inside(x, y)) continue;
+      // how high up its billow this spot is: -1 bottom .. 1 top, leaning to the upper left
+      const up = (l.y - y) / l.r + (l.x - x) / l.r * 0.25;
+      if (pass === 1 && up < -0.55 + rand() * 0.3) continue; // keep the undersides dark
+      if (pass === 2 && up < 0.15 + rand() * 0.35) continue; // light only on the tops
+      const r = size * (0.6 + rand() * 0.9) * (h / 200);
+      stroke(x, y, r, tones[Math.floor(rand() * tones.length)], pass === 2 ? 0.22 + rand() * 0.3 : 0.55 + rand() * 0.35);
+    }
   }
-  // a few speckles, so they sit with the fish and mountains
+  // a flat, wispy base drawn with long horizontal strokes
+  for (let i = 0; i < 70; i++) {
+    const x = w * (0.12 + rand() * 0.76);
+    const y = base - rand() * h * 0.06;
+    g.strokeStyle = `rgba(${CLOUD_DARK[Math.floor(rand() * 3)]},${0.5 + rand() * 0.4})`;
+    g.lineWidth = 2 + rand() * 4;
+    g.lineCap = "round";
+    g.beginPath();
+    g.moveTo(x, y);
+    g.lineTo(x + (rand() - 0.3) * w * 0.12, y + (rand() - 0.5) * 3);
+    g.stroke();
+  }
+  g.filter = "none";
   g.globalCompositeOperation = "source-atop";
-  for (let i = 0; i < (w * h) / 300; i++) {
-    g.fillStyle = `rgba(255,255,255,${0.1 + rand() * 0.25})`;
+  for (let i = 0; i < (w * h) / 260; i++) {
+    g.fillStyle = rand() < 0.75 ? `rgba(255,255,255,${0.12 + rand() * 0.25})` : "rgba(20,25,80,0.25)";
     g.fillRect(rand() * w, rand() * h, 1, 1);
   }
   g.globalCompositeOperation = "source-over";
