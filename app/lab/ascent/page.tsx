@@ -9,7 +9,7 @@ export default function AscentPrototype() {
   return (
     <main>
       <Ascent />
-      <Switcher current="ascent" hint="scroll to rise · move through the fish · tap a planet" className={styles.fixedSwitcher} />
+      <Switcher current="ascent" hint="scroll to rise · move through the fish" className={styles.fixedSwitcher} />
     </main>
   );
 }

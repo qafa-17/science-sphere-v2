@@ -296,7 +296,7 @@
 /* ---------- 06 the ascent ---------- */
 .ascentWrap {
   position: relative;
-  height: 700vh;
+  height: 640vh;
   background: #050a2e;
   color: #f4ead7;
 }
@@ -364,4 +364,15 @@
   opacity: 0.06;
   pointer-events: none;
   background-repeat: repeat;
+}
+
+.nightCard {
+  border-color: rgba(200, 215, 255, 0.3);
+  background: rgba(7, 16, 52, 0.72);
+  color: #eef2ff;
+}
+
+.nightCard .cardButton {
+  background: #eef2ff;
+  color: #0b1a52 !important;
 }

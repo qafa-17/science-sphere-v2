@@ -1,12 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { runCanvas, seeded } from "@/lib/canvasLoop";
-import { createSmoke, drawCloud, drawPlatform, drawRocket, grainDataUrl } from "@/lib/scenes/launch";
+import { cloudBank, drawFlareStar, drawSatellite, grainDataUrl, mountainLayer, planetEdge } from "@/lib/scenes/heights";
 import { createOcean } from "@/lib/scenes/ocean";
-import { createSpace, drawBeacon } from "@/lib/scenes/space";
 import { createSphere } from "@/lib/scenes/sphere";
 import BootLine from "./BootLine";
 import styles from "./Lab.module.css";
@@ -15,31 +13,31 @@ const clamp = (v: number) => Math.max(0, Math.min(1, v));
 const smooth = (x: number) => x * x * (3 - 2 * x);
 const between = (p: number, a: number, b: number) => smooth(clamp((p - a) / (b - a)));
 
-// The world, top to bottom, in screen-heights: space, sky, the sea surface, the deep.
-const BEACON_Y = 0.42; // the bright star we zoom into, at the very top
-const PLANETS = [1.0, 2.0];
-const SURFACE = 3.6;
-const WORLD = 5.8;
+// The world, top to bottom, in screen-heights.
+const BEACON_Y = 0.42; // the bright star at the very top
+const SATELLITE_Y = 1.55;
+const PLANET_TOP = 2.0; // the curve of the planet, seen from orbit
+const SURFACE = 3.8; // the sea
+const WORLD = 6.0;
 
 // Where the camera's top edge sits (in screen-heights) as you scroll from 0 to 1.
 const CAMERA: [number, number][] = [
-  [0, 4.8],
-  [0.08, 4.8],
-  [0.24, 2.85],
-  [0.36, 2.85],
-  [0.52, 1.0],
-  [0.66, 1.0],
-  [0.76, 0],
+  [0, 5.0],
+  [0.06, 5.0],
+  [0.24, 3.0],
+  [0.36, 3.0],
+  [0.5, 1.2],
+  [0.62, 1.2],
+  [0.72, 0],
   [1, 0],
 ];
 
 // When each card shows: [fade in from, fully in, start fading, gone]
 const CARDS = {
-  title: [-1, 0, 0.05, 0.11],
-  pitch: [0.26, 0.3, 0.4, 0.45],
-  issues: [0.52, 0.55, 0.64, 0.68],
-  beacon: [0.74, 0.77, 0.8, 0.83],
-  contact: [0.9, 0.93, 1.1, 1.2],
+  title: [-1, 0, 0.05, 0.1],
+  pitch: [0.25, 0.29, 0.36, 0.41],
+  issues: [0.5, 0.53, 0.6, 0.64],
+  beacon: [0.7, 0.72, 0.76, 0.79],
 } as const;
 
 const ISSUES = [
@@ -47,6 +45,9 @@ const ISSUES = [
   { label: "ISSUE_002 // WINTER2026", href: "/issues/2" },
   { label: "ISSUE_001 // FALL2025", href: "/issues/1" },
 ];
+
+// the star-sphere's colours: white light with blue edges
+const STAR_COLOURS = { line: "150,175,255", glow: "255,255,255", dot: "235,242,255", accent: "190,210,255", rim: "120,150,255" };
 
 function cameraAt(p: number) {
   for (let i = 1; i < CAMERA.length; i++) {
@@ -58,53 +59,74 @@ function cameraAt(p: number) {
 }
 
 /**
- * Prototype 06: the ascent. You start among the fish in the deep sea, rise to
- * the surface where a rocket stands on its launch platform, ride it up through
- * an orange sky into space, past planets (the issues), up to the sphere.
+ * Prototype 06: the ascent. Start among the fish in the deep sea, rise past
+ * the surface, painted mountains and clouds, up through the atmosphere to
+ * orbit, past a satellite over the curve of the planet, to one bright star.
+ * Fly into the star and it opens into the sphere.
  */
 export default function Ascent() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const router = useRouter();
-  const routerRef = useRef(router);
-
-  useEffect(() => {
-    routerRef.current = router;
-  }, [router]);
 
   useEffect(() => {
     const wrap = wrapRef.current!;
-    // a fine grain over everything, for a painted, printed finish (drawn once, by the browser)
     const grainEl = wrap.querySelector<HTMLElement>("[data-grain]");
     if (grainEl) grainEl.style.backgroundImage = `url(${grainDataUrl()})`;
     const cards = new Map<string, HTMLElement>();
     wrap.querySelectorAll<HTMLElement>("[data-card]").forEach((el) => cards.set(el.dataset.card!, el));
+
     const ocean = createOcean();
-    const space = createSpace();
     const sphere = createSphere();
-    const smoke = createSmoke();
-    let clouds: { x: number; y: number; s: number }[] = [];
-    let lastTap = -1;
     let skyGrad: CanvasGradient | null = null;
     let rayGrad: CanvasGradient | null = null;
-    let rayGradH = 0;
-    let skyGradH = 0;
+    let builtFor = "";
+    let mountains: { img: HTMLCanvasElement; depth: number }[] = [];
+    let banks: { img: HTMLCanvasElement; x: number; y: number; depth: number; drift: number }[] = [];
+    let planet: HTMLCanvasElement | null = null;
+    let stars: { x: number; y: number; r: number; p: number; flare: boolean }[] = [];
 
-    // screen-heights to px
-    const world = (h: number) => (y: number) => y * h;
+    const build = (w: number, h: number) => {
+      ocean.resize(w, SURFACE * h, WORLD * h);
+      mountains = [
+        { img: mountainLayer(w * 1.1, h * 0.36, 1, "#8a9cf0", "#5a6fd0", 4), depth: 0.2 },
+        { img: mountainLayer(w * 1.1, h * 0.27, 2, "#3f55bf", "#2b3d96", 6), depth: 0.45 },
+        { img: mountainLayer(w * 1.1, h * 0.19, 3, "#1b2b78", "#0f1a4e", 8), depth: 0.8 },
+      ];
+      const rand = seeded(4);
+      banks = Array.from({ length: 6 }, (_, i) => ({
+        img: cloudBank(Math.min(w * 0.7, 900), h * 0.3, 10 + i),
+        x: rand() * w - w * 0.2,
+        y: h * (2.55 + i * 0.15 + rand() * 0.05),
+        depth: 0.3 + rand() * 0.6,
+        drift: 6 + rand() * 10,
+      }));
+      planet = planetEdge(w, h * 0.9, h * 0.1, 8);
+      stars = Array.from({ length: Math.floor((w * h * 2.2) / 3500) }, () => ({
+        x: rand() * w,
+        y: rand() * h * 2.3,
+        r: 0.4 + rand() * 1.1,
+        p: rand() * 6.28,
+        flare: rand() < 0.03,
+      }));
+      skyGrad = null;
+      rayGrad = null;
+      builtFor = `${w}x${h}`;
+    };
 
     return runCanvas(
       canvasRef.current!,
       (f) => {
-        const { ctx, w, h, t, dt, pointer, taps } = f;
-        const at = world(h);
+        const { ctx, w, h, t, dt, pointer } = f;
+        if (builtFor !== `${w}x${h}`) build(w, h);
+        const at = (y: number) => y * h;
         const r = wrap.getBoundingClientRect();
         const p = clamp(-r.top / (r.height - window.innerHeight + 56));
         const cam = cameraAt(p) * h;
         const wp = { x: pointer.x, y: pointer.y + cam, inside: pointer.inside };
+        const lean = pointer.inside ? pointer.x / w - 0.5 : 0; // for gentle parallax
 
         // at the very end, the whole world zooms into the bright star
-        const zoomIn = between(p, 0.78, 0.9);
+        const zoomIn = between(p, 0.74, 0.86);
         const zoom = 1 + zoomIn * zoomIn * 10;
         const bx = w / 2;
         const by = at(BEACON_Y) - cam;
@@ -115,28 +137,30 @@ export default function Ascent() {
         ctx.translate(-bx, -by);
         ctx.translate(0, -cam);
 
-        // the sky and sea as one long gradient (made once per size)
-        if (!skyGrad || skyGradH !== h) {
-          skyGradH = h;
+        // one long gradient from deep space to the deep sea
+        if (!skyGrad) {
           skyGrad = ctx.createLinearGradient(0, 0, 0, at(WORLD));
           const stop = (y: number, c: string) => skyGrad!.addColorStop(y / WORLD, c);
-          stop(0, "#0e1a20");
-          stop(1.9, "#1d3640");
-          stop(2.55, "#9c4a2c");
-          stop(3.1, "#ec8f52");
-          stop(3.6, "#f6dcb4");
-          stop(3.601, "#4a86d8");
-          stop(4.3, "#1f3fa0");
-          stop(5.0, "#0d1c66");
-          stop(5.8, "#050a2e");
+          stop(0, "#01030c");
+          stop(1.2, "#030820");
+          stop(2.0, "#071640");
+          stop(2.3, "#0c2560");
+          stop(2.8, "#1d43a8");
+          stop(3.3, "#3f62d8");
+          stop(3.8, "#8aa0ee");
+          stop(3.801, "#3a64c8");
+          stop(4.5, "#1f3fa0");
+          stop(5.2, "#0d1c66");
+          stop(6.0, "#050a2e");
         }
         ctx.fillStyle = skyGrad;
         ctx.fillRect(0, cam, w, h);
 
+        const visible = (y0: number, y1: number) => y1 > cam && y0 < cam + h;
+
         // ---- the deep: light rays, fish, bubbles
-        if (cam + h > at(SURFACE)) {
-          if (!rayGrad || rayGradH !== h) {
-            rayGradH = h;
+        if (visible(at(SURFACE), at(WORLD))) {
+          if (!rayGrad) {
             rayGrad = ctx.createLinearGradient(0, at(SURFACE), 0, at(SURFACE + 1.3));
             rayGrad.addColorStop(0, "rgba(200,225,255,0.16)");
             rayGrad.addColorStop(1, "rgba(200,225,255,0)");
@@ -155,8 +179,47 @@ export default function Ascent() {
           ocean.draw(ctx, cam, cam + h);
         }
 
-        // ---- the surface: a gently moving waterline
-        ctx.fillStyle = "rgba(244,234,215,0.6)";
+        // ---- distant stars, the satellite and the planet's curve
+        if (visible(0, at(PLANET_TOP + 0.9))) {
+          for (const s of stars) {
+            if (s.y < cam - 10 || s.y > cam + h + 10) continue;
+            const tw = 0.45 + 0.4 * Math.sin(t * 1.2 + s.p);
+            if (s.flare) drawFlareStar(ctx, s.x, s.y, 1.2, t + s.p);
+            else {
+              ctx.globalAlpha = tw;
+              ctx.fillStyle = "#dfe8ff";
+              ctx.beginPath();
+              ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          }
+          ctx.globalAlpha = 1;
+          if (planet) ctx.drawImage(planet, 0, at(PLANET_TOP - 0.1));
+          const sx = w * (w > 900 ? 0.68 : 0.62) + Math.sin(t * 0.15) * 20;
+          const sy = at(SATELLITE_Y) + Math.sin(t * 0.25) * 10;
+          drawSatellite(ctx, sx, sy, Math.min(1, w / 1100), -0.25 + Math.sin(t * 0.12) * 0.08 + lean * 0.25);
+        }
+
+        // ---- clouds, drifting, with a little parallax
+        for (const b of banks) {
+          if (!visible(b.y - h * 0.2, b.y + h * 0.3)) continue;
+          const bw = b.img.width;
+          const x = ((b.x + t * b.drift - lean * 40 * b.depth) % (w + bw)) - bw * 0.5;
+          ctx.globalAlpha = 0.9;
+          ctx.drawImage(b.img, x, b.y - h * 0.15);
+        }
+        ctx.globalAlpha = 1;
+
+        // ---- the mountains along the shore, far to near
+        if (visible(at(SURFACE - 0.4), at(SURFACE + 0.05))) {
+          for (const m of mountains) {
+            const mh = m.img.height;
+            ctx.drawImage(m.img, -w * 0.05 - lean * 30 * m.depth, at(SURFACE) - mh + 2);
+          }
+        }
+
+        // ---- the waterline
+        ctx.fillStyle = "rgba(220,230,255,0.55)";
         ctx.beginPath();
         ctx.moveTo(0, at(SURFACE));
         for (let x = 0; x <= w; x += 12) ctx.lineTo(x, at(SURFACE) + Math.sin(x * 0.03 + t * 1.6) * 3);
@@ -164,77 +227,40 @@ export default function Ascent() {
         ctx.lineTo(0, at(SURFACE) + 6);
         ctx.fill();
 
-        // ---- the sky: clouds
-        clouds.forEach((c, i) => {
-          if (c.y > cam - 150 && c.y < cam + h + 150) drawCloud(ctx, c.x + Math.sin(t * 0.1 + c.y) * 20, c.y, c.s, i);
-        });
-
-        // ---- the launch
-        const rocketH = Math.min(h * 0.36, w * 0.5);
-        const padX = w > 900 ? w * 0.62 : w * 0.5;
-        const deck = at(SURFACE) - rocketH * 0.05;
-        drawPlatform(ctx, padX, at(SURFACE), rocketH);
-        const thrust = between(p, 0.3, 0.36);
-        const lift = between(p, 0.36, 0.42);
-        // after lift-off the rocket holds its place on screen while the world falls away below
-        const onScreen = (deck - cam) * (1 - lift) + h * 0.74 * lift - between(p, 0.47, 0.52) * h * 1.1;
-        const rocketY = cam + onScreen;
-        if (thrust > 0) smoke.emit(padX, deck, thrust * (1 - between(p, 0.4, 0.46)) * 3, dt);
-        smoke.draw(ctx, dt);
-        if (p < 0.53) drawRocket(ctx, padX, rocketY, rocketH, t, thrust);
-
-        // ---- space: stars and the planets
-        if (cam < at(PLANETS[1] + 0.2)) {
-          space.draw(ctx, t, dt, wp, cam, cam + h);
-          const tap = taps[taps.length - 1];
-          if (tap && tap.t !== lastTap) {
-            lastTap = tap.t;
-            const hit = space.hit(tap.x, tap.y + cam);
-            if (hit) routerRef.current.push(hit.href);
-          }
-        }
         ctx.restore();
 
         // ---- the bright star: it grows as we fly at it, flashes, and opens into the sphere
-        const dim = between(p, 0.8, 0.88);
+        const dim = between(p, 0.78, 0.86);
         if (dim > 0) {
-          ctx.fillStyle = `rgba(14,26,32,${dim})`;
+          ctx.fillStyle = `rgba(2,4,16,${dim})`;
           ctx.fillRect(0, 0, w, h);
         }
-        const open = between(p, 0.88, 0.95);
-        const R = Math.min(w, h) * 0.3;
-        const cy = by + (h / 2 - by) * open;
+        const open = between(p, 0.87, 0.95);
         if (open > 0) {
+          const R = Math.min(w, h) * 0.3;
+          const cy = by + (h / 2 - by) * open;
+          // the sphere as a star: a white core, a blue halo, flares and points of light
+          ctx.globalAlpha = open;
+          drawFlareStar(ctx, w / 2, cy, R * 0.16 * open, t);
+          ctx.globalAlpha = 1;
           sphere.draw(f, {
             alpha: open,
             cx: w / 2,
             cy,
             radius: Math.max(4, R * (0.3 + 0.7 * open)),
             background: false,
-            colours: { line: "108,196,192", glow: "244,234,215", dot: "244,234,215", accent: "226,103,47", rim: "108,196,192" },
+            colours: STAR_COLOURS,
           });
-          const orbit = between(p, 0.92, 0.96);
-          if (orbit > 0) {
-            const a = t * 0.6;
-            ctx.save();
-            ctx.globalAlpha = orbit;
-            const ox = w / 2 + Math.cos(a) * R * 1.35;
-            const oy = cy + Math.sin(a) * R * 0.45;
-            ctx.translate(ox, oy);
-            ctx.rotate(Math.atan2(Math.cos(a) * R * 0.45, -Math.sin(a) * R * 1.35));
-            drawRocket(ctx, 0, rocketH * 0.06, rocketH * 0.12, t, 0.3);
-            ctx.restore();
-          }
         }
-        const starFade = 1 - between(p, 0.87, 0.9);
+        const starFade = 1 - between(p, 0.86, 0.89);
         if (cam < h * 0.2 && starFade > 0) {
           ctx.globalAlpha = starFade;
-          drawBeacon(ctx, bx, by, Math.min(w, h) * 0.012 * (1 + zoomIn * zoomIn * zoomIn * 26), t);
+          drawFlareStar(ctx, bx, by, Math.min(w, h) * 0.008 * (1 + zoomIn * zoomIn * zoomIn * 30), t);
           ctx.globalAlpha = 1;
         }
-        const flash = between(p, 0.845, 0.875) * (1 - between(p, 0.885, 0.94));
+        const flash = between(p, 0.83, 0.865) * (1 - between(p, 0.875, 0.93));
         if (flash > 0) {
-          ctx.fillStyle = `rgba(255,248,235,${flash})`;
+          ctx.fillStyle = `rgba(235,242,255,${flash})`;
           ctx.fillRect(0, 0, w, h);
         }
 
@@ -247,23 +273,6 @@ export default function Ascent() {
           el.style.transform = `translateY(${(1 - o) * 24}px)`;
           el.style.visibility = o < 0.01 ? "hidden" : "visible";
         }
-        // planets are links: let the cursor know (the CPU cursor grows its circuit)
-        const c = canvasRef.current;
-        if (!c) return;
-        if (pointer.inside && space.hit(wp.x, wp.y)) c.dataset.clickable = "true";
-        else delete c.dataset.clickable;
-      },
-      {
-        onResize: (w, h) => {
-          ocean.resize(w, SURFACE * h, WORLD * h);
-          space.resize(w, h, PLANETS[0] * h, PLANETS[1] * h, ISSUES);
-          const rand = seeded(9);
-          clouds = Array.from({ length: 7 }, () => ({
-            x: rand() * w,
-            y: h * (2.35 + rand() * 0.75),
-            s: 20 + rand() * 40,
-          }));
-        },
       },
     );
   }, []);
@@ -287,7 +296,7 @@ export default function Ascent() {
           <p className={`label ${styles.scrollHint}`}>scroll to rise ↓</p>
         </section>
 
-        <section data-card="pitch" className={`${styles.card} ${styles.cardLeft} ${styles.posterCard}`} aria-label="This month's pitch meeting">
+        <section data-card="pitch" className={`${styles.card} ${styles.cardLeft} ${styles.nightCard}`} aria-label="This month's pitch meeting">
           <p className="label">specimen // pitch_meeting // nov 2026</p>
           <h2>This month&apos;s pitch meeting</h2>
           <dl>
@@ -299,35 +308,24 @@ export default function Ascent() {
             <dd>B231B, Lincoln Park building</dd>
           </dl>
           <Link href="/pitch" className={styles.cardButton}>
-            Launch your story →
+            Pitch a story →
           </Link>
         </section>
 
-        <section data-card="issues" className={`${styles.banner} ${styles.posterCard}`} aria-label="Issues">
-          <p className="label">archive log // 3 planets // tap one to open that issue</p>
-          <nav className={styles.bannerLinks} aria-label="Issues">
+        <section data-card="issues" className={`${styles.card} ${styles.cardLeft} ${styles.nightCard}`} aria-label="Issues">
+          <p className="label">incoming transmission // archive log</p>
+          <h2>The issues</h2>
+          <ul className={styles.issueList}>
             {ISSUES.map((i) => (
-              <Link key={i.href} href={i.href}>
-                {i.label}
-              </Link>
+              <li key={i.href}>
+                <Link href={i.href}>{i.label}</Link>
+              </li>
             ))}
-          </nav>
+          </ul>
         </section>
 
         <section data-card="beacon" className={`${styles.diveTitle} ${styles.creamText}`} aria-hidden="true">
           <p className={`label ${styles.beaconLabel}`}>signal detected // keep scrolling</p>
-        </section>
-
-        <section data-card="contact" className={`${styles.card} ${styles.cardLeft} ${styles.posterCard}`} aria-label="Contact">
-          <p className="label">transmission // open channel</p>
-          <h2>Talk to us</h2>
-          <p>
-            <a href="mailto:sciencesphere@mtroyal.ca">sciencesphere@mtroyal.ca</a>
-            <br />
-            <a href="https://instagram.com/mrusciencesphere" target="_blank" rel="noopener noreferrer">
-              @mrusciencesphere ↗
-            </a>
-          </p>
         </section>
       </div>
     </div>
