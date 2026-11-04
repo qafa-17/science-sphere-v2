@@ -1,16 +1,13 @@
 .page {
   --bg: var(--sunset-honeydew);
   --red: var(--sunset-tomato);
+  position: relative;
   background: var(--bg);
   overflow: hidden;
-  padding-bottom: 80px;
+  padding: 40px 16px 80px;
 }
 
 /* faint print grain, like the poster reference */
-.page {
-  position: relative;
-}
-
 .page::before {
   content: "";
   position: absolute;
@@ -21,149 +18,176 @@
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' seed='5'/%3E%3CfeColorMatrix values='0 0 0 0 0.4 0 0 0 0 0.42 0 0 0 0 0.38 0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-.intro {
+/* the poster: everything inside is placed in percent, so it scales as one piece */
+.poster {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-  max-width: 620px;
+  --ratio: 0.9;
+  width: min(880px, 100%);
+  aspect-ratio: var(--ratio);
   margin: 0 auto;
-  padding: 64px 16px 24px;
-  text-align: center;
+  container-type: inline-size;
 }
 
-.title {
-  display: flex;
-  flex-direction: column;
-  font-size: clamp(56px, 9vw, 120px);
-  line-height: 0.9;
-}
-
-.small {
-  font-family: var(--font-body);
-  font-stretch: 100%;
-  font-weight: 600;
-  font-size: 0.24em;
-  letter-spacing: 0;
-  text-transform: lowercase;
-}
-
-.blurb {
-  margin: 8px 0 0;
-  font-size: 18px;
-  line-height: 1.55;
-}
-
-/* ---------- the four people ---------- */
-.people {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-}
-
-/* the faces overlap down the page, left and right, like the poster */
-.person + .person {
-  margin-top: calc(var(--face-h) * -0.45);
-}
-
-.person {
-  --face-h: clamp(220px, 34vw, 360px);
-  --face-w: calc(var(--face-h) * 0.46);
-  position: relative;
-  height: var(--face-h);
-  display: flex;
-  align-items: flex-start;
-}
-
-/* half a face, cut by the edge of the page */
+/* half a face: the cut edge tucks under the middle column */
 .face {
-  position: relative;
-  flex: none;
-  width: var(--face-w);
-  height: 100%;
+  position: absolute;
+  right: 74%;
+  /* the face is 27% of the poster's height; show a little over half of it */
+  width: calc(var(--aspect) * 29cqw / var(--ratio) * 0.55);
   overflow: hidden;
-  display: block;
+  z-index: 1;
 }
 
 .face img {
   position: absolute;
   top: 0;
-  right: 0;
+  left: 0;
   height: 100%;
   width: auto;
   max-width: none;
-  filter: grayscale(1) contrast(1.05);
   transition: transform 0.3s ease;
+}
+
+.faceRight {
+  right: auto;
+  left: 74%;
+}
+
+.faceRight img {
+  left: auto;
+  right: 0;
 }
 
 .face:hover img {
   transform: scale(1.03);
 }
 
-.dot {
+/* the light column down the middle */
+.panel {
   position: absolute;
-  left: 40%;
-  top: 60%;
-  width: 14px;
-  height: 14px;
-  margin: -7px 0 0 -7px;
-  border-radius: 50%;
-  background: var(--red);
-  box-shadow: 0 0 0 4px rgba(201, 54, 56, 0.18);
+  top: 0;
+  bottom: 8%;
+  left: 25%;
+  right: 25%;
+  z-index: 2;
+  background: #fbfff4;
+  box-shadow: 0 0 0 1px rgba(11, 12, 14, 0.04);
 }
 
-/* the thin red line from the dot to the name */
-.line {
+.head {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 6cqw;
+  text-align: center;
+}
+
+.corner {
   position: absolute;
-  left: calc(var(--face-w) * 0.4);
-  top: calc(var(--face-h) * 0.6 - var(--face-h) * 0.62 * 0.62);
-  width: clamp(90px, 14vw, 200px);
-  height: calc(var(--face-h) * 0.62);
+  top: 3cqw;
+  left: 4cqw;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: max(11px, 1.7cqw);
+}
+
+.cornerRight {
+  left: auto;
+  right: 4cqw;
+}
+
+.meet {
+  margin: 0;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: max(16px, 3.4cqw);
+  line-height: 1;
+}
+
+.title {
+  font-size: 11cqw;
+  line-height: 0.9;
+}
+
+/* ---------- names, dots and the red line ---------- */
+.lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  pointer-events: none;
   overflow: visible;
 }
 
-.line polyline {
+.lines polyline {
   fill: none;
   stroke: var(--red);
-  stroke-width: 1.4;
+  stroke-opacity: 0.55;
+  stroke-width: 1.2;
   vector-effect: non-scaling-stroke;
 }
 
+.dot {
+  position: absolute;
+  z-index: 4;
+  width: max(10px, 1.6cqw);
+  height: max(10px, 1.6cqw);
+  border-radius: 50%;
+  background: var(--red);
+  transform: translate(-50%, -50%);
+}
+
 .label {
-  position: relative;
-  margin-left: calc(var(--face-w) * -0.6 + clamp(90px, 14vw, 200px) + 14px);
-  margin-top: calc(var(--face-h) * 0.6 - var(--face-h) * 0.62 * 0.62 + var(--face-h) * 0.62 * 0.18 - 14px);
+  position: absolute;
+  z-index: 5;
+  left: 26.5%;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  align-items: flex-start;
+}
+
+.labelRight {
+  left: auto;
+  right: 26.5%;
+  align-items: flex-end;
+  text-align: right;
+}
+
+/* the words sit on a patch of the panel colour, so the red line passes behind them */
+.name,
+.role,
+.expertise {
+  background: #fbfff4;
+  box-shadow: 0 0 0 2px #fbfff4;
 }
 
 .name {
-  font-size: clamp(18px, 2.2vw, 26px);
+  font-size: max(13px, 2.3cqw);
+  line-height: 1.05;
 }
 
-.role {
-  margin: 4px 0 0;
-  font-family: var(--font-mono);
-  font-size: 13px;
-}
-
+/* tight, like the reference */
+.role,
 .expertise {
   margin: 0;
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: max(11px, 1.55cqw);
+  line-height: 1.25;
+}
+
+.expertise {
   color: var(--red);
 }
 
 .more {
-  align-self: flex-start;
-  margin-top: 10px;
-  padding: 6px 12px;
-  border: 1.5px solid var(--ink);
+  margin-top: 6px;
+  padding: 3px 8px;
+  border: 1.2px solid var(--ink);
   border-radius: 2px;
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: max(10px, 1.3cqw);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   text-decoration: none;
@@ -174,51 +198,36 @@
   color: var(--bg);
 }
 
-/* ---------- people on the right: everything mirrored ---------- */
-.right {
-  flex-direction: row-reverse;
-}
-
-.right .face img {
-  right: auto;
-  left: 0;
-}
-
-.right .dot {
-  left: 60%;
-}
-
-.right .line {
-  left: auto;
-  right: calc(var(--face-w) * 0.4);
-  transform: scaleX(-1);
-}
-
-.right .label {
-  margin-left: 0;
-  margin-right: calc(var(--face-w) * -0.6 + clamp(90px, 14vw, 200px) + 14px);
-  align-items: flex-end;
-  text-align: right;
-}
-
-.right .more {
-  align-self: flex-end;
-}
-
 @media (max-width: 600px) {
-  .person {
-    --face-h: 220px;
+  /* a taller, narrower poster with a wider middle column */
+  .poster {
+    --ratio: 0.42;
   }
-  .person + .person {
-    margin-top: 0;
+  .panel {
+    left: 16%;
+    right: 16%;
   }
-  .line {
-    width: 60px;
+  .face {
+    right: 82%;
+  }
+  .faceRight {
+    left: 82%;
   }
   .label {
-    margin-left: calc(var(--face-w) * -0.6 + 60px + 10px);
+    left: 18%;
+    max-width: 64%;
   }
-  .right .label {
-    margin-right: calc(var(--face-w) * -0.6 + 60px + 10px);
+  .labelRight {
+    left: auto;
+    right: 18%;
+  }
+  .corner {
+    display: none;
+  }
+  .title {
+    font-size: 15cqw;
+  }
+  .meet {
+    font-size: 5cqw;
   }
 }

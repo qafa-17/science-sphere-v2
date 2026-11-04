@@ -6,12 +6,13 @@ import styles from "./IdCard.module.css";
 
 /** A barcode built from the ID number, so every card's is different but stays the same. */
 function Barcode({ seed }: { seed: string }) {
+  // thin, tightly packed lines, like the sample card
   const bars: number[] = [];
-  for (let i = 0; i < 34; i++) bars.push(1 + ((seed.charCodeAt(i % seed.length) * (i + 3)) % 4));
+  for (let i = 0; i < 64; i++) bars.push(1 + ((seed.charCodeAt(i % seed.length) * (i + 7)) % 3));
   return (
     <span className={styles.barcode} aria-hidden="true">
       {bars.map((w, i) => (
-        <span key={i} style={{ height: w, opacity: i % 2 ? 0 : 1 }} />
+        <span key={i} style={{ height: w }} />
       ))}
     </span>
   );
@@ -44,12 +45,20 @@ export default function IdCard({ m }: { m: Member }) {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/brand/logo-bw-160.png" alt="" className={styles.logo} />
           <span className={styles.field}>SUBJECT :</span>
-          <span className={styles.name}>{m.name}</span>
-          <span className={styles.degree}>{m.degree}</span>
+          <span className={styles.name}>
+            {m.name.split(" ")[0]}
+            <br />
+            {m.name.split(" ").slice(1).join(" ")}
+          </span>
+          <span className={styles.degree}>
+            {m.degree.map((d) => (
+              <span key={d}>{d}</span>
+            ))}
+          </span>
           <span className={styles.middle}>
             <span className={styles.photo}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={m.photo} alt="" />
+              <img src={m.cardPhoto} alt="" />
             </span>
             <Barcode seed={m.idNumber + m.serial} />
           </span>
