@@ -1,0 +1,278 @@
+.wrap {
+  position: relative;
+  height: 260vh;
+  background: #e6e1cc;
+}
+
+.stage {
+  position: sticky;
+  top: 56px;
+  height: calc(100svh - 56px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  overflow: hidden;
+  padding: 0 16px;
+}
+
+.stack {
+  position: relative;
+  width: min(1180px, 100%);
+  height: min(78svh - 56px, 760px);
+}
+
+/* every file, positioned and sized each frame by the script */
+.file {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  color: #f3efe0;
+  box-shadow: 6px 0 14px rgba(30, 28, 15, 0.28);
+  transition: box-shadow 0.2s ease;
+  will-change: transform, width;
+}
+
+/* paper grain on every file */
+.file::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.35;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.48 0 0 0 0 0.42 0 0 0 0.6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  z-index: 3;
+}
+
+.pulled {
+  transition: transform 0.45s cubic-bezier(0.5, 0, 0.75, 0) !important;
+}
+
+/* ---------- the title file ---------- */
+.titleFile {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 18px 0 14px 14px;
+  background: var(--melon-exocarp);
+  overflow: hidden;
+}
+
+.bigTitle {
+  writing-mode: vertical-rl;
+  font-size: calc(var(--h) / 15);
+  line-height: 0.9;
+  letter-spacing: -0.01em;
+  color: #2a2d0c;
+  white-space: nowrap;
+}
+
+.titleSmall {
+  margin: 0;
+  writing-mode: vertical-rl;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.4;
+  color: #2a2d0c;
+  max-height: 40%;
+}
+
+.fileNo {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: #2a2d0c;
+}
+
+/* ---------- the archive log ---------- */
+.archiveFile {
+  background: var(--melon-mystic);
+  color: #2b2a1c;
+}
+
+.archiveBody {
+  position: absolute;
+  inset: 22% 12% 10% 18%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.barcode {
+  height: 26px;
+  background: repeating-linear-gradient(90deg, #2b2a1c 0 3px, transparent 3px 5px, #2b2a1c 5px 6px, transparent 6px 9px);
+}
+
+.archiveBig {
+  font-family: var(--font-display);
+  font-stretch: var(--display-stretch);
+  font-weight: 800;
+  font-size: 34px;
+  line-height: 1;
+}
+
+.archiveLine {
+  border-top: 1px solid rgba(43, 42, 28, 0.4);
+  padding-top: 4px;
+}
+
+/* ---------- an issue ---------- */
+.issueFile {
+  cursor: pointer;
+}
+
+.issueFile:focus-visible {
+  outline: 3px solid var(--melon-kumquat);
+  outline-offset: -3px;
+}
+
+.coverWrap {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.cover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: var(--cover-w);
+  max-width: none;
+  object-fit: cover;
+}
+
+.coverPlaceholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: var(--cover-w);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 24px 20px;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.14), rgba(0, 0, 0, 0.25));
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+
+.coverPlaceholder strong {
+  font-family: var(--font-display);
+  font-stretch: var(--display-stretch);
+  font-weight: 800;
+  font-size: calc(var(--h) / 6);
+  line-height: 1;
+}
+
+/* the tab sticks out of the file's right edge, over the next file */
+.tab {
+  position: absolute;
+  right: -32px;
+  width: 32px;
+  padding: 14px 0;
+  border-radius: 0 10px 10px 0;
+  writing-mode: vertical-rl;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.25;
+  letter-spacing: 0.04em;
+  text-align: left;
+  color: inherit;
+  background: inherit;
+  z-index: 2;
+  box-shadow: 4px 2px 6px rgba(30, 28, 15, 0.22);
+}
+
+.archiveFile .tab {
+  background: var(--melon-mystic);
+}
+
+.hint {
+  color: #4a4a30;
+  text-align: center;
+}
+
+/* ---------- the reading room ---------- */
+.reader {
+  min-height: calc(100svh - 56px);
+  padding: 20px 16px 40px;
+  background: #0b0c0e;
+  color: var(--paper);
+  scroll-margin-top: 56px;
+  --page-width: 1300px;
+}
+
+.readerEmpty {
+  min-height: 50svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+  opacity: 0.8;
+}
+
+.back {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid rgba(235, 232, 223, 0.5);
+  border-radius: 2px;
+  background: none;
+  color: var(--paper);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.back:hover {
+  background: rgba(235, 232, 223, 0.1);
+}
+
+.readerTitle {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.touchOnly {
+  display: none;
+}
+
+@media (hover: none) {
+  .mouseOnly {
+    display: none;
+  }
+  .touchOnly {
+    display: inline;
+  }
+}
+
+@media (max-width: 700px) {
+  .archiveBody .archiveBig,
+  .archiveBody .archiveLine {
+    display: none;
+  }
+  .tab {
+    right: -20px;
+    width: 20px;
+    font-size: 9px;
+  }
+  .stack {
+    height: min(70svh, 600px);
+  }
+}

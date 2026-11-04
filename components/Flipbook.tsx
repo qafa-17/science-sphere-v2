@@ -167,6 +167,10 @@ export default function Flipbook({ pages, hotspots = [], title, toolbarStart }: 
   const [pageIndex, setPageIndex] = useState(0);
   const [landscape, setLandscape] = useState(true);
   const [soundOn, setSoundOn] = useState(true);
+  // zoom: 1 is the normal flipbook; above 1 shows the open pages larger, to pan around
+  const [zoom, setZoom] = useState(1);
+  const [bookHeight, setBookHeight] = useState(600);
+  const zoomRef = useRef<HTMLDivElement>(null);
 
   // Build the flipbook once the page is in the browser.
   useEffect(() => {
@@ -253,11 +257,46 @@ export default function Flipbook({ pages, hotspots = [], title, toolbarStart }: 
     else void frameRef.current?.requestFullscreen();
   };
 
+  const changeZoom = (step: number) => {
+    const h = holderRef.current?.getBoundingClientRect().height;
+    if (h && zoom === 1) setBookHeight(h);
+    setZoom((z) => Math.max(1, Math.min(3, Math.round((z + step) * 2) / 2)));
+  };
+
+  // Escape leaves the zoomed view
+  useEffect(() => {
+    if (zoom === 1) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setZoom(1);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [zoom]);
+
+  // drag to move around a zoomed page
+  const drag = useRef<{ x: number; y: number; left: number; top: number } | null>(null);
+  const onZoomDown = (e: React.PointerEvent) => {
+    const el = zoomRef.current;
+    if (!el) return;
+    drag.current = { x: e.clientX, y: e.clientY, left: el.scrollLeft, top: el.scrollTop };
+    el.setPointerCapture(e.pointerId);
+  };
+  const onZoomMove = (e: React.PointerEvent) => {
+    const el = zoomRef.current;
+    if (!el || !drag.current) return;
+    el.scrollLeft = drag.current.left - (e.clientX - drag.current.x);
+    el.scrollTop = drag.current.top - (e.clientY - drag.current.y);
+  };
+  const onZoomUp = () => {
+    drag.current = null;
+  };
+
   // "page 1", or "pages 2 to 3" when two pages are open side by side
   const total = pages.length;
   const first = pageIndex + 1;
   const showsSpread = landscape && pageIndex > 0 && first < total;
   const pageLabel = showsSpread ? `pages ${first} to ${first + 1} of ${total}` : `page ${first} of ${total}`;
+  const openPages = showsSpread ? [pageIndex, pageIndex + 1] : [pageIndex];
 
   return (
     <div ref={frameRef} className={styles.frame}>
@@ -286,13 +325,40 @@ export default function Flipbook({ pages, hotspots = [], title, toolbarStart }: 
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6L8 10H4z" /><path d="M17 9l5 6M22 9l-5 6" /></svg>
             )}
           </button>
+          <button type="button" className={styles.control} onClick={() => changeZoom(-0.5)} disabled={zoom === 1} aria-label="Zoom out">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6" /><path d="M8 11h6M16 16l4 4" /></svg>
+          </button>
+          <span className={styles.zoomLabel} aria-live="polite">{Math.round(zoom * 100)}%</span>
+          <button type="button" className={styles.control} onClick={() => changeZoom(0.5)} disabled={zoom === 3} aria-label="Zoom in">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6" /><path d="M8 11h6M11 8v6M16 16l4 4" /></svg>
+          </button>
           <button type="button" className={styles.control} onClick={toggleFullscreen} aria-label="Full screen">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" /></svg>
           </button>
         </div>
       </div>
 
-      <div ref={holderRef} className={styles.book} aria-label={`${title}, flipbook`} />
+      <div className={styles.bookArea}>
+        <div ref={holderRef} className={styles.book} aria-label={`${title}, flipbook`} />
+        {zoom > 1 && (
+          <div
+            ref={zoomRef}
+            className={styles.zoomView}
+            onPointerDown={onZoomDown}
+            onPointerMove={onZoomMove}
+            onPointerUp={onZoomUp}
+            onPointerCancel={onZoomUp}
+            aria-label={`${pageLabel}, zoomed to ${Math.round(zoom * 100)}%. Drag to move around.`}
+          >
+            <div className={styles.zoomPages}>
+              {openPages.map((i) => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img key={i} src={pages[i]} alt={`Page ${i + 1}`} draggable={false} style={{ height: bookHeight * zoom }} />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

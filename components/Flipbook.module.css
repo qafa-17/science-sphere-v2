@@ -116,7 +116,7 @@
   min-height: 44px;
   border-radius: 999px;
   border: 3px solid var(--ink);
-  background: var(--lime);
+  background: var(--melon-unripe);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -203,8 +203,57 @@
 }
 
 .counter {
-  font-family: var(--font-note);
+  font-family: var(--font-mono);
   font-size: 16px;
   min-width: 150px;
   text-align: center;
+}
+
+/* ---------- zoom ---------- */
+.bookArea {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.zoomView {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  overflow: auto;
+  background: #0b0c0e;
+  cursor: grab;
+  touch-action: none;
+  border-radius: 4px;
+}
+
+.zoomView:active {
+  cursor: grabbing;
+}
+
+.zoomPages {
+  display: flex;
+  justify-content: center;
+  width: max-content;
+  min-width: 100%;
+  margin: 0 auto;
+}
+
+.zoomPages img {
+  max-width: none;
+  width: auto;
+  user-select: none;
+}
+
+.zoomLabel {
+  min-width: 48px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.control:disabled {
+  opacity: 0.35;
+  cursor: default;
 }

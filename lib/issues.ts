@@ -54,6 +54,8 @@ export type Issue = {
   season: string;
   /** The issue's own colour, matching its cover. */
   colour: IssueColour;
+  /** Its folder tab on the Issues page: a darker version of the cover's colour. */
+  tab: string;
   /** Path to the cover image in /public, or undefined if we don't have it yet. */
   cover?: string;
   summary: string;
@@ -89,6 +91,7 @@ export const issues: Issue[] = [
     number: 3,
     season: "Fall 2026",
     colour: "lime",
+    tab: "#3E4D0E",
     cover: "/issues/3/cover.webp",
     summary:
       "This issue pulls back the curtain on how science really works: the broken incentives behind publishing, a student's first research project, the race for new antibiotics, and a crash course in reading papers. Plus a viral herb under the microscope, a kids' anatomy book reimagined, an alumni chat, and mental health resources for when uni gets heavy.",
@@ -125,6 +128,7 @@ export const issues: Issue[] = [
     number: 2,
     season: "Winter 2026",
     colour: "plum", // TODO: Issue 2's real colour
+    tab: "#4C473E",
     summary: "[Summary of Issue #2]",
     articles: [],
     pageCount: 0,
@@ -134,6 +138,7 @@ export const issues: Issue[] = [
     number: 1,
     season: "Fall 2025",
     colour: "sky",
+    tab: "#2E5574",
     summary: "[Summary of Issue #1]",
     articles: [],
     pageCount: 0,
