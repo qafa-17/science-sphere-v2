@@ -107,6 +107,7 @@
   resize: vertical;
 }
 
+.drop[aria-invalid="true"],
 .form [aria-invalid="true"] {
   border-color: var(--carousel-indian-red) !important;
   background: #fff1ec !important;

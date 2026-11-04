@@ -18,7 +18,7 @@ export default function PitchPage() {
             Write an article, poem, letter or op-ed. Draw something that inspires you about your discipline. Make a collage.
             Share your research or your journey. Whatever science idea you have, we want to hear about it.
           </p>
-          <p className={styles.lede2}>Fill in the form on the left; the guide on the right helps you shape each part.</p>
+          <p className={styles.lede2}>Fill in the form below. Where it helps, a guide on the right shows you what we look for.</p>
         </header>
         <PitchForm />
       </div>

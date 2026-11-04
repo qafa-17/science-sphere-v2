@@ -3,10 +3,8 @@
 import Link from "next/link";
 import { type FormEvent, type ReactNode, useState } from "react";
 import {
-  MAIN_EMAIL,
   MAX_FILE_MB,
   type Pitch,
-  editors,
   formats,
   storyTypes,
   subjects,
@@ -21,11 +19,12 @@ const empty: Pitch = {
   program: "",
   year: "",
   type: "",
+  typeOther: "",
   subject: "",
+  subjectOther: "",
   formats: [],
   angle: "",
   why: "",
-  interview: "",
   files: [],
 };
 
@@ -38,15 +37,18 @@ function check(p: Pitch): Errors {
   if (!p.program.trim()) e.program = "Your degree and program, e.g. BSc, Biology.";
   if (!p.year) e.year = "Pick your year.";
   if (!p.type) e.type = "Pick the kind of story closest to yours.";
+  if (p.type === "idea" && !p.typeOther.trim()) e.typeOther = "Tell us what kind of idea it is.";
   if (!p.subject) e.subject = "Pick a subject area.";
+  if (p.subject === "other" && !p.subjectOther.trim()) e.subjectOther = "Tell us the subject.";
   if (p.formats.length === 0) e.formats = "Pick at least one format.";
   if (p.angle.trim().length < 20) e.angle = "A sentence or two about your angle, please.";
   if (p.why.trim().length < 20) e.why = "A sentence or two on why it fits Science Sphere.";
+  if (p.files.length === 0) e.files = "Upload at least one file. A document with a link in it is fine.";
   return e;
 }
 
 /** One row: the form part on the left, the matching guide note on the right. */
-function Row({ n, title, note, children }: { n: string; title: string; note: ReactNode; children: ReactNode }) {
+function Row({ n, title, note, children }: { n: string; title: string; note?: ReactNode; children: ReactNode }) {
   return (
     <section className={styles.row} aria-labelledby={`step-${n}`}>
       <div className={styles.field}>
@@ -56,10 +58,12 @@ function Row({ n, title, note, children }: { n: string; title: string; note: Rea
         </div>
         {children}
       </div>
-      <aside className={styles.note}>
-        <p className="label">guide {"//"} {n}</p>
-        {note}
-      </aside>
+      {note && (
+        <aside className={styles.note}>
+          <p className="label">guide {"//"} {n}</p>
+          {note}
+        </aside>
+      )}
     </section>
   );
 }
@@ -114,10 +118,10 @@ export default function PitchForm() {
           Your pitch is with the editors. We usually reply within a week, at <strong>{p.email}</strong>.
         </p>
         <div className={styles.specimen}>
-          <p className="label">specimen // {type?.name}</p>
+          <p className="label">specimen // {p.type === "idea" ? p.typeOther : type?.name}</p>
           <p className={styles.specimenTitle}>{p.angle.slice(0, 120)}</p>
           <p className="label">
-            subject: {subject?.label} &nbsp; format: {p.formats.join(", ").toLowerCase()}
+            subject: {p.subject === "other" ? p.subjectOther : subject?.label} &nbsp; format: {p.formats.join(", ").toLowerCase()}
           </p>
         </div>
         <button
@@ -139,12 +143,6 @@ export default function PitchForm() {
       <Row
         n="01"
         title="About you"
-        note={
-          <p>
-            All students in the Faculty of Science and Technology, or anyone with an interest in science, are welcome to
-            pitch. Your year is just for us; it won&apos;t be printed.
-          </p>
-        }
       >
         <div className={styles.grid2}>
           <label className={styles.label}>
@@ -206,23 +204,18 @@ export default function PitchForm() {
           ))}
         </div>
         {err("type")}
+        {p.type === "idea" && (
+          <label className={styles.label}>
+            What kind of idea is it?
+            <input id="f-typeOther" value={p.typeOther} onChange={(e) => set("typeOther", e.target.value)} placeholder="e.g. a podcast episode, a comic, a photo essay" aria-invalid={!!errors.typeOther} aria-describedby={describedBy("typeOther")} />
+            {err("typeOther")}
+          </label>
+        )}
       </Row>
 
       <Row
         n="03"
         title="Subject and format"
-        note={
-          <>
-            {subject ? (
-              <p>
-                <strong>{subject.label}</strong> pitches go to <strong>{editors[subject.editor].name}</strong> and to {MAIN_EMAIL}.
-              </p>
-            ) : (
-              <p>Your subject decides which editor reads your pitch first. Not sure? Pick &ldquo;Something else.&rdquo;</p>
-            )}
-            <p>Print copies are only one part: this is an online multimedia magazine too, so audio and video stories work.</p>
-          </>
-        }
       >
         <label className={styles.label}>
           Subject area
@@ -236,6 +229,13 @@ export default function PitchForm() {
           </select>
           {err("subject")}
         </label>
+        {p.subject === "other" && (
+          <label className={styles.label}>
+            Which subject?
+            <input id="f-subjectOther" value={p.subjectOther} onChange={(e) => set("subjectOther", e.target.value)} aria-invalid={!!errors.subjectOther} aria-describedby={describedBy("subjectOther")} />
+            {err("subjectOther")}
+          </label>
+        )}
         <fieldset className={styles.formats} aria-describedby={describedBy("formats")}>
           <legend className={styles.label}>Format (pick any)</legend>
           <div id="f-formats" tabIndex={-1} className={styles.chips}>
@@ -260,19 +260,6 @@ export default function PitchForm() {
       <Row
         n="04"
         title="The angle"
-        note={
-          <>
-            <p className={styles.noteTitle}>A topic is not a story.</p>
-            <p>
-              Know the purpose of the research, the characters and places, and how the story will unfold. Look for new
-              research, or research that can be told in a different way.
-            </p>
-            <p className={styles.example}>
-              Topic: antibiotics. Angle: bacteria&apos;s own weapons, plus some AI, could be the next defence as antibiotics
-              quietly lose.
-            </p>
-          </>
-        }
       >
         <label className={styles.label}>
           What&apos;s your story really about?
@@ -284,15 +271,6 @@ export default function PitchForm() {
       <Row
         n="05"
         title="Why Science Sphere?"
-        note={
-          <>
-            <p className={styles.noteTitle}>Think of your nut graf.</p>
-            <p>
-              The who, what, when, where and why: why is this interesting and relevant to MRU students right now, and how
-              does it fit the bigger picture? Like a movie trailer for your piece.
-            </p>
-          </>
-        }
       >
         <label className={styles.label}>
           Why does it belong in Science Sphere?
@@ -303,27 +281,16 @@ export default function PitchForm() {
 
       <Row
         n="06"
-        title="Who you'd interview"
+        title="Files"
         note={
           <p>
-            Optional. Strong stories include quotes from an interview with researchers, professors or the people involved.
-            Tell us who you have in mind, even if you haven&apos;t asked them yet.
+            Whatever format you choose, upload something: a draft, sketch, photo or recording. If your work lives somewhere
+            else, a document with a link in it is fine. Keep each file under {MAX_FILE_MB}MB.
           </p>
         }
       >
-        <label className={styles.label}>
-          People you&apos;d like to talk to <span className={styles.optional}>(optional)</span>
-          <textarea rows={3} value={p.interview} onChange={(e) => set("interview", e.target.value)} />
-        </label>
-      </Row>
-
-      <Row
-        n="07"
-        title="Files"
-        note={<p>Optional. Drafts, sketches, photos, recordings: anything that helps us see your idea. Keep each file under {MAX_FILE_MB}MB.</p>}
-      >
-        <label className={styles.drop}>
-          <input type="file" multiple onChange={(e) => set("files", [...(e.target.files ?? [])])} />
+        <label className={styles.drop} aria-invalid={!!errors.files}>
+          <input id="f-files" type="file" multiple aria-describedby={describedBy("files")} onChange={(e) => set("files", [...(e.target.files ?? [])])} />
           <span>{p.files.length ? `${p.files.length} file${p.files.length > 1 ? "s" : ""} chosen` : "Choose files"}</span>
           <span className="label">or drop them here</span>
         </label>
@@ -336,6 +303,7 @@ export default function PitchForm() {
             ))}
           </ul>
         )}
+        {err("files")}
         {bigFiles.length > 0 && (
           <p className={styles.warning}>
             {bigFiles.map((f) => f.name).join(", ")} {bigFiles.length > 1 ? "are" : "is"} over {MAX_FILE_MB}MB. It may not send;

@@ -95,11 +95,14 @@ export type Pitch = {
   program: string;
   year: string;
   type: string;
+  /** what kind of idea, when the type is "Another Idea" */
+  typeOther: string;
   subject: string;
+  /** which subject, when it's "Something else" */
+  subjectOther: string;
   formats: string[];
   angle: string;
   why: string;
-  interview: string;
   files: File[];
 };
 
