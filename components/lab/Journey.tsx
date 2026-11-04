@@ -35,8 +35,8 @@ const CAMERA: [number, number][] = [
 // When each card shows: [fade in from, fully in, start fading, gone]
 const CARDS = {
   title: [-1, 0, 0.05, 0.09],
-  pitch: [0.24, 0.27, 0.34, 0.38],
-  issues: [0.76, 0.8, 1.1, 1.2],
+  issues: [0.24, 0.27, 0.34, 0.38],
+  pitch: [0.76, 0.8, 1.1, 1.2],
 } as const;
 
 const ISSUES = [
