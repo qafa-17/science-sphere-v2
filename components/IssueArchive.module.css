@@ -136,10 +136,17 @@
   outline-offset: -3px;
 }
 
+/* the magazine sits inside its folder, with a border of the folder's colour around it */
 .coverWrap {
   position: absolute;
-  inset: 0;
+  inset: var(--folder) var(--folder) var(--folder) var(--folder);
   overflow: hidden;
+  border-radius: 2px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+.issueFile {
+  --folder: 12px;
 }
 
 .cover {
@@ -147,7 +154,7 @@
   top: 0;
   left: 0;
   height: 100%;
-  width: var(--cover-w);
+  width: calc((var(--h) - 2 * var(--folder)) * 0.773);
   max-width: none;
   object-fit: cover;
 }
@@ -157,7 +164,7 @@
   top: 0;
   left: 0;
   height: 100%;
-  width: var(--cover-w);
+  width: calc((var(--h) - 2 * var(--folder)) * 0.773);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -263,6 +270,9 @@
 }
 
 @media (max-width: 700px) {
+  .issueFile {
+    --folder: 7px;
+  }
   .archiveBody .archiveBig,
   .archiveBody .archiveLine {
     display: none;

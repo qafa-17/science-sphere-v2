@@ -38,7 +38,7 @@ export default function IssueArchive({ issues }: { issues: Issue[] }) {
     const frame = () => {
       const r = wrap.getBoundingClientRect();
       const p = clamp(-r.top / Math.max(1, r.height - window.innerHeight));
-      const W = stack.clientWidth;
+      const W = stack.clientWidth - 36; // room for the last file's tab
       const H = stack.clientHeight;
       const coverW = H * 0.773;
       const titleW = Math.max(56, Math.min(150, W * 0.13));
@@ -64,7 +64,7 @@ export default function IssueArchive({ issues }: { issues: Issue[] }) {
         else {
           const i = Number(kind);
           // hovering pulls the file out three quarters of the way
-          w = widths[i] + Math.max(0, coverW * 0.75 - widths[i]) * shown[i];
+          w = widths[i] + Math.max(0, (coverW + 24) * 0.75 - widths[i]) * shown[i];
           lift = shown[i] * 22;
           if (pulledRef.current === i) lift = H * 1.15;
         }
