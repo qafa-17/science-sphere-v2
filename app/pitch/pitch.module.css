@@ -1,0 +1,34 @@
+.page {
+  background: #fdf3df;
+  color: var(--carousel-bistre);
+  padding-bottom: 120px;
+}
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 56px 0 40px;
+  max-width: 760px;
+}
+
+.title {
+  font-size: var(--text-hero);
+}
+
+.lede {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.lede2 {
+  margin: 0;
+  font-weight: 700;
+}
+
+@media (max-width: 860px) {
+  .lede2 {
+    display: none;
+  }
+}

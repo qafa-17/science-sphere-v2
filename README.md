@@ -31,6 +31,7 @@ When there are new changes: stop it with <kbd>Ctrl</kbd> + <kbd>C</kbd>, then `g
 - `/issues` is the archive: files fan out as you scroll, hover pulls one out, click opens it in the reader below (with zoom and full screen)
 - `/issues/3` still opens Issue 3 on its own page, e.g. for links like `/issues/3?page=16`
 - `lib/palettes.ts` the colour palettes, and which page uses which
+- `lib/pitch.ts` story types, subjects and which editor gets them, formats. Sending is NOT connected yet (`submitPitch` only pretends)
 - `lib/cpu.ts` the CPU cursor's traces
 - `lib/officeHours.ts` office hours (the header's beating heart reads these)
 - `public/brand/` the logo, `public/graphics/crow/` the mascot frames

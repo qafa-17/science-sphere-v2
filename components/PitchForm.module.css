@@ -1,0 +1,345 @@
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- one row: the field and its guide note ---------- */
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+  gap: 40px;
+  padding: 36px 0;
+  border-top: 1px solid rgba(33, 1, 0, 0.18);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.step {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 0;
+}
+
+.step h2 {
+  font-size: 24px;
+}
+
+/* the guide note: a specimen tag beside the field */
+.note {
+  align-self: start;
+  position: sticky;
+  top: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 20px;
+  border-left: 6px solid var(--carousel-goldfinch);
+  border-radius: 2px;
+  background: #fbe8c2;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.note p {
+  margin: 0;
+}
+
+.noteTitle {
+  font-weight: 700;
+}
+
+.noteLink {
+  font-weight: 700;
+  color: var(--carousel-garnet);
+}
+
+.example {
+  padding-top: 8px;
+  border-top: 1px dashed rgba(33, 1, 0, 0.3);
+  font-style: italic;
+}
+
+/* ---------- fields ---------- */
+.grid2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 20px;
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.optional {
+  text-transform: none;
+  opacity: 0.7;
+}
+
+.form input:not([type="radio"]):not([type="checkbox"]):not([type="file"]),
+.form select,
+.form textarea {
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 12px;
+  border: 1.5px solid var(--carousel-bistre);
+  border-radius: 2px;
+  background: #fffaf0;
+  color: var(--carousel-bistre);
+  font: inherit;
+  font-family: var(--font-body);
+  font-size: 16px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.form textarea {
+  resize: vertical;
+}
+
+.form [aria-invalid="true"] {
+  border-color: var(--carousel-indian-red) !important;
+  background: #fff1ec !important;
+}
+
+.error {
+  margin: 0;
+  color: var(--carousel-garnet);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* story type cards */
+.types {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.typeCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 92px;
+  padding: 14px;
+  border: 1.5px solid var(--carousel-bistre);
+  border-radius: 2px;
+  background: #fffaf0;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.typeCard input,
+.chip input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.typeName {
+  font-family: var(--font-display);
+  font-stretch: var(--display-stretch);
+  font-weight: 800;
+  font-size: 15px;
+  line-height: 1.15;
+  text-transform: uppercase;
+}
+
+.typeCard:hover,
+.chip:hover {
+  background: #fde9c0;
+}
+
+.typeCard:has(input:focus-visible),
+.chip:has(input:focus-visible) {
+  outline: 2px solid var(--carousel-indian-red);
+  outline-offset: 2px;
+}
+
+.picked,
+.picked:hover,
+.chip.picked,
+.chip.picked:hover {
+  background: var(--carousel-bistre);
+  color: var(--carousel-butter);
+}
+
+.formats {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  position: relative;
+  padding: 9px 16px;
+  border: 1.5px solid var(--carousel-bistre);
+  border-radius: 999px;
+  background: #fffaf0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* files */
+.drop {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 28px;
+  border: 1.5px dashed var(--carousel-bistre);
+  border-radius: 2px;
+  background: #fffaf0;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.drop input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.fileList {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 14px;
+}
+
+.warning {
+  margin: 0;
+  padding: 10px 12px;
+  border-left: 4px solid var(--carousel-indian-red);
+  background: #fde3d9;
+  font-size: 14px;
+}
+
+/* ---------- send ---------- */
+.sendRow {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 32px 0 0;
+  border-top: 1px solid rgba(33, 1, 0, 0.18);
+}
+
+.primary,
+.secondary {
+  min-height: 50px;
+  padding: 0 26px;
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.primary {
+  border: 1.5px solid var(--carousel-bistre);
+  background: var(--carousel-bistre);
+  color: var(--carousel-butter);
+}
+
+.primary:hover {
+  background: var(--carousel-garnet);
+  border-color: var(--carousel-garnet);
+}
+
+.primary:disabled {
+  opacity: 0.6;
+}
+
+.secondary {
+  align-self: flex-start;
+  border: 1.5px solid var(--carousel-bistre);
+  background: none;
+  color: var(--carousel-bistre);
+}
+
+.secondary:hover {
+  background: var(--carousel-bistre);
+  color: var(--carousel-butter);
+}
+
+/* ---------- sent ---------- */
+.sent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 640px;
+  padding: 40px 0;
+}
+
+.sent h2 {
+  font-size: var(--text-h1);
+}
+
+.sent p {
+  margin: 0;
+}
+
+.specimen {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 20px 22px;
+  border-left: 8px solid var(--carousel-goldfinch);
+  background: #fbe8c2;
+}
+
+.specimenTitle {
+  font-family: var(--font-display);
+  font-stretch: var(--display-stretch);
+  font-weight: 800;
+  font-size: 18px;
+  text-transform: uppercase;
+}
+
+@media (max-width: 860px) {
+  .row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  /* on phones the tip comes first, then the field */
+  .note {
+    position: static;
+    order: -1;
+  }
+  .types {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .grid2 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
