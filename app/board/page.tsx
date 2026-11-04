@@ -48,7 +48,7 @@ export default function BoardPage() {
     <main className={styles.board}>
       <div className="wrap">
         <div className={styles.hero}>
-          <p className="label">file_00 // look &amp; feel // draft 4 // clearance: editors</p>
+          <p className="label">file_00 // look &amp; feel // draft 5</p>
           <h1 className={styles.title}>Look &amp; Feel Board</h1>
           <p className={styles.lede}>
             Everything the new site gets built from, on one page. Nothing here is final: tell me what to keep, swap or
@@ -343,34 +343,9 @@ export default function BoardPage() {
         <Section
           n="08"
           title="Direction"
-          note="A science magazine as a classified research facility: part secret containment lab, part expensive high-tech company. These are the pieces I'd use to build that feeling into the pages; tell me which to keep."
+          note="A hint of a classified research lab or an expensive high-tech company, kept subtle: just these two touches."
         >
           <div className={styles.motifs}>
-            <figure className={styles.motif}>
-              <div className={styles.clearance}>
-                <span className="label">clearance</span>
-                <strong>LEVEL 4</strong>
-                <span className="label">sci_sphere // contributors only</span>
-              </div>
-              <figcaption className="label">clearance stamps on sections</figcaption>
-            </figure>
-            <figure className={styles.motif}>
-              <div className={styles.hazardWrap}>
-                <div className={styles.hazard} />
-                <span className="label">containment // do not cross</span>
-                <div className={styles.hazard} />
-              </div>
-              <figcaption className="label">hazard-stripe dividers</figcaption>
-            </figure>
-            <figure className={styles.motif}>
-              <div className={styles.redactWrap}>
-                <p>
-                  Subject <span className={styles.redact}>xxxxxxxx</span> was observed reading Issue 003 for{" "}
-                  <span className={styles.redact}>xxxxx</span> hours without rest.
-                </p>
-              </div>
-              <figcaption className="label">redacted text that reveals on hover</figcaption>
-            </figure>
             <figure className={styles.motif}>
               <div className={styles.specimen}>
                 <span className="label">specimen // ss-003-a</span>
@@ -379,7 +354,7 @@ export default function BoardPage() {
               </div>
               <figcaption className="label">specimen tags for articles</figcaption>
             </figure>
-            <figure className={`${styles.motif} ${styles.motifWide}`}>
+            <figure className={styles.motif}>
               <div className={styles.terminal}>
                 <span>&gt; sci_sphere.sys booting...</span>
                 <span>&gt; biometric scan: ok</span>
