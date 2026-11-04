@@ -49,7 +49,7 @@ export default function BoardPage() {
     <main className={styles.board}>
       <div className="wrap">
         <div className={styles.hero}>
-          <p className="label">file_00 // look &amp; feel // draft 2</p>
+          <p className="label">file_00 // look &amp; feel // draft 3</p>
           <h1 className={styles.title}>Look &amp; Feel Board</h1>
           <p className={styles.lede}>
             Everything the new site gets built from, on one page. Nothing here is final: tell me what to keep, swap or
@@ -112,12 +112,12 @@ export default function BoardPage() {
         <Section
           n="02"
           title="Type"
-          note="B is in use for now. A felt loud, so C, D and E are calmer options to compare: use the bar above and the whole page (and the header) changes live."
+          note="All caps, as you preferred. Wide Light is in use: the same wide capitals as before, but lighter so they don't shout. Compare the others with the bar above; the whole page (and the header) changes live."
         >
           <div className={styles.specimen}>
             <div className={styles.specRow}>
               <p className="label">
-                display // <span className={`${styles.fontName} ${styles.fb}`}>Space Grotesk 700</span><span className={`${styles.fontName} ${styles.fa}`}>Archivo Expanded 800</span><span className={`${styles.fontName} ${styles.fc}`}>Archivo 600</span><span className={`${styles.fontName} ${styles.fd}`}>Instrument Serif</span><span className={`${styles.fontName} ${styles.fe}`}>Bricolage Grotesque 700</span>
+                display // <span className={`${styles.fontName} ${styles.fw}`}>Archivo Expanded 500</span><span className={`${styles.fontName} ${styles.fa}`}>Archivo Expanded 800</span><span className={`${styles.fontName} ${styles.fc}`}>Archivo 600</span><span className={`${styles.fontName} ${styles.fn}`}>Archivo Condensed 700</span><span className={`${styles.fontName} ${styles.fg}`}>Space Grotesk 600</span>
               </p>
               <p className={styles.specHero}>Science, by students.</p>
             </div>
@@ -131,7 +131,7 @@ export default function BoardPage() {
             </div>
             <div className={styles.specRow}>
               <p className="label">
-                body // <span className={`${styles.fontName} ${styles.fb}`}>Space Grotesk</span><span className={`${styles.fontName} ${styles.fa}`}>Archivo</span><span className={`${styles.fontName} ${styles.fc}`}>Archivo</span><span className={`${styles.fontName} ${styles.fd}`}>Archivo</span><span className={`${styles.fontName} ${styles.fe}`}>Bricolage Grotesque</span>
+                body // <span className={`${styles.fontName} ${styles.fw}`}>Archivo</span><span className={`${styles.fontName} ${styles.fa}`}>Archivo</span><span className={`${styles.fontName} ${styles.fc}`}>Archivo</span><span className={`${styles.fontName} ${styles.fn}`}>Archivo</span><span className={`${styles.fontName} ${styles.fg}`}>Space Grotesk</span>
               </p>
               <p className={styles.specBody}>
                 Science Sphere is a magazine made by students, <em>for</em> students. This year&apos;s team is made up
@@ -140,7 +140,7 @@ export default function BoardPage() {
             </div>
             <div className={styles.specRow}>
               <p className="label">
-                labels // <span className={`${styles.fontName} ${styles.fb}`}>JetBrains Mono</span><span className={`${styles.fontName} ${styles.fa}`}>Space Mono</span><span className={`${styles.fontName} ${styles.fc}`}>Space Mono</span><span className={`${styles.fontName} ${styles.fd}`}>JetBrains Mono</span><span className={`${styles.fontName} ${styles.fe}`}>Space Mono</span>
+                labels // <span className={`${styles.fontName} ${styles.fw}`}>Space Mono</span><span className={`${styles.fontName} ${styles.fa}`}>Space Mono</span><span className={`${styles.fontName} ${styles.fc}`}>Space Mono</span><span className={`${styles.fontName} ${styles.fn}`}>Space Mono</span><span className={`${styles.fontName} ${styles.fg}`}>JetBrains Mono</span>
               </p>
               <p className={styles.specMono}>
                 SUBJECT: QANITA FARRUKH &nbsp;&nbsp; ID: 482913 &nbsp;&nbsp; EDITOR. WRITER. DESIGNER.
@@ -222,8 +222,8 @@ export default function BoardPage() {
           <div className={styles.previews}>
             {[
               { page: "Landing", theme: themes.space, on: "" },
-              { page: "Issues", theme: themes.carousel, on: "Issues" },
-              { page: "Pitch", theme: themes.melon, on: "Pitch" },
+              { page: "Issues", theme: themes.melon, on: "Issues" },
+              { page: "Pitch", theme: themes.carousel, on: "Pitch" },
               { page: "Team, Contact", theme: themes.sunset, on: "Team" },
               { page: "Other", theme: themes.ink, on: "" },
             ].map(({ page, theme, on }) => (
@@ -319,8 +319,8 @@ export default function BoardPage() {
 
             <figure className={styles.detail}>
               <div className={styles.statusRow}>
-                <Heart size={64} beating />
-                <Heart size={64} />
+                <Heart size={70} beating />
+                <Heart size={70} />
                 <span>
                   <strong>Open now</strong> (beating)
                   <br />

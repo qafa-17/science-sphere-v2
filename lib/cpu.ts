@@ -58,8 +58,8 @@ function buildTraces(): Trace[] {
 
 export const TRACES = buildTraces();
 
-/** On-screen size of the whole drawing (the chip itself is about a fifth of this, ~19px). */
-export const CURSOR_PX = 99;
+/** On-screen size of the whole drawing (the chip itself is about a fifth of this, ~15px). */
+export const CURSOR_PX = 79;
 /** The drawing's size in its own units. */
 export const VIEW = 124;
 

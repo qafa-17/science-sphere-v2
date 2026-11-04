@@ -4,8 +4,6 @@ import "@fontsource/space-mono/400.css";
 import "@fontsource/space-mono/700.css";
 import "@fontsource-variable/space-grotesk";
 import "@fontsource-variable/jetbrains-mono";
-import "@fontsource/instrument-serif/400.css";
-import "@fontsource-variable/bricolage-grotesque";
 import "@fontsource/pixelify-sans/600.css";
 import "./globals.css";
 import CpuCursor from "@/components/CpuCursor";

@@ -203,11 +203,11 @@
 .fontName {
   display: none;
 }
-:global(:root:not([data-type])) .fb,
+:global(:root:not([data-type])) .fw,
 :global(:root[data-type="a"]) .fa,
 :global(:root[data-type="c"]) .fc,
-:global(:root[data-type="d"]) .fd,
-:global(:root[data-type="e"]) .fe {
+:global(:root[data-type="n"]) .fn,
+:global(:root[data-type="g"]) .fg {
   display: inline;
 }
 

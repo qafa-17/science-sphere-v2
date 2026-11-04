@@ -4,8 +4,22 @@
 }
 
 .pump {
+  stroke: var(--heart-ink, #111111);
   transform-box: fill-box;
-  transform-origin: 50% 60%;
+  transform-origin: 50% 62%;
+}
+
+.ink {
+  fill: var(--heart-ink, #111111);
+  stroke: none;
+}
+
+.paper {
+  fill: var(--heart-paper, #ffffff);
+}
+
+.line {
+  fill: none;
 }
 
 /* lub-dub, about 66 beats a minute */
@@ -14,7 +28,7 @@
 }
 
 .still {
-  filter: saturate(0.35) brightness(0.85);
+  opacity: 0.5;
 }
 
 @keyframes lubdub {
@@ -24,13 +38,13 @@
     transform: scale(1);
   }
   12% {
-    transform: scale(1.12);
+    transform: scale(1.1);
   }
   24% {
-    transform: scale(1.03);
+    transform: scale(1.02);
   }
   32% {
-    transform: scale(1.08);
+    transform: scale(1.06);
   }
 }
 

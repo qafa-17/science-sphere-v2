@@ -4,19 +4,19 @@ import { useEffect, useState } from "react";
 import styles from "@/app/board/board.module.css";
 
 const typeOptions = [
-  { id: "b", label: "B · Signal (current)" },
-  { id: "a", label: "A · Archive" },
-  { id: "c", label: "C · Quiet Archive" },
-  { id: "d", label: "D · Editorial" },
-  { id: "e", label: "E · Bricolage" },
+  { id: "w", label: "Wide Light (current)" },
+  { id: "a", label: "Wide Heavy" },
+  { id: "c", label: "Regular Caps" },
+  { id: "n", label: "Condensed Caps" },
+  { id: "g", label: "Grotesk Caps" },
 ];
 
 /** Switch the whole site's type between the options, live, to compare them. */
 export default function BoardControls() {
-  const [type, setType] = useState("b");
+  const [type, setType] = useState("w");
 
   useEffect(() => {
-    if (type === "b") delete document.documentElement.dataset.type;
+    if (type === "w") delete document.documentElement.dataset.type;
     else document.documentElement.dataset.type = type;
   }, [type]);
 

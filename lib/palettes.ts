@@ -54,9 +54,9 @@ export const palettes: Record<string, Palette> = {
 /** Which palette each page uses. */
 export const pagePalettes: { page: string; path: string; palette: string; why: string }[] = [
   { page: "Landing", path: "/", palette: "space", why: "night sky, high-tech" },
-  { page: "Issues", path: "/issues", palette: "carousel", why: "warm and rich, like a reading room" },
+  { page: "Issues", path: "/issues", palette: "melon", why: "fresh, earthy, matches the folder tabs" },
   { page: "Meet the Team", path: "/team", palette: "sunset", why: "honeydew ID cards, tomato-red dots" },
-  { page: "Pitch a Story", path: "/pitch", palette: "melon", why: "fresh ideas" },
+  { page: "Pitch a Story", path: "/pitch", palette: "carousel", why: "warm and rich, like a spotlight" },
   { page: "Contact", path: "/contact", palette: "sunset", why: "warm, with a red beating heart" },
 ];
 
