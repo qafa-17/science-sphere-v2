@@ -15,7 +15,11 @@ export type SphereOpts = {
   background?: boolean;
   /** 0..1: lines and dots fade toward the edge, for flying through it */
   through?: number;
+  /** colours as "r,g,b" strings */
+  colours?: { line: string; glow: string; dot: string; accent: string; rim: string };
 };
+
+const SPACE_COLOURS = { line: "139,190,178", glow: "230,249,175", dot: "230,249,175", accent: "202,172,75", rim: "139,190,178" };
 
 export function createSphere() {
   const rand = seeded(17);
@@ -90,6 +94,7 @@ export function createSphere() {
     const cx = o.cx ?? w / 2;
     const cy = o.cy ?? h / 2;
     const through = o.through ?? 0;
+    const col = o.colours ?? SPACE_COLOURS;
     const cyA = Math.cos(spinY);
     const syA = Math.sin(spinY);
     const cxA = Math.cos(spinX);
@@ -143,7 +148,7 @@ export function createSphere() {
       const depth = (A.z + B.z) / 2;
       const glow = Math.max(A.near, B.near, A.wave, B.wave);
       const al = (0.08 + 0.32 * ((depth + 1) / 2) + glow * 0.5) * fade((A.X + B.X) / 2, (A.Y + B.Y) / 2);
-      ctx.strokeStyle = glow > 0.05 ? `rgba(230,249,175,${al})` : `rgba(139,190,178,${al})`;
+      ctx.strokeStyle = glow > 0.05 ? `rgba(${col.glow},${al})` : `rgba(${col.line},${al})`;
       ctx.beginPath();
       ctx.moveTo(A.X, A.Y);
       ctx.lineTo(B.X, B.Y);
@@ -156,7 +161,7 @@ export function createSphere() {
         if (P.z < 0) continue;
         const d = Math.hypot(P.X - pointer.x, P.Y - pointer.y);
         if (d < LINK) {
-          ctx.strokeStyle = `rgba(202,172,75,${(1 - d / LINK) * 0.9})`;
+          ctx.strokeStyle = `rgba(${col.accent},${(1 - d / LINK) * 0.9})`;
           ctx.beginPath();
           ctx.moveTo(P.X, P.Y);
           ctx.lineTo(pointer.x, pointer.y);
@@ -174,15 +179,15 @@ export function createSphere() {
       const r = p.size * (0.6 + depth * 0.8) * (1 + P.near * 1.4 + P.wave) * Math.min(3, Math.sqrt(grow));
       const f2 = fade(P.X, P.Y);
       ctx.fillStyle = p.gold
-        ? `rgba(202,172,75,${(0.3 + depth * 0.7) * f2})`
-        : `rgba(230,249,175,${(0.2 + depth * 0.75 + P.near * 0.3) * f2})`;
+        ? `rgba(${col.accent},${(0.3 + depth * 0.7) * f2})`
+        : `rgba(${col.dot},${(0.2 + depth * 0.75 + P.near * 0.3) * f2})`;
       ctx.beginPath();
       ctx.arc(P.X, P.Y, r, 0, Math.PI * 2);
       ctx.fill();
     }
 
     if (through < 0.2) {
-      ctx.strokeStyle = "rgba(139,190,178,0.25)";
+      ctx.strokeStyle = `rgba(${col.rim},0.25)`;
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.arc(cx, cy, R * 1.02, 0, Math.PI * 2);
@@ -192,7 +197,7 @@ export function createSphere() {
     for (const tap of taps) {
       const age = Math.max(0, t - tap.t);
       if (age > 1.6) continue;
-      ctx.strokeStyle = `rgba(230,249,175,${0.5 * (1 - age / 1.6)})`;
+      ctx.strokeStyle = `rgba(${col.glow},${0.5 * (1 - age / 1.6)})`;
       ctx.beginPath();
       ctx.arc(tap.x, tap.y, age * 520, 0, Math.PI * 2);
       ctx.stroke();

@@ -292,3 +292,63 @@
     right: auto;
   }
 }
+
+/* ---------- 06 the ascent ---------- */
+.ascentWrap {
+  position: relative;
+  height: 700vh;
+  background: #050a2e;
+  color: #f4ead7;
+}
+
+.creamText .title {
+  color: #f4ead7;
+  text-shadow: 0 0 40px rgba(5, 10, 46, 0.6);
+}
+
+.creamText {
+  color: #f4ead7;
+}
+
+.posterCard {
+  border-color: rgba(244, 234, 215, 0.35);
+  background: rgba(29, 54, 64, 0.82);
+  color: #f4ead7;
+}
+
+.posterCard .cardButton {
+  background: #e2672f;
+  color: #f4ead7 !important;
+}
+
+.banner {
+  position: absolute;
+  bottom: 84px;
+  left: 50%;
+  translate: -50% 0;
+  width: min(760px, calc(100% - 32px));
+  padding: 14px 18px;
+  border: 1px solid rgba(244, 234, 215, 0.35);
+  border-radius: 4px;
+  text-align: center;
+}
+
+.bannerLinks {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 18px;
+  margin-top: 8px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.bannerLinks a {
+  color: inherit;
+}
+
+@media (max-width: 700px) {
+  .banner {
+    bottom: 130px;
+  }
+}

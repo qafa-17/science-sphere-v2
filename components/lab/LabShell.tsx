@@ -9,6 +9,7 @@ export const prototypes = [
   { id: "circuit", n: "03", name: "Circuit" },
   { id: "dive", n: "04", name: "The dive" },
   { id: "morph", n: "05", name: "Morphing" },
+  { id: "ascent", n: "06", name: "The ascent" },
 ];
 
 /** The row of buttons for switching between prototypes. */
