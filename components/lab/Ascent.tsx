@@ -4,9 +4,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { runCanvas, seeded } from "@/lib/canvasLoop";
-import { createSmoke, drawCloud, drawPlatform, drawRocket } from "@/lib/scenes/launch";
+import { createSmoke, drawCloud, drawPlatform, drawRocket, grainDataUrl } from "@/lib/scenes/launch";
 import { createOcean } from "@/lib/scenes/ocean";
-import { createSpace } from "@/lib/scenes/space";
+import { createSpace, drawBeacon } from "@/lib/scenes/space";
 import { createSphere } from "@/lib/scenes/sphere";
 import BootLine from "./BootLine";
 import styles from "./Lab.module.css";
@@ -16,7 +16,7 @@ const smooth = (x: number) => x * x * (3 - 2 * x);
 const between = (p: number, a: number, b: number) => smooth(clamp((p - a) / (b - a)));
 
 // The world, top to bottom, in screen-heights: space, sky, the sea surface, the deep.
-const SPHERE_Y = 0.5;
+const BEACON_Y = 0.42; // the bright star we zoom into, at the very top
 const PLANETS = [1.0, 2.0];
 const SURFACE = 3.6;
 const WORLD = 5.8;
@@ -28,8 +28,8 @@ const CAMERA: [number, number][] = [
   [0.24, 2.85],
   [0.36, 2.85],
   [0.52, 1.0],
-  [0.68, 1.0],
-  [0.82, 0],
+  [0.66, 1.0],
+  [0.76, 0],
   [1, 0],
 ];
 
@@ -37,8 +37,9 @@ const CAMERA: [number, number][] = [
 const CARDS = {
   title: [-1, 0, 0.05, 0.11],
   pitch: [0.26, 0.3, 0.4, 0.45],
-  issues: [0.52, 0.55, 0.66, 0.7],
-  contact: [0.8, 0.85, 1.1, 1.2],
+  issues: [0.52, 0.55, 0.64, 0.68],
+  beacon: [0.74, 0.77, 0.8, 0.83],
+  contact: [0.9, 0.93, 1.1, 1.2],
 } as const;
 
 const ISSUES = [
@@ -73,6 +74,9 @@ export default function Ascent() {
 
   useEffect(() => {
     const wrap = wrapRef.current!;
+    // a fine grain over everything, for a painted, printed finish (drawn once, by the browser)
+    const grainEl = wrap.querySelector<HTMLElement>("[data-grain]");
+    if (grainEl) grainEl.style.backgroundImage = `url(${grainDataUrl()})`;
     const cards = new Map<string, HTMLElement>();
     wrap.querySelectorAll<HTMLElement>("[data-card]").forEach((el) => cards.set(el.dataset.card!, el));
     const ocean = createOcean();
@@ -82,6 +86,8 @@ export default function Ascent() {
     let clouds: { x: number; y: number; s: number }[] = [];
     let lastTap = -1;
     let skyGrad: CanvasGradient | null = null;
+    let rayGrad: CanvasGradient | null = null;
+    let rayGradH = 0;
     let skyGradH = 0;
 
     // screen-heights to px
@@ -97,7 +103,16 @@ export default function Ascent() {
         const cam = cameraAt(p) * h;
         const wp = { x: pointer.x, y: pointer.y + cam, inside: pointer.inside };
 
+        // at the very end, the whole world zooms into the bright star
+        const zoomIn = between(p, 0.78, 0.9);
+        const zoom = 1 + zoomIn * zoomIn * 10;
+        const bx = w / 2;
+        const by = at(BEACON_Y) - cam;
+
         ctx.save();
+        ctx.translate(bx, by);
+        ctx.scale(zoom, zoom);
+        ctx.translate(-bx, -by);
         ctx.translate(0, -cam);
 
         // the sky and sea as one long gradient (made once per size)
@@ -120,12 +135,15 @@ export default function Ascent() {
 
         // ---- the deep: light rays, fish, bubbles
         if (cam + h > at(SURFACE)) {
+          if (!rayGrad || rayGradH !== h) {
+            rayGradH = h;
+            rayGrad = ctx.createLinearGradient(0, at(SURFACE), 0, at(SURFACE + 1.3));
+            rayGrad.addColorStop(0, "rgba(200,225,255,0.16)");
+            rayGrad.addColorStop(1, "rgba(200,225,255,0)");
+          }
+          ctx.fillStyle = rayGrad;
           for (let i = 0; i < 6; i++) {
             const x = w * (0.1 + i * 0.17) + Math.sin(t * 0.3 + i) * 30;
-            const ray = ctx.createLinearGradient(0, at(SURFACE), 0, at(SURFACE + 1.3));
-            ray.addColorStop(0, "rgba(200,225,255,0.16)");
-            ray.addColorStop(1, "rgba(200,225,255,0)");
-            ctx.fillStyle = ray;
             ctx.beginPath();
             ctx.moveTo(x - 30, at(SURFACE));
             ctx.lineTo(x + 30, at(SURFACE));
@@ -147,7 +165,9 @@ export default function Ascent() {
         ctx.fill();
 
         // ---- the sky: clouds
-        for (const c of clouds) if (c.y > cam - 100 && c.y < cam + h + 100) drawCloud(ctx, c.x + Math.sin(t * 0.1 + c.y) * 20, c.y, c.s);
+        clouds.forEach((c, i) => {
+          if (c.y > cam - 150 && c.y < cam + h + 150) drawCloud(ctx, c.x + Math.sin(t * 0.1 + c.y) * 20, c.y, c.s, i);
+        });
 
         // ---- the launch
         const rocketH = Math.min(h * 0.36, w * 0.5);
@@ -175,29 +195,47 @@ export default function Ascent() {
         }
         ctx.restore();
 
-        // ---- the sphere at the top, with the rocket in orbit
-        const sy = at(SPHERE_Y) - cam;
-        if (sy > -h * 0.6) {
-          const R = Math.min(w, h) * 0.3;
+        // ---- the bright star: it grows as we fly at it, flashes, and opens into the sphere
+        const dim = between(p, 0.8, 0.88);
+        if (dim > 0) {
+          ctx.fillStyle = `rgba(14,26,32,${dim})`;
+          ctx.fillRect(0, 0, w, h);
+        }
+        const open = between(p, 0.88, 0.95);
+        const R = Math.min(w, h) * 0.3;
+        const cy = by + (h / 2 - by) * open;
+        if (open > 0) {
           sphere.draw(f, {
+            alpha: open,
             cx: w / 2,
-            cy: sy,
-            radius: R,
+            cy,
+            radius: Math.max(4, R * (0.3 + 0.7 * open)),
             background: false,
             colours: { line: "108,196,192", glow: "244,234,215", dot: "244,234,215", accent: "226,103,47", rim: "108,196,192" },
           });
-          const orbit = between(p, 0.8, 0.86);
+          const orbit = between(p, 0.92, 0.96);
           if (orbit > 0) {
             const a = t * 0.6;
             ctx.save();
             ctx.globalAlpha = orbit;
             const ox = w / 2 + Math.cos(a) * R * 1.35;
-            const oy = sy + Math.sin(a) * R * 0.45;
+            const oy = cy + Math.sin(a) * R * 0.45;
             ctx.translate(ox, oy);
             ctx.rotate(Math.atan2(Math.cos(a) * R * 0.45, -Math.sin(a) * R * 1.35));
             drawRocket(ctx, 0, rocketH * 0.06, rocketH * 0.12, t, 0.3);
             ctx.restore();
           }
+        }
+        const starFade = 1 - between(p, 0.87, 0.9);
+        if (cam < h * 0.2 && starFade > 0) {
+          ctx.globalAlpha = starFade;
+          drawBeacon(ctx, bx, by, Math.min(w, h) * 0.012 * (1 + zoomIn * zoomIn * zoomIn * 26), t);
+          ctx.globalAlpha = 1;
+        }
+        const flash = between(p, 0.845, 0.875) * (1 - between(p, 0.885, 0.94));
+        if (flash > 0) {
+          ctx.fillStyle = `rgba(255,248,235,${flash})`;
+          ctx.fillRect(0, 0, w, h);
         }
 
         // cards
@@ -234,6 +272,7 @@ export default function Ascent() {
     <div ref={wrapRef} className={styles.ascentWrap}>
       <div className={styles.diveStage}>
         <canvas ref={canvasRef} className={styles.canvas} aria-hidden="true" />
+        <div data-grain className={styles.grain} aria-hidden="true" />
         <div className={styles.overlay}>
           <BootLine text="> sci_sphere.sys // prototype_06" />
         </div>
@@ -273,6 +312,10 @@ export default function Ascent() {
               </Link>
             ))}
           </nav>
+        </section>
+
+        <section data-card="beacon" className={`${styles.diveTitle} ${styles.creamText}`} aria-hidden="true">
+          <p className={`label ${styles.beaconLabel}`}>signal detected // keep scrolling</p>
         </section>
 
         <section data-card="contact" className={`${styles.card} ${styles.cardLeft} ${styles.posterCard}`} aria-label="Contact">

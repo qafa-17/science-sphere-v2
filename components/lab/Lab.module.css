@@ -352,3 +352,16 @@
     bottom: 130px;
   }
 }
+
+.beaconLabel {
+  margin-top: 52vh;
+  opacity: 0.85;
+}
+
+.grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.06;
+  pointer-events: none;
+  background-repeat: repeat;
+}
