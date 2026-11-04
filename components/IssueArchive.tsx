@@ -62,15 +62,16 @@ export default function IssueArchive({ issues }: { issues: Issue[] }) {
       slots.forEach((el) => {
         const kind = el.dataset.slot!;
         let w: number;
-        let lift = 0;
+        let slide = 0;
         if (kind === "title") w = titleW;
         else if (kind === "archive") w = archiveW;
         else {
           const i = Number(kind);
           w = finalW[i];
-          if (pulledRef.current === i) lift = H * 1.15;
+          // clicking slides the file out of the pile sideways, off to the right
+          if (pulledRef.current === i) slide = W + coverW;
         }
-        el.style.transform = `translate3d(${x}px, ${-lift}px, 0)`;
+        el.style.transform = `translate3d(${x + slide}px, 0, 0)`;
         el.style.width = `${w}px`;
         el.style.setProperty("--h", `${H}px`);
         el.style.setProperty("--cover-w", `${coverW}px`);
