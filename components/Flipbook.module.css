@@ -1,0 +1,210 @@
+.frame {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+/* in full screen, the book gets the whole screen on a dark background */
+.frame:fullscreen {
+  justify-content: flex-start;
+  background: #141b21;
+  padding: 12px 24px 16px;
+}
+
+.book {
+  width: 100%;
+  /* Two pages side by side are about 1.545x wider than tall. This makes the
+     spread as big as the screen allows: the full width, or the height left
+     after the site header (84px) and toolbar (about 76px). */
+  max-width: calc((100vh - 176px) * 1.545);
+  /* the library draws its own pages; this just gives them a soft drop shadow */
+  filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.35));
+}
+
+/* in full screen there's no site header, so the pages get even bigger */
+.frame:fullscreen .book {
+  max-width: calc((100vh - 92px) * 1.545);
+}
+
+/* on phones the book shows one page at a time, so it can be taller */
+@media (max-width: 700px) {
+  .book {
+    max-width: calc((100vh - 200px) * 0.772);
+  }
+}
+
+/* ---------- one magazine page ---------- */
+.page {
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.pageImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* links and page jumps: invisible until you hover, then a soft highlight */
+.spot {
+  position: absolute;
+  display: block;
+  border-radius: 6px;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.spot:hover,
+.spot:focus-visible {
+  background: rgba(207, 224, 122, 0.28);
+  box-shadow: 0 0 0 2px rgba(166, 192, 54, 0.9);
+}
+
+/* videos play inside their box on the page */
+.videoBox {
+  position: absolute;
+  overflow: hidden;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.playButton {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  border: 3px solid #ffffff;
+  background: rgba(31, 42, 51, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease;
+}
+
+.playButton:hover {
+  transform: scale(1.08);
+}
+
+.playButton[hidden] {
+  display: none;
+}
+
+.playButton svg {
+  width: 24px;
+  height: 24px;
+  fill: #ffffff;
+  margin-left: 3px;
+}
+
+/* soundbites: a round speaker button that pulses while playing */
+.audioButton {
+  position: absolute;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 999px;
+  border: 3px solid var(--ink);
+  background: var(--lime);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 3px 4px 0 rgba(31, 42, 51, 0.25);
+}
+
+.audioButton svg {
+  width: 55%;
+  height: 55%;
+  max-width: 26px;
+  max-height: 26px;
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.playing {
+  animation: soundPulse 1s ease-in-out infinite;
+}
+
+@keyframes soundPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(166, 192, 54, 0.7); }
+  50% { box-shadow: 0 0 0 10px rgba(166, 192, 54, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .playing { animation: none; }
+}
+
+/* ---------- the toolbar above the book ---------- */
+.toolbar {
+  width: 100%;
+  max-width: var(--page-width);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  padding: 0 16px;
+}
+
+.toolbarStart {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--paper);
+}
+
+.control {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 2px solid var(--paper);
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.control:hover {
+  background: rgba(243, 242, 236, 0.12);
+}
+
+.control svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: var(--paper);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.counter {
+  font-family: var(--font-note);
+  font-size: 16px;
+  min-width: 150px;
+  text-align: center;
+}

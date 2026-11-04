@@ -1,0 +1,117 @@
+/* drawn in white and blended with "difference", so it shows up dark on light
+   pages and light on dark pages, without needing a colour per page */
+/* colours come from these, so the board can show the drawing in ink too */
+.cursor,
+.drawing {
+  --chip: #ffffff;
+  --chip-fill: #000000;
+  --trace: #a4a4a4;
+}
+
+.cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10000;
+  pointer-events: none;
+  mix-blend-mode: difference;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  will-change: transform;
+}
+
+.cursor[data-shown] {
+  opacity: 1;
+}
+
+.drawing {
+  display: block;
+  overflow: visible;
+}
+
+.chip {
+  transform-origin: 0 0;
+  transition: transform 0.12s ease;
+}
+
+.pressed .chip {
+  transform: scale(0.86);
+}
+
+.chip rect {
+  fill: var(--chip);
+}
+
+.chip .body {
+  fill: var(--chip-fill);
+  stroke: var(--chip);
+  stroke-width: 2.2;
+}
+
+.chip .die {
+  fill: none;
+  stroke: var(--chip);
+  stroke-width: 1.1;
+}
+
+.mark {
+  fill: var(--chip);
+}
+
+/* ---------- the circuit ---------- */
+.traces polyline {
+  fill: none;
+  stroke: var(--trace);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 0.14s ease-in;
+}
+
+.pads > * {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(0.2);
+  transition:
+    opacity 0.08s ease,
+    transform 0.08s ease;
+}
+
+.fill {
+  fill: var(--trace);
+}
+
+.ring {
+  fill: none;
+  stroke: var(--trace);
+  stroke-width: 1.2;
+}
+
+/* :global(.active) lets the board switch a drawing on from outside */
+/* all the lines leave the chip together and finish in 0.3s */
+.active .traces polyline,
+:global(.cpu-on) .traces polyline {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.3s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+.active .pads > *,
+:global(.cpu-on) .pads > * {
+  opacity: 1;
+  transform: scale(1);
+  transition:
+    opacity 0.08s ease 0.22s,
+    transform 0.12s cubic-bezier(0.3, 1.6, 0.5, 1) 0.22s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .traces polyline,
+  .active .traces polyline,
+  .pads > *,
+  .active .pads > * {
+    transition: none;
+  }
+}

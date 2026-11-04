@@ -1,0 +1,158 @@
+/* ---------- design tokens ---------- */
+:root {
+  /* base: ID-card cream and near-black ink */
+  --paper: #ebe8df;
+  --paper-2: #e1ddd1;
+  --ink: #0b0c0e;
+  --ink-soft: #3b3d42;
+  --line: rgba(11, 12, 14, 0.18);
+
+  /* Space */
+  --space-lime: #e6f9af;
+  --space-gold: #caac4b;
+  --space-teal: #8bbeb2;
+  --space-blue: #18314f;
+  --space-amethyst: #0d0630;
+  /* Logo */
+  --logo-navy: #1b4079;
+  --logo-orchid: #e58ef6;
+  --logo-pink: #ff6b9a;
+  --logo-mist: #dce3ee;
+  --logo-night: #0b1a33;
+  /* Sunset */
+  --sunset-honeydew: #f6ffea;
+  --sunset-peach: #ffde96;
+  --sunset-coral: #fa855a;
+  --sunset-tomato: #c93638;
+  --sunset-sky: #62c4da;
+  /* Melon */
+  --melon-exocarp: #788417;
+  --melon-unripe: #aab026;
+  --melon-mystic: #f6f1bc;
+  --melon-cantaloupe: #fdcb7b;
+  --melon-kumquat: #eea64b;
+  --melon-zest: #d9641f;
+
+  /* type: option A ("Archive") by default */
+  --font-display: "Archivo Variable", system-ui, sans-serif;
+  --display-stretch: 125%;
+  --display-weight: 800;
+  --font-body: "Archivo Variable", system-ui, sans-serif;
+  --body-stretch: 100%;
+  --font-mono: "Space Mono", ui-monospace, monospace;
+  --font-pixel: "Silkscreen", var(--font-mono);
+
+  --text-hero: clamp(44px, 7vw, 96px);
+  --text-h1: clamp(32px, 4vw, 48px);
+  --text-h2: 26px;
+  --text-h3: 19px;
+  --text-body: 16px;
+  --text-small: 14px;
+  --text-label: 12px;
+}
+
+/* type option B ("Signal") */
+:root[data-type="b"] {
+  --font-display: "Space Grotesk Variable", system-ui, sans-serif;
+  --display-stretch: 100%;
+  --display-weight: 700;
+  --font-body: "Space Grotesk Variable", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+}
+
+/* pixel accent choices */
+:root[data-pixel="doto"] {
+  --font-pixel: "Doto", var(--font-mono);
+}
+:root[data-pixel="pixelify"] {
+  --font-pixel: "Pixelify Sans", var(--font-mono);
+}
+
+/* ---------- base ---------- */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-stretch: var(--body-stretch);
+  font-size: var(--text-body);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-stretch: var(--display-stretch);
+  font-weight: var(--display-weight);
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--logo-pink);
+  outline-offset: 3px;
+}
+
+/* the CPU cursor replaces the normal one, except where you type */
+html.cpu-cursor,
+html.cpu-cursor * {
+  cursor: none !important;
+}
+html.cpu-cursor input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]),
+html.cpu-cursor textarea {
+  cursor: text !important;
+}
+
+/* small all-caps labels, like on an ID card */
+.label {
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.wrap {
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+@media (max-width: 700px) {
+  .wrap {
+    padding: 0 16px;
+  }
+}
+
+.skip {
+  position: absolute;
+  left: -9999px;
+}
+.skip:focus {
+  left: 16px;
+  top: 16px;
+  z-index: 1000;
+  padding: 8px 12px;
+  background: var(--ink);
+  color: var(--paper);
+}

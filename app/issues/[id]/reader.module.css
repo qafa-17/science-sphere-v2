@@ -1,0 +1,75 @@
+/* the reader is a dark "reading room" so the pages stand out */
+.reader {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 12px 0 32px;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 16px 0 10px;
+  border-radius: 999px;
+  border: 2px solid var(--paper);
+  color: var(--paper);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+.back:hover {
+  background: rgba(245, 243, 236, 0.12);
+}
+
+.back svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* small, so the magazine gets the space */
+.heading {
+  font-size: 18px;
+  white-space: nowrap;
+}
+
+.season {
+  margin-left: 6px;
+  font-family: var(--font-note);
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--lime-light);
+}
+
+.stage {
+  padding: 0 16px;
+}
+
+.emptyBar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: var(--page-width);
+  margin: 0 auto;
+}
+
+.empty {
+  max-width: 480px;
+  margin: 64px auto;
+  text-align: center;
+  font-size: var(--text-body);
+  color: #d9dccf;
+}
+
+@media (max-width: 600px) {
+  .heading {
+    font-size: 16px;
+  }
+}
