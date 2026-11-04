@@ -41,7 +41,7 @@ function check(p: Pitch): Errors {
   if (!p.subject) e.subject = "Pick a subject area.";
   if (p.subject === "other" && !p.subjectOther.trim()) e.subjectOther = "Tell us the subject.";
   if (p.formats.length === 0) e.formats = "Pick at least one format.";
-  if (p.angle.trim().length < 20) e.angle = "A sentence or two about your angle, please.";
+  if (p.angle.trim().length < 20) e.angle = "Give us your pitch in a sentence or two.";
   if (p.why.trim().length < 20) e.why = "A sentence or two on why it fits Science Sphere.";
   if (p.files.length === 0) e.files = "Upload at least one file. A document with a link in it is fine.";
   return e;
@@ -259,11 +259,25 @@ export default function PitchForm() {
 
       <Row
         n="04"
-        title="The angle"
+        title="The pitch"
+        note={
+          <>
+            <p className={styles.noteTitle}>Your elevator pitch.</p>
+            <p>In a sentence or two, what would you talk about, and what makes it interesting? Not just the topic, but the story in it.</p>
+            <p className={styles.example}>
+              &ldquo;Antibiotics are quietly losing the fight against bacteria. I want to look at how scientists are turning
+              bacteria&apos;s own weapons, with a little help from AI, into the next line of defence.&rdquo;
+            </p>
+            <p className={styles.example}>
+              &ldquo;Ashwagandha is all over TikTok as a cure for stress. I&apos;d dig into what the research actually says, and
+              why so many students are taking it.&rdquo;
+            </p>
+          </>
+        }
       >
         <label className={styles.label}>
-          What&apos;s your story really about?
-          <textarea id="f-angle" rows={5} value={p.angle} onChange={(e) => set("angle", e.target.value)} aria-invalid={!!errors.angle} aria-describedby={describedBy("angle")} />
+          Explain what you want to talk about in a sentence or two
+          <textarea id="f-angle" rows={4} value={p.angle} onChange={(e) => set("angle", e.target.value)} aria-invalid={!!errors.angle} aria-describedby={describedBy("angle")} />
           {err("angle")}
         </label>
       </Row>
