@@ -15,133 +15,155 @@ function canvas(w: number, h: number, scale = SCALE) {
   return { c, g };
 }
 
+// ---------- painting helpers ----------
+/** A flat, hard-edged brush stroke: a slightly rounded rectangle, turned by `angle`. */
+function slab(g: CanvasRenderingContext2D, x: number, y: number, len: number, wid: number, angle: number, colour: string) {
+  g.save();
+  g.translate(x, y);
+  g.rotate(angle);
+  g.fillStyle = colour;
+  g.beginPath();
+  g.roundRect(-len / 2, -wid / 2, len, wid, Math.min(wid, len) * 0.35);
+  g.fill();
+  g.restore();
+}
+
+/** A palette-knife stroke: a sharp-cornered, slanted parallelogram. */
+function knife(g: CanvasRenderingContext2D, x: number, y: number, len: number, wid: number, angle: number, skew: number, colour: string) {
+  g.save();
+  g.translate(x, y);
+  g.rotate(angle);
+  g.fillStyle = colour;
+  g.beginPath();
+  g.moveTo(-len / 2 + skew, -wid / 2);
+  g.lineTo(len / 2 + skew, -wid / 2);
+  g.lineTo(len / 2 - skew, wid / 2);
+  g.lineTo(-len / 2 - skew, wid / 2);
+  g.closePath();
+  g.fill();
+  g.restore();
+}
+
 // ---------- mountains ----------
+export type MountainColours = {
+  dark: string;
+  mid: string;
+  light: string;
+  snow: string;
+  snowShade: string;
+  haze: string;
+  hazeAmount: number;
+};
+
 /**
- * One ridge of mountains as an image, w wide and h tall, its base at the
- * bottom, painted like the fish: a gradient body, a lit edge along the ridge,
- * sunlit slopes on one side, fine ridge lines and speckles.
+ * One range of mountains as an image, w wide and h tall, its base at the
+ * bottom, painted like the reference: flat palette-knife strokes, sunlit rock
+ * on the left of each ridge and dark faces on the right, snow lying in long
+ * streaks down the gullies, and haze over the distant ranges.
  */
-export function mountainLayer(
-  w: number,
-  h: number,
-  seed: number,
-  colours: { top: string; bottom: string; light: string; shadow: string },
-  jag: number,
-) {
+export function mountainLayer(w: number, h: number, seed: number, col: MountainColours, opts: { peaks: number; dominant?: boolean; snow: number }) {
   const { c, g } = canvas(w, h, 1);
   const rand = seeded(seed);
 
-  // the ridge: a row of pointed peaks, each one a tent with slightly hollow
-  // sides, plus a little small-scale roughness on top
-  const count = 3 + Math.floor(rand() * 3);
-  const peaks = Array.from({ length: count }, (_, i) => ({
-    x: w * ((i + 0.15 + rand() * 0.7) / count),
-    top: h * (0.12 + rand() * 0.45),
-    half: w * (0.17 + rand() * 0.16),
+  // the skyline: a row of peaks with hollow sides, roughened
+  const peaks = Array.from({ length: opts.peaks }, (_, i) => ({
+    x: w * ((i + 0.15 + rand() * 0.7) / opts.peaks),
+    top: h * (0.18 + rand() * 0.4),
+    half: w * (0.6 / opts.peaks) * (0.8 + rand() * 0.5),
   }));
+  if (opts.dominant) {
+    const main = peaks[Math.floor(opts.peaks / 2)];
+    main.top = h * 0.02;
+    main.half *= 1.5;
+  }
   const N = 513;
   const noise = new Array(N).fill(0);
   {
     let step = N - 1;
-    let rough = h * 0.06 * jag * 2;
+    let rough = h * 0.12;
     while (step > 1) {
       const half = step / 2;
       for (let i = half; i < N; i += step) noise[i] = (noise[i - half] + noise[i + half]) / 2 + (rand() - 0.5) * rough;
       step = half;
-      rough *= 0.55;
+      rough *= 0.6;
     }
   }
-  const tent = (x: number, pk: (typeof peaks)[number]) => {
-    const d = Math.abs(x - pk.x) / pk.half;
-    if (d >= 1) return h;
-    return pk.top + (h - pk.top) * Math.pow(d, 0.95);
-  };
   const ridgeAt = (x: number) => {
-    let y = h * 0.92;
-    for (const pk of peaks) y = Math.min(y, tent(x, pk));
+    let y = h * 0.95;
+    for (const pk of peaks) {
+      const d = Math.abs(x - pk.x) / pk.half;
+      if (d < 1) y = Math.min(y, pk.top + (h - pk.top) * Math.pow(d, 0.85));
+    }
     const i = Math.max(0, Math.min(N - 1, Math.round((x / w) * (N - 1))));
-    return Math.max(2, y + noise[i]);
+    return Math.max(2, y + noise[i] * (y / h + 0.3));
   };
+
+  // spurs: ridges running down from each summit; rock left of a spur faces the light
+  const spurs: { x: number; y: number; dx: number }[] = [];
+  for (const pk of peaks) {
+    const sx = pk.x;
+    const sy = ridgeAt(sx);
+    const n = 3 + Math.floor(rand() * 3);
+    for (let k = 0; k < n; k++) spurs.push({ x: sx + (rand() - 0.5) * pk.half * 0.2, y: sy + rand() * (h - sy) * 0.15, dx: (rand() - 0.45) * pk.half * 1.4 });
+  }
+  const spurX = (s: (typeof spurs)[number], y: number) => s.x + (s.dx * Math.max(0, y - s.y)) / Math.max(1, h - s.y);
+
   const shape = new Path2D();
   shape.moveTo(0, h);
   for (let x = 0; x <= w; x += 2) shape.lineTo(x, ridgeAt(x));
   shape.lineTo(w, h);
   shape.closePath();
-
-  const body = g.createLinearGradient(0, h * 0.1, 0, h);
-  body.addColorStop(0, colours.top);
-  body.addColorStop(1, colours.bottom);
-  g.fillStyle = body;
+  g.fillStyle = col.mid;
   g.fill(shape);
-
   g.save();
   g.clip(shape);
-  // each peak: the face away from the light (right) in shadow, cut by a crease
-  // that runs from the summit down and to the right; the left face catches light
-  for (const pk of peaks.slice().sort((a2, b2) => b2.top - a2.top)) {
-    const P = { x: pk.x, y: ridgeAt(pk.x) };
-    const creaseX = P.x + pk.half * (0.15 + rand() * 0.2);
-    const shade = new Path2D();
-    shade.moveTo(P.x, P.y);
-    for (let x = P.x; x <= P.x + pk.half; x += 2) shade.lineTo(x, ridgeAt(x));
-    shade.lineTo(P.x + pk.half, h);
-    shade.lineTo(creaseX, h);
-    shade.closePath();
-    const sg = g.createLinearGradient(P.x, P.y, P.x + pk.half * 0.4, h);
-    sg.addColorStop(0, colours.shadow);
-    sg.addColorStop(1, "rgba(0,0,0,0.04)");
-    g.fillStyle = sg;
-    g.fill(shade);
-    const lit = new Path2D();
-    lit.moveTo(P.x, P.y);
-    for (let x = P.x; x >= P.x - pk.half * 0.8; x -= 2) lit.lineTo(x, ridgeAt(x));
-    lit.lineTo(P.x - pk.half * 0.5, P.y + (h - P.y) * 0.6);
-    lit.lineTo(P.x + (creaseX - P.x) * 0.3, P.y + (h - P.y) * 0.4);
-    lit.closePath();
-    const lg = g.createLinearGradient(0, P.y, 0, P.y + (h - P.y) * 0.6);
-    lg.addColorStop(0, colours.light);
-    lg.addColorStop(1, "rgba(255,255,255,0)");
-    g.fillStyle = lg;
-    g.globalAlpha = 0.5;
-    g.fill(lit);
-    g.globalAlpha = 1;
-    // fine gullies running down the faces, like the lines on the fish
-    g.lineCap = "round";
-    for (let k = 0; k < 7; k++) {
-      const sx = P.x + (rand() - 0.5) * pk.half * 0.9;
-      const sy = ridgeAt(sx) + 2;
-      const len = (h - sy) * (0.15 + rand() * 0.3);
-      const drift = (sx - P.x) * 0.35;
-      g.strokeStyle = sx > P.x ? `rgba(255,255,255,${0.06 + rand() * 0.08})` : `rgba(255,255,255,${0.12 + rand() * 0.12})`;
-      g.lineWidth = 0.8;
-      g.beginPath();
-      g.moveTo(sx, sy);
-      g.quadraticCurveTo(sx + drift * 0.4, sy + len * 0.5, sx + drift, sy + len);
-      g.stroke();
-    }
-  }
-  // speckles, denser near the top
-  for (let i = 0; i < (w * h) / 90; i++) {
+
+  const paint = (count: number, size: number, purity: number, spread: number) => {
+  for (let i = 0; i < count; i++) {
     const x = rand() * w;
     const top = ridgeAt(x);
-    const y = top + Math.pow(rand(), 2) * (h - top);
-    g.fillStyle = rand() < 0.7 ? `rgba(255,255,255,${0.12 + rand() * 0.3})` : "rgba(5,10,40,0.25)";
-    g.beginPath();
-    g.arc(x, y, 0.3 + rand() * 0.8, 0, Math.PI * 2);
-    g.fill();
+    const y = top + rand() * (h - top);
+    // nearest spur at this height
+    let best = spurs[0];
+    let bd = Infinity;
+    for (const s of spurs) {
+      if (y < s.y) continue;
+      const d = Math.abs(spurX(s, y) - x);
+      if (d < bd) {
+        bd = d;
+        best = s;
+      }
+    }
+    const lit = x < spurX(best, y);
+    const up = 1 - (y - top) / Math.max(1, h - top); // 1 at the skyline
+    const high = 1 - y / h;
+    // mostly along the spur (downhill), sometimes across it, like a palette knife
+    const along = Math.atan2(h - best.y, best.dx);
+    const angle = (rand() < 0.3 ? along + Math.PI / 2 : along) + (rand() - 0.5) * spread;
+    let colour: string;
+    const r = rand();
+    if (high > 1 - opts.snow && r < (lit ? 0.38 : 0.18) * (0.5 + high) * (size < 2 ? 1 : 0.4)) colour = lit ? col.snow : col.snowShade;
+    else if (lit) colour = r < purity * (0.8 + up * 0.2) ? col.light : col.mid;
+    else colour = r < purity ? col.dark : col.mid;
+    const len = (10 + rand() * 30) * (h / 400) * size;
+    const wid = len * (0.25 + rand() * 0.3);
+    // snow lies in long streaks
+    const stretch = colour === col.snow || colour === col.snowShade ? 1.8 : 1;
+    knife(g, x, y, len * stretch, wid, angle, (rand() - 0.5) * wid * 1.2, colour);
+  }
+  };
+  // big strokes block in the faces, then smaller ones add the broken rock and snow
+  paint(Math.floor((w * h) / 1400), 4, 0.94, 0.5);
+  paint(Math.floor((w * h) / 380), 1, 0.75, 1.0);
+  // haze over the distance, thickest at the foot
+  if (col.hazeAmount > 0) {
+    const hz = g.createLinearGradient(0, 0, 0, h);
+    hz.addColorStop(0, `rgba(${col.haze},${col.hazeAmount * 0.6})`);
+    hz.addColorStop(1, `rgba(${col.haze},${Math.min(1, col.hazeAmount * 1.4)})`);
+    g.fillStyle = hz;
+    g.fillRect(0, 0, w, h);
   }
   g.restore();
-
-  // a thin lit edge along the ridge, like the sheen along a fish's back
-  g.strokeStyle = colours.light;
-  g.lineWidth = 1.4;
-  g.beginPath();
-  for (let x = 0; x <= w; x += 2) {
-    const y = ridgeAt(x) + 0.7;
-    if (x === 0) g.moveTo(x, y);
-    else g.lineTo(x, y);
-  }
-  g.stroke();
   return c;
 }
 
@@ -210,85 +232,96 @@ export function nightSky(w: number, h: number, seed: number) {
 }
 
 // ---------- clouds ----------
-// tones from shadow to light, after the blue cloud paintings
-const CLOUD_DARK = ["58,70,160", "70,78,150", "84,92,170"];
-const CLOUD_MID = ["104,120,210", "122,136,222", "112,118,196"];
-const CLOUD_LIGHT = ["170,184,242", "196,206,250", "220,228,255"];
+const SHADOW = ["#7f82ab", "#8c8fb8", "#9496bd"];
+const MID = ["#9fb0dc", "#aabbe6", "#a2b0de"];
+const COOL_LIGHT = ["#c2d2f2", "#cddbf6"];
+const LIGHT = ["#e6edfc", "#f2f5fe", "#ffffff"];
+const WARM = ["#f8e2a8", "#f3cd8c", "#f6d79c"];
+const RIM = ["#93d4f2", "#a6dcf5"];
 
 /**
- * A bank of cloud, painted the way the references are: lots of short, crisp
- * brush dabs, dark underneath, mid-blue in the body and pale lavender where
- * the light hits the tops, with a flatter, wispy base.
+ * A heaped cumulus cloud painted like the references: flat, hard-edged brush
+ * strokes, lavender-grey in the shadowed lower masses, blue in the body, white
+ * where the light hits, warm gold on some sunlit tops and a cyan glow at the
+ * turning edges.
  */
 export function cloudBank(w: number, h: number, seed: number) {
   const { c, g } = canvas(w, h, 1);
   const rand = seeded(seed);
-  const base = h * (0.7 + rand() * 0.08);
-  // the billows: big in the middle, smaller toward the ends, all sitting on the base
-  const n = 6 + Math.floor(rand() * 4);
-  const lumps = Array.from({ length: n }, (_, i) => {
-    const k = i / (n - 1);
-    // never so tall that the top (plus a brush stroke) runs off the image
-    const r = Math.min(h * (0.16 + Math.sin(k * Math.PI) * 0.22 + rand() * 0.08), (base - h * 0.16) / 1.9);
-    return { x: w * (0.14 + k * 0.72) + (rand() - 0.5) * w * 0.05, y: base - r * (0.55 + rand() * 0.35), r };
-  });
-  const inside = (x: number, y: number) => {
-    if (y > base + h * 0.04) return false;
-    return lumps.some((l) => (x - l.x) ** 2 + ((y - l.y) / 0.92) ** 2 < l.r * l.r) || (y > base - h * 0.06 && x > w * 0.12 && x < w * 0.88);
-  };
-  const stroke = (x: number, y: number, r: number, tone: string, a: number) => {
-    g.save();
-    g.translate(x, y);
-    g.rotate((rand() - 0.5) * 0.9);
-    g.fillStyle = `rgba(${tone},${a})`;
+  const warm = seed % 2 === 0;
+  const base = h * 0.9;
+  const lx = -0.55;
+  const ly = -0.83; // light from the upper left
+
+  // billows heaped into one mound: tall in the middle, low at the ends
+  const cx0 = w * (0.42 + rand() * 0.16);
+  const H = h * 0.68;
+  const hump = (x: number) =>
+    Math.max(Math.exp(-(((x - cx0) / (w * 0.22)) ** 2)), 0.55 * Math.exp(-(((x - cx0 - w * 0.22) / (w * 0.14)) ** 2)), 0.2);
+  const top = (x: number) => base - H * hump(x);
+  const billows: { x: number; y: number; r: number }[] = [];
+  for (let k = 0; k < 26; k++) {
+    const x = w * (0.12 + rand() * 0.76);
+    const r = h * (0.08 + rand() * 0.07) * (0.6 + hump(x) * 0.7);
+    const y = Math.min(base - r * 0.35, top(x) + r * (0.9 + rand() * 1.8));
+    billows.push({ x: Math.max(r + 4, Math.min(w - r - 4, x)), y: Math.max(r + 4, y), r });
+  }
+  for (let k = 0; k < 12; k++) {
+    const r = h * (0.1 + rand() * 0.04);
+    billows.push({ x: w * (0.13 + (k / 11) * 0.74), y: base - r * 0.15, r });
+  }
+  // higher billows first, so the lower, darker masses overlap them
+  billows.sort((a, b) => a.y - b.y);
+  const pick = (a: string[]) => a[Math.floor(rand() * a.length)];
+  // nothing goes below the base, so the cloud sits on a flat bottom
+  // a gently ragged bottom edge, not a ruler-straight cut
+  g.save();
+  g.beginPath();
+  g.moveTo(0, 0);
+  g.lineTo(w, 0);
+  for (let x = w; x >= 0; x -= 6) g.lineTo(x, base + Math.sin(x * 0.045 + seed) * 3 + Math.sin(x * 0.13) * 2 - (rand() < 0.15 ? 4 : 0));
+  g.closePath();
+  g.clip();
+  for (const b of billows) {
+    const lift = 1 - b.y / base; // higher billows are lighter overall
+    // a solid body underneath, so the strokes never leave gaps
+    g.fillStyle = lift > 0.45 ? MID[1] : SHADOW[1];
     g.beginPath();
-    g.ellipse(0, 0, r * (1.1 + rand() * 0.7), r * (0.65 + rand() * 0.3), 0, 0, Math.PI * 2);
+    g.arc(b.x, b.y, b.r * 0.86, 0, Math.PI * 2);
     g.fill();
-    g.restore();
-  };
-  g.filter = "blur(1.2px)";
-  // three passes, back to front: shadow, body, light. Big, overlapping strokes,
-  // so they merge into masses with brushy edges rather than separate blobs
-  const passes: [string[], number, number, number][] = [
-    [CLOUD_DARK, 900, 16, 0],
-    [CLOUD_MID, 1100, 13, 1],
-    [CLOUD_LIGHT, 1100, 10, 2],
-  ];
-  for (const [tones, count, size, pass] of passes) {
-    for (let i = 0; i < count; i++) {
-      const l = lumps[Math.floor(rand() * lumps.length)];
-      const ang = rand() * Math.PI * 2;
-      const d = Math.sqrt(rand()) * l.r;
-      const x = l.x + Math.cos(ang) * d;
-      const y = l.y + Math.sin(ang) * d * 0.92;
-      if (!inside(x, y)) continue;
-      // how high up its billow this spot is: -1 bottom .. 1 top, leaning to the upper left
-      const up = (l.y - y) / l.r + (l.x - x) / l.r * 0.25;
-      if (pass === 1 && up < -0.55 + rand() * 0.3) continue; // keep the undersides dark
-      if (pass === 2 && up < 0.15 + rand() * 0.35) continue; // light only on the tops
-      const r = size * (0.6 + rand() * 0.9) * (h / 200);
-      stroke(x, y, r, tones[Math.floor(rand() * tones.length)], pass === 2 ? 0.22 + rand() * 0.3 : 0.55 + rand() * 0.35);
+    const n = Math.floor((b.r * b.r) / 30);
+    for (let i = 0; i < n; i++) {
+      const a = rand() * Math.PI * 2;
+      const d = Math.sqrt(rand()) * b.r * 1.04;
+      const x = b.x + Math.cos(a) * d;
+      const y = b.y + Math.sin(a) * d;
+      if (y > base + 2) continue;
+      const nx = (x - b.x) / b.r;
+      const ny = (y - b.y) / b.r;
+      // the underside of the whole cloud sits in its own shadow
+      const under = Math.max(0, (y - (base - h * 0.12)) / (h * 0.12));
+      const L = nx * lx + ny * ly + lift * 0.9 - 0.35 - under * 0.9 + (rand() - 0.5) * 0.25;
+      const edge = Math.hypot(nx, ny);
+      let colour: string;
+      if (edge > 0.82 && L > -0.25 && L < 0.35 && rand() < 0.35) colour = pick(RIM);
+      else if (L > 0.75) colour = warm && lift > 0.35 ? pick(WARM) : pick(LIGHT);
+      else if (L > 0.42) colour = pick(LIGHT);
+      else if (L > 0.12) colour = pick(COOL_LIGHT);
+      else if (L > -0.25) colour = pick(MID);
+      else colour = pick(SHADOW);
+      const len = b.r * (0.32 + rand() * 0.34);
+      // strokes follow the curve of the billow
+      slab(g, x, y, len, len * (0.45 + rand() * 0.35), Math.atan2(ny, nx) + Math.PI / 2 + (rand() - 0.5) * 0.8, colour);
     }
   }
-  // a flat, wispy base drawn with long horizontal strokes
-  for (let i = 0; i < 70; i++) {
-    const x = w * (0.12 + rand() * 0.76);
-    const y = base - rand() * h * 0.06;
-    g.strokeStyle = `rgba(${CLOUD_DARK[Math.floor(rand() * 3)]},${0.5 + rand() * 0.4})`;
-    g.lineWidth = 2 + rand() * 4;
-    g.lineCap = "round";
-    g.beginPath();
-    g.moveTo(x, y);
-    g.lineTo(x + (rand() - 0.3) * w * 0.12, y + (rand() - 0.5) * 3);
-    g.stroke();
+  g.restore();
+  // a couple of faint wisps streaming off to the side
+  g.globalAlpha = 0.22;
+  for (let i = 0; i < 3; i++) {
+    const y = h * (0.45 + rand() * 0.3);
+    slab(g, w * (0.08 + rand() * 0.1) + 40, y, 60 + rand() * 70, 2 + rand() * 2, -0.3 + (rand() - 0.5) * 0.2, pick(warm ? WARM : LIGHT));
   }
-  g.filter = "none";
-  g.globalCompositeOperation = "source-atop";
-  for (let i = 0; i < (w * h) / 260; i++) {
-    g.fillStyle = rand() < 0.75 ? `rgba(255,255,255,${0.12 + rand() * 0.25})` : "rgba(20,25,80,0.25)";
-    g.fillRect(rand() * w, rand() * h, 1, 1);
-  }
-  g.globalCompositeOperation = "source-over";
+  g.globalAlpha = 1;
   return c;
 }
 

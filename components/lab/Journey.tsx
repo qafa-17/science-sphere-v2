@@ -84,16 +84,16 @@ export default function Journey() {
       ocean.resize(w, SURFACE * h, WORLD * h);
       const mw = Math.ceil(w * 1.1);
       mountains = [
-        mountainLayer(mw, h * 0.62, 1, { top: "#a9b8f2", bottom: "#8193e2", light: "rgba(255,255,255,0.55)", shadow: "rgba(60,70,170,0.45)" }, 0.5),
-        mountainLayer(mw, h * 0.5, 2, { top: "#6f84dc", bottom: "#4b5fc4", light: "rgba(220,230,255,0.5)", shadow: "rgba(25,35,120,0.5)" }, 0.5),
-        mountainLayer(mw, h * 0.37, 3, { top: "#3a4fb4", bottom: "#26388f", light: "rgba(170,190,255,0.45)", shadow: "rgba(8,15,70,0.55)" }, 0.5),
-        mountainLayer(mw, h * 0.24, 4, { top: "#1b2a78", bottom: "#0d1748", light: "rgba(120,150,240,0.45)", shadow: "rgba(0,0,30,0.6)" }, 0.5),
+        mountainLayer(mw, h * 0.5, 1, { dark: "#7d8ab8", mid: "#95a2cc", light: "#b9c4e6", snow: "#e2e8f8", snowShade: "#aeb8dc", haze: "169,184,242", hazeAmount: 0.4 }, { peaks: 6, snow: 0.35 }),
+        mountainLayer(mw, h * 0.44, 2, { dark: "#4f5c88", mid: "#6b78a6", light: "#9aa7cc", snow: "#e6ecf8", snowShade: "#a2adcf", haze: "130,150,225", hazeAmount: 0.22 }, { peaks: 5, snow: 0.4 }),
+        mountainLayer(mw, h * 0.66, 3, { dark: "#252c44", mid: "#3e4866", light: "#7e8aa8", snow: "#eef2fa", snowShade: "#a8b3ce", haze: "100,120,200", hazeAmount: 0.04 }, { peaks: 3, dominant: true, snow: 0.55 }),
+        mountainLayer(mw, h * 0.2, 4, { dark: "#131a2d", mid: "#202943", light: "#45536f", snow: "#c4cee4", snowShade: "#6d7a98", haze: "0,0,0", hazeAmount: 0 }, { peaks: 6, snow: 0.2 }),
       ];
       const rand = seeded(4);
-      banks = Array.from({ length: 7 }, (_, i) => ({
-        img: cloudBank(Math.min(w * 0.85, 1100), h * 0.34, 10 + i),
-        x: rand() * w - w * 0.2,
-        y: h * (CLOUDS[0] + (i / 6) * (CLOUDS[1] - CLOUDS[0])),
+      banks = Array.from({ length: 5 }, (_, i) => ({
+        img: cloudBank(Math.min(w * 0.6, 760), h * 0.42, 10 + i),
+        x: (i % 2 ? w * 0.55 : 0) + rand() * w * 0.3,
+        y: h * (CLOUDS[0] + (i / 4) * (CLOUDS[1] - CLOUDS[0])),
         depth: 0.3 + rand() * 0.6,
         drift: 6 + rand() * 10,
       }));
@@ -167,7 +167,7 @@ export default function Journey() {
         const bw = b.img.width;
         const x = ((b.x + t * b.drift - lean * 40 * b.depth) % (w + bw)) - bw * 0.5;
         ctx.globalAlpha = 0.97;
-        ctx.drawImage(b.img, x, b.y - h * 0.17);
+        ctx.drawImage(b.img, x, b.y - h * 0.3);
       }
       ctx.globalAlpha = 1;
 
