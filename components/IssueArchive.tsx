@@ -68,7 +68,6 @@ export default function IssueArchive({ issues }: { issues: Issue[] }) {
         else {
           const i = Number(kind);
           w = finalW[i];
-          lift = shown[i] * 22;
           if (pulledRef.current === i) lift = H * 1.15;
         }
         el.style.transform = `translate3d(${x}px, ${-lift}px, 0)`;
