@@ -33,14 +33,16 @@
   --melon-kumquat: #eea64b;
   --melon-zest: #d9641f;
 
-  /* type: option A ("Archive") by default */
-  --font-display: "Archivo Variable", system-ui, sans-serif;
-  --display-stretch: 125%;
-  --display-weight: 800;
-  --font-body: "Archivo Variable", system-ui, sans-serif;
+  /* type: option B ("Signal") is the default for now */
+  --font-display: "Space Grotesk Variable", system-ui, sans-serif;
+  --display-stretch: 100%;
+  --display-weight: 700;
+  --display-case: none;
+  --display-tracking: -0.02em;
+  --font-body: "Space Grotesk Variable", system-ui, sans-serif;
   --body-stretch: 100%;
-  --font-mono: "Space Mono", ui-monospace, monospace;
-  --font-pixel: "Silkscreen", var(--font-mono);
+  --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+  --font-pixel: "Pixelify Sans", var(--font-mono);
 
   --text-hero: clamp(44px, 7vw, 96px);
   --text-h1: clamp(32px, 4vw, 48px);
@@ -51,21 +53,41 @@
   --text-label: 12px;
 }
 
-/* type option B ("Signal") */
-:root[data-type="b"] {
-  --font-display: "Space Grotesk Variable", system-ui, sans-serif;
+/* the other type options, to compare on the board */
+/* A "Archive": wide, heavy, all caps */
+:root[data-type="a"] {
+  --font-display: "Archivo Variable", system-ui, sans-serif;
+  --display-stretch: 125%;
+  --display-weight: 800;
+  --display-case: uppercase;
+  --display-tracking: -0.01em;
+  --font-body: "Archivo Variable", system-ui, sans-serif;
+  --font-mono: "Space Mono", ui-monospace, monospace;
+}
+/* C "Quiet Archive": the same family as A, normal width and sentence case */
+:root[data-type="c"] {
+  --font-display: "Archivo Variable", system-ui, sans-serif;
   --display-stretch: 100%;
-  --display-weight: 700;
-  --font-body: "Space Grotesk Variable", system-ui, sans-serif;
+  --display-weight: 600;
+  --display-tracking: -0.02em;
+  --font-body: "Archivo Variable", system-ui, sans-serif;
+  --font-mono: "Space Mono", ui-monospace, monospace;
+}
+/* D "Editorial": a magazine serif for headings, with techy mono labels */
+:root[data-type="d"] {
+  --font-display: "Instrument Serif", Georgia, serif;
+  --display-weight: 400;
+  --display-tracking: 0;
+  --font-body: "Archivo Variable", system-ui, sans-serif;
   --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
 }
-
-/* pixel accent choices */
-:root[data-pixel="doto"] {
-  --font-pixel: "Doto", var(--font-mono);
-}
-:root[data-pixel="pixelify"] {
-  --font-pixel: "Pixelify Sans", var(--font-mono);
+/* E "Bricolage": a grotesque with a hand-made quirk */
+:root[data-type="e"] {
+  --font-display: "Bricolage Grotesque Variable", system-ui, sans-serif;
+  --display-weight: 700;
+  --display-tracking: -0.025em;
+  --font-body: "Bricolage Grotesque Variable", system-ui, sans-serif;
+  --font-mono: "Space Mono", ui-monospace, monospace;
 }
 
 /* ---------- base ---------- */
@@ -96,7 +118,8 @@ h3 {
   font-stretch: var(--display-stretch);
   font-weight: var(--display-weight);
   line-height: 1.02;
-  letter-spacing: -0.01em;
+  letter-spacing: var(--display-tracking);
+  text-transform: var(--display-case);
 }
 
 img {

@@ -9,31 +9,59 @@ export const PIN_TIP = 15;
 export const PINS = [-10, -6, -2, 2, 6, 10];
 
 export type Pad = "dot" | "ring" | "chip";
-/** Each trace: the points it runs through (starting at a pin tip), and what it ends in. */
-export const TRACES: { points: [number, number][]; end: Pad }[] = [
-  // top
-  { points: [[-10, -15], [-10, -24], [-16, -30], [-16, -40]], end: "chip" },
-  { points: [[-2, -15], [-2, -46]], end: "ring" },
-  { points: [[2, -15], [2, -26], [8, -32], [8, -50]], end: "dot" },
-  { points: [[10, -15], [10, -22], [16, -28], [16, -38]], end: "dot" },
-  // right
-  { points: [[15, -6], [28, -6], [34, -12], [46, -12]], end: "dot" },
-  { points: [[15, 2], [52, 2]], end: "ring" },
-  { points: [[15, 10], [26, 10], [32, 16], [40, 16]], end: "chip" },
-  // bottom
-  { points: [[-6, 15], [-6, 28], [-12, 34], [-12, 48]], end: "dot" },
-  { points: [[2, 15], [2, 44]], end: "ring" },
-  { points: [[10, 15], [10, 24], [16, 30], [16, 40]], end: "dot" },
-  // left
-  { points: [[-15, -10], [-26, -10], [-32, -16], [-44, -16]], end: "dot" },
-  { points: [[-15, -2], [-50, -2]], end: "ring" },
-  { points: [[-15, 6], [-28, 6], [-34, 12], [-40, 12]], end: "chip" },
+export type Trace = { points: [number, number][]; end: Pad };
+
+// Every pin gets a trace. They leave the chip straight, all bend outward at the
+// same distance (so they fan out without crossing), then run on for different
+// lengths. A few grow a short side branch.
+const LENGTHS = [16, 26, 10, 30, 14, 22, 20, 12, 28, 18, 24, 8, 12, 30, 20, 16, 26, 10, 22, 14, 28, 18, 10, 24];
+const ENDS: Pad[] = ["dot", "ring", "chip", "dot", "dot", "ring", "chip", "dot"];
+const SIDES: { out: [number, number]; along: [number, number] }[] = [
+  { out: [0, -1], along: [1, 0] }, // top
+  { out: [1, 0], along: [0, 1] }, // right
+  { out: [0, 1], along: [-1, 0] }, // bottom
+  { out: [-1, 0], along: [0, -1] }, // left
 ];
 
-/** On-screen size of the whole drawing (the chip itself is about a fifth of this). */
-export const CURSOR_PX = 112;
+function buildTraces(): Trace[] {
+  const traces: Trace[] = [];
+  let n = 0;
+  SIDES.forEach(({ out, along }, side) => {
+    PINS.forEach((o, i) => {
+      const at = (d: number, t: number): [number, number] => [
+        +(out[0] * d + along[0] * t).toFixed(2),
+        +(out[1] * d + along[1] * t).toFixed(2),
+      ];
+      const bendAt = PIN_TIP + 5;
+      const spread = o * 0.8; // outer pins spread further
+      const diag = Math.abs(spread);
+      const length = LENGTHS[(side * 6 + i) % LENGTHS.length];
+      const end = bendAt + diag + length;
+      traces.push({
+        points: [at(PIN_TIP, o), at(bendAt, o), at(bendAt + diag, o + spread), at(end, o + spread)],
+        end: ENDS[n % ENDS.length],
+      });
+      // every third trace sprouts a short branch off its last stretch
+      if (n % 3 === 1 && length >= 16) {
+        const from = bendAt + diag + length * 0.45;
+        const dir = Math.sign(o + spread) || 1;
+        traces.push({
+          points: [at(from, o + spread), at(from + 5, o + spread + 5 * dir), at(from + 11, o + spread + 5 * dir)],
+          end: "dot",
+        });
+      }
+      n++;
+    });
+  });
+  return traces;
+}
+
+export const TRACES = buildTraces();
+
+/** On-screen size of the whole drawing (the chip itself is about a fifth of this, ~19px). */
+export const CURSOR_PX = 99;
 /** The drawing's size in its own units. */
-export const VIEW = 112;
+export const VIEW = 124;
 
 /** Things that count as clickable, so the circuit forms over them. */
 export const CLICKABLE =

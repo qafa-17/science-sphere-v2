@@ -15,15 +15,15 @@ export const palettes: Record<string, Palette> = {
       { name: "Dark Amethyst", hex: "#0D0630" },
     ],
   },
-  logo: {
-    id: "logo",
-    name: "Logo",
+  carousel: {
+    id: "carousel",
+    name: "Carousel",
     swatches: [
-      { name: "Sphere Navy", hex: "#1B4079" },
-      { name: "Orchid", hex: "#E58EF6" },
-      { name: "Signal Pink", hex: "#FF6B9A" },
-      { name: "Mist", hex: "#DCE3EE" },
-      { name: "Night", hex: "#0B1A33" },
+      { name: "Bistre", hex: "#210100" },
+      { name: "Goldfinch", hex: "#E6A341" },
+      { name: "Butter", hex: "#FECE79" },
+      { name: "Indian Red", hex: "#B14A36" },
+      { name: "Garnet", hex: "#8C0902" },
     ],
   },
   sunset: {
@@ -54,7 +54,7 @@ export const palettes: Record<string, Palette> = {
 /** Which palette each page uses. */
 export const pagePalettes: { page: string; path: string; palette: string; why: string }[] = [
   { page: "Landing", path: "/", palette: "space", why: "night sky, high-tech" },
-  { page: "Issues", path: "/issues", palette: "logo", why: "where the magazine lives" },
+  { page: "Issues", path: "/issues", palette: "carousel", why: "warm and rich, like a reading room" },
   { page: "Meet the Team", path: "/team", palette: "sunset", why: "honeydew ID cards, tomato-red dots" },
   { page: "Pitch a Story", path: "/pitch", palette: "melon", why: "fresh ideas" },
   { page: "Contact", path: "/contact", palette: "sunset", why: "warm, with a red beating heart" },

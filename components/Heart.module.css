@@ -1,0 +1,41 @@
+.heart {
+  display: block;
+  overflow: visible;
+}
+
+.pump {
+  transform-box: fill-box;
+  transform-origin: 50% 60%;
+}
+
+/* lub-dub, about 66 beats a minute */
+.beating .pump {
+  animation: lubdub 0.9s ease-in-out infinite;
+}
+
+.still {
+  filter: saturate(0.35) brightness(0.85);
+}
+
+@keyframes lubdub {
+  0%,
+  45%,
+  100% {
+    transform: scale(1);
+  }
+  12% {
+    transform: scale(1.12);
+  }
+  24% {
+    transform: scale(1.03);
+  }
+  32% {
+    transform: scale(1.08);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .beating .pump {
+    animation: none;
+  }
+}

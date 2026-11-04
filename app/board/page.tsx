@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import type { CSSProperties, ReactNode } from "react";
 import BoardControls from "@/components/BoardControls";
 import CpuDrawing from "@/components/CpuDrawing";
+import Heart from "@/components/Heart";
+import { themes } from "@/lib/themes";
 import { pagePalettes, palettes, rgb, textOn } from "@/lib/palettes";
 import styles from "./board.module.css";
 
@@ -47,7 +49,7 @@ export default function BoardPage() {
     <main className={styles.board}>
       <div className="wrap">
         <div className={styles.hero}>
-          <p className="label">file_00 // look &amp; feel // draft 1</p>
+          <p className="label">file_00 // look &amp; feel // draft 2</p>
           <h1 className={styles.title}>Look &amp; Feel Board</h1>
           <p className={styles.lede}>
             Everything the new site gets built from, on one page. Nothing here is final: tell me what to keep, swap or
@@ -110,14 +112,12 @@ export default function BoardPage() {
         <Section
           n="02"
           title="Type"
-          note="Switch between A and B, and the three pixel fonts, with the bar above. The whole page (and the header) changes live."
+          note="B is in use for now. A felt loud, so C, D and E are calmer options to compare: use the bar above and the whole page (and the header) changes live."
         >
           <div className={styles.specimen}>
             <div className={styles.specRow}>
               <p className="label">
-                display //{" "}
-                <span className={styles.forA}>Archivo Expanded 800</span>
-                <span className={styles.forB}>Space Grotesk 700</span>
+                display // <span className={`${styles.fontName} ${styles.fb}`}>Space Grotesk 700</span><span className={`${styles.fontName} ${styles.fa}`}>Archivo Expanded 800</span><span className={`${styles.fontName} ${styles.fc}`}>Archivo 600</span><span className={`${styles.fontName} ${styles.fd}`}>Instrument Serif</span><span className={`${styles.fontName} ${styles.fe}`}>Bricolage Grotesque 700</span>
               </p>
               <p className={styles.specHero}>Science, by students.</p>
             </div>
@@ -131,8 +131,7 @@ export default function BoardPage() {
             </div>
             <div className={styles.specRow}>
               <p className="label">
-                body // <span className={styles.forA}>Archivo</span>
-                <span className={styles.forB}>Space Grotesk</span>
+                body // <span className={`${styles.fontName} ${styles.fb}`}>Space Grotesk</span><span className={`${styles.fontName} ${styles.fa}`}>Archivo</span><span className={`${styles.fontName} ${styles.fc}`}>Archivo</span><span className={`${styles.fontName} ${styles.fd}`}>Archivo</span><span className={`${styles.fontName} ${styles.fe}`}>Bricolage Grotesque</span>
               </p>
               <p className={styles.specBody}>
                 Science Sphere is a magazine made by students, <em>for</em> students. This year&apos;s team is made up
@@ -141,27 +140,23 @@ export default function BoardPage() {
             </div>
             <div className={styles.specRow}>
               <p className="label">
-                labels // <span className={styles.forA}>Space Mono</span>
-                <span className={styles.forB}>JetBrains Mono</span>
+                labels // <span className={`${styles.fontName} ${styles.fb}`}>JetBrains Mono</span><span className={`${styles.fontName} ${styles.fa}`}>Space Mono</span><span className={`${styles.fontName} ${styles.fc}`}>Space Mono</span><span className={`${styles.fontName} ${styles.fd}`}>JetBrains Mono</span><span className={`${styles.fontName} ${styles.fe}`}>Space Mono</span>
               </p>
               <p className={styles.specMono}>
                 SUBJECT: QANITA FARRUKH &nbsp;&nbsp; ID: 482913 &nbsp;&nbsp; EDITOR. WRITER. DESIGNER.
               </p>
             </div>
             <div className={styles.specRow}>
-              <p className="label">pixel accent // for small moments only</p>
+              <p className="label">pixel accent // Pixelify Sans (chosen)</p>
               <p className={styles.specPixel}>ISSUE_003 // FALL2026</p>
             </div>
           </div>
         </Section>
 
         {/* ---------- 03 buttons ---------- */}
-        <Section n="03" title="Buttons & links" note="Hover them to see the cursor's circuit form.">
+        <Section n="03" title="Buttons & links" note="Deep space blue, as you picked. On other pages they take that page's colours the same way. Hover them to see the cursor's circuit form.">
           <div className={styles.buttonPanels}>
-            {[
-              { id: "light", label: "on paper" },
-              { id: "dark", label: "on deep space blue" },
-            ].map((panel) => (
+            {[{ id: "dark", label: "on deep space blue" }].map((panel) => (
               <div key={panel.id} className={`${styles.buttonPanel} ${panel.id === "dark" ? styles.dark : ""}`}>
                 <p className="label">{panel.label}</p>
                 <div className={styles.buttonRow}>
@@ -194,7 +189,7 @@ export default function BoardPage() {
         <Section
           n="04"
           title="CPU cursor"
-          note="Based on your chip sketch. It sits still as just the chip; over anything clickable, all the traces leave the pins at once and finish forming in 0.3 seconds, then the pads pop in. It shows dark on light pages and light on dark ones. Phones and tablets don't get it."
+          note="Now 0.8 of its old size, and every one of the 24 pins grows a trace (plus a few side branches). Over anything clickable they all leave the chip at once and finish forming in 0.3 seconds, then the pads pop in. Dark on light pages, light on dark ones. Phones and tablets don't get it."
         >
           <div className={styles.cursorDemo}>
             <figure>
@@ -222,18 +217,50 @@ export default function BoardPage() {
         <Section
           n="05"
           title="Header"
-          note="The bar at the top of this page. Black on every page, so it ties the different palettes together."
+          note="To stop the jump from black and white into colourful pages, the header now takes on each page's colours. Black stays only for pages outside the main five, like this board."
         >
+          <div className={styles.previews}>
+            {[
+              { page: "Landing", theme: themes.space, on: "" },
+              { page: "Issues", theme: themes.carousel, on: "Issues" },
+              { page: "Pitch", theme: themes.melon, on: "Pitch" },
+              { page: "Team, Contact", theme: themes.sunset, on: "Team" },
+              { page: "Other", theme: themes.ink, on: "" },
+            ].map(({ page, theme, on }) => (
+              <div key={page} className={styles.preview}>
+                <span className="label">{page}</span>
+                <div
+                  className={styles.previewBar}
+                  style={{ background: theme.bg, color: theme.fg, "--accent": theme.accent } as CSSProperties}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/brand/logo-bw-160.png" alt="" />
+                  <strong>SCIENCE_SPHERE</strong>
+                  <span className={styles.previewNav}>
+                    {["Issues", "Pitch", "Team", "Contact"].map((l) => (
+                      <span key={l} className={l === on ? styles.on : undefined}>
+                        {l}
+                      </span>
+                    ))}
+                  </span>
+                  <span className={styles.previewStatus}>
+                    <Heart size={14} beating /> office open
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
           <ul className={styles.facts}>
             <li>
               <span className="label">left</span>The black and white logo and SCIENCE_SPHERE
             </li>
             <li>
-              <span className="label">middle</span>The pages, split with // and the current one in [ brackets ]
+              <span className="label">middle</span>The pages, split with // and the current one in [ brackets ] in
+              the page&apos;s accent colour
             </li>
             <li>
-              <span className="label">right</span>A live Calgary clock, and a heart that beats while the office is open
-              (it links to Contact)
+              <span className="label">right</span>A live Calgary clock, and a real heart that beats while the office
+              is open and goes still and grey when it&apos;s closed (it links to Contact)
             </li>
             <li>
               <span className="label">phone</span>The links fold into a &quot;Menu [+]&quot; that opens a numbered list
@@ -260,32 +287,15 @@ export default function BoardPage() {
           </div>
         </Section>
 
-        {/* ---------- 07 mascot ---------- */}
-        <Section
-          n="07"
-          title="Mascot"
-          note="Your crow, cut out and stood upright. Shows up on every page except the landing page. Only the eyes stay white; everything else around him is see-through."
-        >
-          <div className={styles.crows}>
-            {[1, 2, 3, 4, 5].map((n) => (
-              <figure key={n}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={`/graphics/crow/crow-0${n}.png`} alt={`Crow, frame ${n}`} />
-                <figcaption className="label">frame_0{n}</figcaption>
-              </figure>
-            ))}
-          </div>
-        </Section>
-
-        {/* ---------- 08 details ---------- */}
-        <Section n="08" title="Details" note="Small pieces that repeat across pages.">
+        {/* ---------- 07 details ---------- */}
+        <Section n="07" title="Details" note="Small pieces that repeat across pages.">
           <div className={styles.details}>
             <figure className={styles.detail}>
               <div className={styles.folders}>
                 {[
-                  { n: "001", season: "FALL2025", colour: "#BFE0F2" },
-                  { n: "002", season: "WINTER2026", colour: "#CFCBC0" },
-                  { n: "003", season: "FALL2026", colour: "#AAC12F" },
+                  { n: "001", season: "FALL2025", colour: "#5F8FB4" },
+                  { n: "002", season: "WINTER2026", colour: "#857F72" },
+                  { n: "003", season: "FALL2026", colour: "#6E861B" },
                 ].map((f) => (
                   <div key={f.n} className={styles.folder} style={{ "--tab": f.colour } as CSSProperties}>
                     <span className={styles.tab}>
@@ -296,7 +306,7 @@ export default function BoardPage() {
                   </div>
                 ))}
               </div>
-              <figcaption className="label">issue folder tabs, in each cover&apos;s colour</figcaption>
+              <figcaption className="label">issue folder tabs, in darker versions of each cover&apos;s colour</figcaption>
             </figure>
 
             <figure className={styles.detail}>
@@ -309,20 +319,21 @@ export default function BoardPage() {
 
             <figure className={styles.detail}>
               <div className={styles.statusRow}>
-                <span className={styles.bigHeart} aria-hidden="true">♥</span>
+                <Heart size={64} beating />
+                <Heart size={64} />
                 <span>
-                  <strong>Open now</strong>
+                  <strong>Open now</strong> (beating)
                   <br />
-                  <span className="label">until 4:00pm</span>
+                  <span className="label">closed: still and grey</span>
                 </span>
               </div>
-              <figcaption className="label">office status heart (beats when open)</figcaption>
+              <figcaption className="label">office status heart</figcaption>
             </figure>
 
             <figure className={styles.detail}>
               <div className={styles.starRow}>
                 <Star colour="var(--space-gold)" />
-                <Star colour="var(--logo-pink)" />
+                <Star colour="#E6A341" />
                 <Star colour="var(--sunset-tomato)" />
                 <Star colour="var(--melon-zest)" />
               </div>

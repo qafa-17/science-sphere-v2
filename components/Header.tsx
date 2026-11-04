@@ -4,6 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { TIME_ZONE, officeStatus } from "@/lib/officeHours";
+import { themeFor } from "@/lib/themes";
+import type { CSSProperties } from "react";
+import Heart from "./Heart";
 import styles from "./Header.module.css";
 
 const links = [
@@ -38,6 +41,8 @@ export default function Header() {
   const readout = useReadout();
   const [menuOpen, setMenuOpen] = useState(false);
   const isCurrent = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+  const theme = themeFor(pathname);
+  const colours = { "--hdr-bg": theme.bg, "--hdr-fg": theme.fg, "--hdr-accent": theme.accent } as CSSProperties;
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- close the menu after navigating
@@ -45,7 +50,7 @@ export default function Header() {
   }, [pathname]);
 
   return (
-    <header className={styles.bar}>
+    <header className={styles.bar} style={colours}>
       <div className={styles.inner}>
         <Link href="/" className={styles.brand} aria-label="Science Sphere home">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -69,9 +74,7 @@ export default function Header() {
             <>
               <span>CGY {readout.time}</span>
               <Link href="/contact" className={styles.status}>
-                <span className={`${styles.heart} ${readout.open ? styles.beating : ""}`} aria-hidden="true">
-                  ♥
-                </span>
+                <Heart size={15} beating={readout.open} />
                 {readout.open ? "Office open" : "Office closed"}
               </Link>
             </>

@@ -2,8 +2,11 @@
   position: sticky;
   top: 0;
   z-index: 50;
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--hdr-bg, var(--ink));
+  color: var(--hdr-fg, var(--paper));
+  transition:
+    background 0.4s ease,
+    color 0.4s ease;
   font-family: var(--font-mono);
   font-size: 13px;
   letter-spacing: 0.06em;
@@ -58,6 +61,11 @@
 }
 
 /* the current page gets square brackets, like a selected item in a terminal */
+.nav a[aria-current="page"]::before,
+.nav a[aria-current="page"]::after {
+  color: var(--hdr-accent);
+}
+
 .nav a[aria-current="page"]::before {
   content: "[";
   position: absolute;
@@ -74,7 +82,7 @@
   align-items: center;
   gap: 16px;
   padding-left: 24px;
-  border-left: 1px solid rgba(235, 232, 223, 0.2);
+  border-left: 1px solid color-mix(in srgb, var(--hdr-fg, #ebe8df) 25%, transparent);
   font-size: 12px;
   white-space: nowrap;
   min-width: 250px;
@@ -85,22 +93,6 @@
   align-items: center;
   gap: 6px;
   text-decoration: none;
-}
-
-.heart {
-  color: var(--sunset-tomato);
-  opacity: 0.55;
-}
-
-.beating {
-  opacity: 1;
-  animation: beat 1.1s ease-in-out infinite;
-}
-
-@keyframes beat {
-  0%, 40%, 100% { transform: scale(1); }
-  15% { transform: scale(1.3); }
-  28% { transform: scale(1.12); }
 }
 
 .menuButton {
@@ -152,7 +144,7 @@
     align-items: baseline;
     gap: 14px;
     padding: 12px 0;
-    border-top: 1px solid rgba(235, 232, 223, 0.15);
+    border-top: 1px solid color-mix(in srgb, var(--hdr-fg, #ebe8df) 18%, transparent);
     font-family: var(--font-display);
     font-stretch: var(--display-stretch);
     font-weight: var(--display-weight);
@@ -168,8 +160,4 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .beating {
-    animation: none;
-  }
-}
+
