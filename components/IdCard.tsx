@@ -42,13 +42,16 @@ export default function IdCard({ m }: { m: Member }) {
         {/* front */}
         <span className={styles.front}>
           <span className={styles.slot} aria-hidden="true" />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/logo-bw-160.png" alt="" className={styles.logo} />
           <span className={styles.field}>SUBJECT :</span>
-          <span className={styles.name}>
-            {m.name.split(" ")[0]}
-            <br />
-            {m.name.split(" ").slice(1).join(" ")}
+          {/* the name, with the logo sitting level with the bottom of the last name */}
+          <span className={styles.nameRow}>
+            <span className={styles.name}>
+              {m.name.split(" ")[0]}
+              <br />
+              {m.name.split(" ").slice(1).join(" ")}
+            </span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/brand/logo-bw-160.png" alt="" className={styles.logo} />
           </span>
           <span className={styles.degree}>
             {m.degree.map((d) => (

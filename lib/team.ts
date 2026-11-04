@@ -16,9 +16,9 @@ export type Member = {
   idNumber: string;
   /** a made-up 13-character serial for the back of the card */
   serial: string;
-  /** black and white head (top of head to chin), for the team page */
+  /** colour head (top of head to chin), for the team page */
   photo: string;
-  /** black and white head and shoulders, for the ID card */
+  /** colour head and shoulders, for the ID card */
   cardPhoto: string;
   /** which side of the team page their face sits on */
   side: "left" | "right";
@@ -36,14 +36,14 @@ export const team: Member[] = [
     expertise: ["admin", "inquiries"],
     degree: ["Professor of Biology", "PhD in Neuroscience"],
     bio:
-      "I'm a Biology professor with a PhD in Neuroscience, and an adventure scientist who explores the world through photography, writing and art. I created Science Sphere in 2025 to show there's more to science writing than lab reports and journal articles, and to give MRU's secret artists, poets and writers a place in science communication.",
+      "Neuroscientist, Biology professor and self-described adventure scientist, usually found somewhere wild with a camera and a sketchbook. I started Science Sphere in 2025 because science deserves better stories than lab reports.",
     fact: "[Sarah's interesting fact]",
     idNumber: "104729",
     serial: "SS7K2Q9XH4M1B",
     photo: "/team/sarah.webp",
     cardPhoto: "/team/sarah-card.webp",
     side: "left",
-    faceAspect: 0.901,
+    faceAspect: 0.898,
     faceScale: 0.828,
   },
   {
@@ -53,14 +53,14 @@ export const team: Member[] = [
     expertise: ["physics", "geology", "geography"],
     degree: ["BSc in Interdisciplinary Science"],
     bio:
-      "I'm doing a BSc in Interdisciplinary Science with concentrations in physics and geography, and I work at TELUS Spark.",
+      "Physics by day, geography by every other day. When I'm not studying how the Earth moves, I'm at TELUS Spark helping visitors fall in love with science.",
     fact: "[Hadi's interesting fact]",
     idNumber: "238516",
     serial: "SS4F8R2LW9C3D",
     photo: "/team/hadi.webp",
     cardPhoto: "/team/hadi-card.webp",
     side: "right",
-    faceAspect: 0.919,
+    faceAspect: 0.896,
     faceScale: 0.96,
   },
   {
@@ -70,7 +70,7 @@ export const team: Member[] = [
     expertise: ["chemistry", "biology", "environmental sci."],
     degree: ["BSc in Chemistry"],
     bio:
-      "I'm doing a BSc in Chemistry with a concentration in analytical biochemistry and a minor in communications. I've worked at The Reflector.",
+      "I pull molecules apart for a living (or at least for a degree in analytical biochemistry), then put the story back together with a minor in communications. Formerly of The Reflector.",
     fact: "[Liam's interesting fact]",
     idNumber: "371094",
     serial: "SS9P1T6ZV2N8K",
@@ -87,7 +87,7 @@ export const team: Member[] = [
     expertise: ["computing", "math", "data sci."],
     degree: ["BSc in Computer Science"],
     bio:
-      "I'm doing a BSc in Computer Science with a cognate in biology, and I've worked at Etherae Magazine.",
+      "I write code by day and stories by night, with a biology cognate to keep things interesting. Before Science Sphere, I worked at Etherae Magazine.",
     fact: "[Qanita's interesting fact]",
     idNumber: "462803",
     serial: "SS3H7M5QJ1R6X",

@@ -104,12 +104,18 @@
   background: #0b0c0e;
 }
 
+.nameRow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px;
+}
+
 .logo {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  width: 58px;
-  height: 58px;
+  flex: none;
+  width: 66px;
+  height: 66px;
+  margin-bottom: -2px;
 }
 
 .field {
@@ -120,7 +126,6 @@
 
 .name {
   margin-top: 2px;
-  max-width: 75%;
   font-family: var(--font-display);
   font-stretch: var(--display-stretch);
   font-weight: 800;
@@ -143,7 +148,7 @@
   align-items: stretch;
   gap: 12px;
   flex: none;
-  height: 46%;
+  height: 40%;
   margin: 14px 0 12px;
 }
 
@@ -160,7 +165,7 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  object-position: center bottom;
+  object-position: left bottom;
 }
 
 .barcode {
