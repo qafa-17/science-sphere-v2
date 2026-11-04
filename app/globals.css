@@ -33,13 +33,12 @@
   --melon-kumquat: #eea64b;
   --melon-zest: #d9641f;
 
-  /* type: "Wide Light" is the default for now: wide all-caps headings, but
-     lighter than option A so they don't shout */
+  /* type: option A, wide heavy all-caps headings */
   --font-display: "Archivo Variable", system-ui, sans-serif;
   --display-stretch: 125%;
-  --display-weight: 500;
+  --display-weight: 800;
   --display-case: uppercase;
-  --display-tracking: 0.01em;
+  --display-tracking: -0.01em;
   --font-body: "Archivo Variable", system-ui, sans-serif;
   --body-stretch: 100%;
   --font-mono: "Space Mono", ui-monospace, monospace;
@@ -52,34 +51,6 @@
   --text-body: 16px;
   --text-small: 14px;
   --text-label: 12px;
-}
-
-/* the other all-caps type options, to compare on the board */
-/* "Wide Heavy" (the first option A) */
-:root[data-type="a"] {
-  --display-weight: 800;
-  --display-tracking: -0.01em;
-}
-/* "Regular Caps": normal width, semi-bold */
-:root[data-type="c"] {
-  --display-stretch: 100%;
-  --display-weight: 600;
-  --display-tracking: 0.01em;
-}
-/* "Condensed Caps": tall and narrow, like a magazine cover line */
-:root[data-type="n"] {
-  --display-stretch: 72%;
-  --display-weight: 700;
-  --display-tracking: 0.01em;
-}
-/* "Grotesk Caps": the B option, in capitals */
-:root[data-type="g"] {
-  --font-display: "Space Grotesk Variable", system-ui, sans-serif;
-  --display-stretch: 100%;
-  --display-weight: 600;
-  --display-tracking: 0.01em;
-  --font-body: "Space Grotesk Variable", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
 }
 
 /* ---------- base ---------- */

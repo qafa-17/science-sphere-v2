@@ -62,7 +62,7 @@
 .traces polyline {
   fill: none;
   stroke: var(--trace);
-  stroke-width: 1.2;
+  stroke-width: 0.85;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-dasharray: 1;
@@ -87,7 +87,7 @@
 .ring {
   fill: none;
   stroke: var(--trace);
-  stroke-width: 1.2;
+  stroke-width: 0.85;
 }
 
 /* :global(.active) lets the board switch a drawing on from outside */

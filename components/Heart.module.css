@@ -3,53 +3,133 @@
   overflow: visible;
 }
 
-.pump {
-  stroke: var(--heart-ink, #111111);
-  transform-box: fill-box;
-  transform-origin: 50% 62%;
+.drawing {
+  stroke: #2a0508;
 }
 
 .ink {
-  fill: var(--heart-ink, #111111);
+  fill: #111111;
   stroke: none;
 }
 
-.paper {
-  fill: var(--heart-paper, #ffffff);
+.bubble {
+  fill: #f6d9d6;
+  stroke: #111111;
+}
+
+.muscle,
+.vessel {
+  stroke-width: 3.6;
+}
+
+.opening {
+  fill: #1d1430;
+  stroke-width: 3;
 }
 
 .line {
   fill: none;
+  stroke: #5a0d15;
+  stroke-opacity: 0.85;
+  stroke-width: 1.8;
 }
 
-/* lub-dub, about 66 beats a minute */
-.beating .pump {
-  animation: lubdub 0.9s ease-in-out infinite;
+.pore {
+  fill: #5a0d15;
+  stroke: none;
 }
 
-.still {
-  opacity: 0.5;
+.drips {
+  fill: #111111;
+  stroke: none;
 }
 
-@keyframes lubdub {
+/* ---------- open: the pieces pull together and spring apart ---------- */
+/* "together" = each piece moved in by --ix/--iy, covering the cracks */
+.piece {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.beating .piece {
+  animation: close-open 1s ease-in-out infinite;
+}
+
+.beating .ink {
+  animation: ink 1s ease-in-out infinite;
+}
+
+.beating .bubble {
+  animation: bubbles 1s ease-in-out infinite;
+}
+
+@keyframes close-open {
   0%,
-  45%,
+  8% {
+    transform: translate(var(--ix), var(--iy)) scale(1.07);
+  }
+  18% {
+    transform: translate(0, 0) scale(1);
+  }
+  28% {
+    transform: translate(var(--ix), var(--iy)) scale(1.07);
+  }
+  36% {
+    transform: translate(0, 0) scale(1);
+  }
+  50%,
   100% {
-    transform: scale(1);
+    transform: translate(var(--ix), var(--iy)) scale(1.07);
   }
-  12% {
-    transform: scale(1.1);
+}
+
+/* the cracks are dark muscle while closed, and turn black as the pieces part */
+@keyframes ink {
+  0%,
+  8% {
+    fill: #7a1621;
   }
-  24% {
-    transform: scale(1.02);
+  18% {
+    fill: #111111;
   }
-  32% {
-    transform: scale(1.06);
+  28% {
+    fill: #5a1018;
   }
+  36% {
+    fill: #161010;
+  }
+  50%,
+  100% {
+    fill: #7a1621;
+  }
+}
+
+@keyframes bubbles {
+  0%,
+  8%,
+  50%,
+  100% {
+    opacity: 0;
+  }
+  18%,
+  36% {
+    opacity: 1;
+  }
+  28% {
+    opacity: 0.2;
+  }
+}
+
+/* ---------- closed: apart, still, a little faded ---------- */
+.still {
+  filter: saturate(0.4);
+  opacity: 0.7;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .beating .pump {
+  .beating .piece,
+  .beating .ink,
+  .beating .bubble {
     animation: none;
   }
 }

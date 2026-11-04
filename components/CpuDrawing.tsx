@@ -14,8 +14,8 @@ export default function CpuDrawing({ size }: { size: number }) {
       <g className={styles.pads}>
         {TRACES.map((t, i) => {
           const [x, y] = t.points[t.points.length - 1];
-          if (t.end === "dot") return <circle key={i} cx={x} cy={y} r={1.9} className={styles.fill} />;
-          if (t.end === "ring") return <circle key={i} cx={x} cy={y} r={2.4} className={styles.ring} />;
+          if (t.end === "dot") return <circle key={i} cx={x} cy={y} r={1.6} className={styles.fill} />;
+          if (t.end === "ring") return <circle key={i} cx={x} cy={y} r={2.1} className={styles.ring} />;
           // a tiny component, turned to run along its trace
           const [px] = t.points[t.points.length - 2];
           const vertical = px === x;

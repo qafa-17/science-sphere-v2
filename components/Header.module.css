@@ -89,9 +89,6 @@
 }
 
 .status {
-  /* the heart is drawn in the bar's own colours */
-  --heart-ink: var(--hdr-bg, #0b0c0e);
-  --heart-paper: var(--hdr-fg, #ebe8df);
   display: inline-flex;
   align-items: center;
   gap: 8px;

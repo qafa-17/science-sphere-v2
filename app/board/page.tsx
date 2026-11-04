@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import type { CSSProperties, ReactNode } from "react";
-import BoardControls from "@/components/BoardControls";
 import CpuDrawing from "@/components/CpuDrawing";
 import Heart from "@/components/Heart";
 import { themes } from "@/lib/themes";
@@ -49,7 +48,7 @@ export default function BoardPage() {
     <main className={styles.board}>
       <div className="wrap">
         <div className={styles.hero}>
-          <p className="label">file_00 // look &amp; feel // draft 3</p>
+          <p className="label">file_00 // look &amp; feel // draft 4 // clearance: editors</p>
           <h1 className={styles.title}>Look &amp; Feel Board</h1>
           <p className={styles.lede}>
             Everything the new site gets built from, on one page. Nothing here is final: tell me what to keep, swap or
@@ -57,8 +56,6 @@ export default function BoardPage() {
           </p>
         </div>
       </div>
-
-      <BoardControls />
 
       <div className="wrap">
         {/* ---------- 01 palettes ---------- */}
@@ -112,12 +109,12 @@ export default function BoardPage() {
         <Section
           n="02"
           title="Type"
-          note="All caps, as you preferred. Wide Light is in use: the same wide capitals as before, but lighter so they don't shout. Compare the others with the bar above; the whole page (and the header) changes live."
+          note="Option A: wide, heavy capitals for headings, plain Archivo for reading, Space Mono for labels, and Pixelify for small moments."
         >
           <div className={styles.specimen}>
             <div className={styles.specRow}>
               <p className="label">
-                display // <span className={`${styles.fontName} ${styles.fw}`}>Archivo Expanded 500</span><span className={`${styles.fontName} ${styles.fa}`}>Archivo Expanded 800</span><span className={`${styles.fontName} ${styles.fc}`}>Archivo 600</span><span className={`${styles.fontName} ${styles.fn}`}>Archivo Condensed 700</span><span className={`${styles.fontName} ${styles.fg}`}>Space Grotesk 600</span>
+                display // Archivo Expanded 800 (chosen)
               </p>
               <p className={styles.specHero}>Science, by students.</p>
             </div>
@@ -131,7 +128,7 @@ export default function BoardPage() {
             </div>
             <div className={styles.specRow}>
               <p className="label">
-                body // <span className={`${styles.fontName} ${styles.fw}`}>Archivo</span><span className={`${styles.fontName} ${styles.fa}`}>Archivo</span><span className={`${styles.fontName} ${styles.fc}`}>Archivo</span><span className={`${styles.fontName} ${styles.fn}`}>Archivo</span><span className={`${styles.fontName} ${styles.fg}`}>Space Grotesk</span>
+                body // Archivo
               </p>
               <p className={styles.specBody}>
                 Science Sphere is a magazine made by students, <em>for</em> students. This year&apos;s team is made up
@@ -140,7 +137,7 @@ export default function BoardPage() {
             </div>
             <div className={styles.specRow}>
               <p className="label">
-                labels // <span className={`${styles.fontName} ${styles.fw}`}>Space Mono</span><span className={`${styles.fontName} ${styles.fa}`}>Space Mono</span><span className={`${styles.fontName} ${styles.fc}`}>Space Mono</span><span className={`${styles.fontName} ${styles.fn}`}>Space Mono</span><span className={`${styles.fontName} ${styles.fg}`}>JetBrains Mono</span>
+                labels // Space Mono
               </p>
               <p className={styles.specMono}>
                 SUBJECT: QANITA FARRUKH &nbsp;&nbsp; ID: 482913 &nbsp;&nbsp; EDITOR. WRITER. DESIGNER.
@@ -189,7 +186,7 @@ export default function BoardPage() {
         <Section
           n="04"
           title="CPU cursor"
-          note="Now 0.8 of its old size, and every one of the 24 pins grows a trace (plus a few side branches). Over anything clickable they all leave the chip at once and finish forming in 0.3 seconds, then the pads pop in. Dark on light pages, light on dark ones. Phones and tablets don't get it."
+          note="About 15px, with 20 thin traces (five from each side). Over anything clickable they all leave the chip at once and finish forming in 0.3 seconds, then the pads pop in. Dark on light pages, light on dark ones. Phones and tablets don't get it."
         >
           <div className={styles.cursorDemo}>
             <figure>
@@ -319,12 +316,12 @@ export default function BoardPage() {
 
             <figure className={styles.detail}>
               <div className={styles.statusRow}>
-                <Heart size={70} beating />
-                <Heart size={70} />
+                <Heart size={80} beating />
+                <Heart size={80} />
                 <span>
-                  <strong>Open now</strong> (beating)
+                  <strong>Open:</strong> the pieces pull together, then spring apart and the black shows
                   <br />
-                  <span className="label">closed: still and grey</span>
+                  <span className="label">closed: apart, still, faded</span>
                 </span>
               </div>
               <figcaption className="label">office status heart</figcaption>
@@ -338,6 +335,58 @@ export default function BoardPage() {
                 <Star colour="var(--melon-zest)" />
               </div>
               <figcaption className="label">four-point star (from your palettes and the wizard&apos;s robe)</figcaption>
+            </figure>
+          </div>
+        </Section>
+
+        {/* ---------- 08 direction ---------- */}
+        <Section
+          n="08"
+          title="Direction"
+          note="A science magazine as a classified research facility: part secret containment lab, part expensive high-tech company. These are the pieces I'd use to build that feeling into the pages; tell me which to keep."
+        >
+          <div className={styles.motifs}>
+            <figure className={styles.motif}>
+              <div className={styles.clearance}>
+                <span className="label">clearance</span>
+                <strong>LEVEL 4</strong>
+                <span className="label">sci_sphere // contributors only</span>
+              </div>
+              <figcaption className="label">clearance stamps on sections</figcaption>
+            </figure>
+            <figure className={styles.motif}>
+              <div className={styles.hazardWrap}>
+                <div className={styles.hazard} />
+                <span className="label">containment // do not cross</span>
+                <div className={styles.hazard} />
+              </div>
+              <figcaption className="label">hazard-stripe dividers</figcaption>
+            </figure>
+            <figure className={styles.motif}>
+              <div className={styles.redactWrap}>
+                <p>
+                  Subject <span className={styles.redact}>xxxxxxxx</span> was observed reading Issue 003 for{" "}
+                  <span className={styles.redact}>xxxxx</span> hours without rest.
+                </p>
+              </div>
+              <figcaption className="label">redacted text that reveals on hover</figcaption>
+            </figure>
+            <figure className={styles.motif}>
+              <div className={styles.specimen}>
+                <span className="label">specimen // ss-003-a</span>
+                <strong>THE FUTURE OF THE ANTIBIOTIC CRISIS</strong>
+                <span className="label">logged: fall 2026 &nbsp; status: contained</span>
+              </div>
+              <figcaption className="label">specimen tags for articles</figcaption>
+            </figure>
+            <figure className={`${styles.motif} ${styles.motifWide}`}>
+              <div className={styles.terminal}>
+                <span>&gt; sci_sphere.sys booting...</span>
+                <span>&gt; biometric scan: ok</span>
+                <span>&gt; loading archive: issue_001 issue_002 issue_003</span>
+                <span className={styles.caret}>&gt; welcome, reader_</span>
+              </div>
+              <figcaption className="label">terminal readouts (e.g. a short boot-up on the landing page)</figcaption>
             </figure>
           </div>
         </Section>

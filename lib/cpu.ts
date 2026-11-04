@@ -11,9 +11,9 @@ export const PINS = [-10, -6, -2, 2, 6, 10];
 export type Pad = "dot" | "ring" | "chip";
 export type Trace = { points: [number, number][]; end: Pad };
 
-// Every pin gets a trace. They leave the chip straight, all bend outward at the
-// same distance (so they fan out without crossing), then run on for different
-// lengths. A few grow a short side branch.
+// Five pins on each side get a trace (20 in all). They leave the chip straight,
+// all bend outward at the same distance (so they fan out without crossing),
+// then run on for different lengths.
 const LENGTHS = [16, 26, 10, 30, 14, 22, 20, 12, 28, 18, 24, 8, 12, 30, 20, 16, 26, 10, 22, 14, 28, 18, 10, 24];
 const ENDS: Pad[] = ["dot", "ring", "chip", "dot", "dot", "ring", "chip", "dot"];
 const SIDES: { out: [number, number]; along: [number, number] }[] = [
@@ -28,6 +28,8 @@ function buildTraces(): Trace[] {
   let n = 0;
   SIDES.forEach(({ out, along }, side) => {
     PINS.forEach((o, i) => {
+      // skip one pin per side, a different one each side
+      if (i === [1, 4, 2, 3][side]) return;
       const at = (d: number, t: number): [number, number] => [
         +(out[0] * d + along[0] * t).toFixed(2),
         +(out[1] * d + along[1] * t).toFixed(2),
@@ -41,15 +43,6 @@ function buildTraces(): Trace[] {
         points: [at(PIN_TIP, o), at(bendAt, o), at(bendAt + diag, o + spread), at(end, o + spread)],
         end: ENDS[n % ENDS.length],
       });
-      // every third trace sprouts a short branch off its last stretch
-      if (n % 3 === 1 && length >= 16) {
-        const from = bendAt + diag + length * 0.45;
-        const dir = Math.sign(o + spread) || 1;
-        traces.push({
-          points: [at(from, o + spread), at(from + 5, o + spread + 5 * dir), at(from + 11, o + spread + 5 * dir)],
-          end: "dot",
-        });
-      }
       n++;
     });
   });
