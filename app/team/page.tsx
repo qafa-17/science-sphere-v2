@@ -38,8 +38,9 @@ export default function TeamPage() {
             style={
               {
                 top: `${SPOTS[i].faceTop}%`,
-                height: `${FACE_H}%`,
+                height: `${FACE_H * m.faceScale}%`,
                 "--aspect": m.faceAspect,
+                "--scale": m.faceScale,
               } as CSSProperties
             }
             aria-label={`${m.name}'s ID card`}

@@ -22,8 +22,10 @@ export type Member = {
   cardPhoto: string;
   /** which side of the team page their face sits on */
   side: "left" | "right";
-  /** how wide their face is compared to its height, for the team page */
+  /** how wide their head image is compared to its height, for the team page */
   faceAspect: number;
+  /** how tall their head image is compared to the tallest one; every image is at the same face scale */
+  faceScale: number;
 };
 
 export const team: Member[] = [
@@ -41,7 +43,8 @@ export const team: Member[] = [
     photo: "/team/sarah.webp",
     cardPhoto: "/team/sarah-card.webp",
     side: "left",
-    faceAspect: 1.049,
+    faceAspect: 0.901,
+    faceScale: 0.828,
   },
   {
     id: "hadi",
@@ -57,7 +60,8 @@ export const team: Member[] = [
     photo: "/team/hadi.webp",
     cardPhoto: "/team/hadi-card.webp",
     side: "right",
-    faceAspect: 0.933,
+    faceAspect: 0.919,
+    faceScale: 0.96,
   },
   {
     id: "liam",
@@ -73,7 +77,8 @@ export const team: Member[] = [
     photo: "/team/liam.webp",
     cardPhoto: "/team/liam-card.webp",
     side: "left",
-    faceAspect: 0.904,
+    faceAspect: 1.081,
+    faceScale: 0.977,
   },
   {
     id: "qanita",
@@ -89,6 +94,7 @@ export const team: Member[] = [
     photo: "/team/qanita.webp",
     cardPhoto: "/team/qanita-card.webp",
     side: "right",
-    faceAspect: 0.886,
+    faceAspect: 1.092,
+    faceScale: 1.0,
   },
 ];

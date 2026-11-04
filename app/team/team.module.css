@@ -33,7 +33,7 @@
   position: absolute;
   right: 74%;
   /* the face is 27% of the poster's height; show a little over half of it */
-  width: calc(var(--aspect) * 29cqw / var(--ratio) * 0.55);
+  width: calc(var(--aspect) * var(--scale) * 29cqw / var(--ratio) * 0.55);
   overflow: hidden;
   z-index: 1;
 }
