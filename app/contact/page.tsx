@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import ContactOffice from "@/components/ContactOffice";
-import CopyEmail from "@/components/CopyEmail";
+import ContactChannels from "@/components/ContactChannels";
+import ContactOffice, { OfficeLight } from "@/components/ContactOffice";
 import { MAIN_EMAIL } from "@/lib/pitch";
 import { OFFICE_ROOM } from "@/lib/officeHours";
 import styles from "./contact.module.css";
@@ -19,40 +19,17 @@ export default function ContactPage() {
         <span className={`${styles.corner} ${styles.cornerRight}`}>MRU</span>
         <p className={styles.small}>get in</p>
         <h1 className={styles.title}>Touch</h1>
+        <OfficeLight />
+        <p className={`label ${styles.hint}`}>scroll ↓</p>
       </header>
 
-      <section className={styles.block} aria-labelledby="office">
-        <p className={`label ${styles.blockLabel}`} id="office">
-          01 {"//"} the office
-        </p>
-        <ContactOffice />
-      </section>
+      <ContactOffice />
 
       <section className={styles.block} aria-labelledby="channels">
         <p className={`label ${styles.blockLabel}`} id="channels">
           02 {"//"} channels
         </p>
-        <div className={styles.channels}>
-          <div className={styles.channel}>
-            <span className="label">email</span>
-            <a href={`mailto:${MAIN_EMAIL}`} className={styles.channelLink}>
-              {MAIN_EMAIL.split("@")[0]}
-              <wbr />@{MAIN_EMAIL.split("@")[1]}
-            </a>
-            <CopyEmail email={MAIN_EMAIL} />
-          </div>
-          <div className={styles.channel}>
-            <span className="label">instagram</span>
-            <a
-              href="https://instagram.com/mrusciencesphere"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.channelLink}
-            >
-              @mrusciencesphere <span aria-hidden="true">↗</span>
-            </a>
-          </div>
-        </div>
+        <ContactChannels email={MAIN_EMAIL} instagram="mrusciencesphere" />
         <p className={styles.pitchNote}>
           Have a story idea? <Link href="/pitch">Pitch it here →</Link>
         </p>

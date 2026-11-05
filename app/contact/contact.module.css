@@ -3,7 +3,7 @@
   --red: var(--sunset-tomato);
   position: relative;
   background: var(--bg);
-  overflow: hidden;
+  overflow: clip; /* not hidden: hidden would stop the office hours from holding still */
   padding: 0 16px 18vh;
 }
 
@@ -56,10 +56,44 @@
   line-height: 0.9;
 }
 
+.hint {
+  margin-top: 26px;
+  animation: nudge 1.6s ease-in-out infinite;
+}
+
+@keyframes nudge {
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+/* the small status light: the heart in a pill, like the first site's */
+.light {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 28px;
+  padding: 6px 16px 6px 10px;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.lightOpen {
+  border-color: var(--red);
+  background: var(--red);
+  color: var(--sunset-honeydew);
+}
+
+.lightRoom {
+  font-weight: 500;
+}
+
 /* ---------- blocks ---------- */
 .block {
   width: min(1080px, 100%);
-  margin: 0 auto 10vh;
+  margin: 12vh auto 0;
 }
 
 .blockLabel {
@@ -68,39 +102,34 @@
   border-bottom: 1.5px solid var(--ink);
 }
 
-/* ---------- office ---------- */
+/* ---------- office hours: a peach band that holds still while the days load ---------- */
+.officeWrap {
+  position: relative;
+  height: 230vh;
+  margin: 0 -16px;
+  background: var(--sunset-peach);
+}
+
+.officeStage {
+  position: sticky;
+  top: 56px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: min(1080px, calc(100% - 32px));
+  min-height: calc(100vh - 56px);
+  margin: 0 auto;
+  padding: 24px 0;
+}
+
 .office {
   display: grid;
-  grid-template-columns: minmax(220px, 300px) 1fr;
-  grid-template-areas:
-    "heart week"
-    "read week";
+  grid-template-columns: minmax(240px, 320px) 1fr;
   gap: 28px 48px;
   align-items: start;
 }
 
-.heartBox {
-  grid-area: heart;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  margin: 0;
-}
-
-.tag {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 6px 10px;
-  border: 1.5px solid var(--ink);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.06em;
-}
-
 .readout {
-  grid-area: read;
   padding: 14px 16px;
   background: var(--ink);
   color: var(--sunset-honeydew);
@@ -113,6 +142,11 @@
   align-items: baseline;
   gap: 8px;
   margin: 0 0 4px;
+}
+
+.readGap {
+  margin-top: 14px;
+  min-height: 40px;
 }
 
 .prompt {
@@ -130,12 +164,43 @@
 }
 
 .readOpen {
-  color: #7cf29a;
+  color: var(--sunset-sky);
+}
+
+.readClosed {
+  color: var(--sunset-coral);
+}
+
+.readHint {
+  color: rgb(246 255 234 / 0.7);
+}
+
+.saveVisit,
+.clearVisit {
+  padding: 0;
+  margin-top: 6px;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--sunset-sky);
+  cursor: pointer;
+}
+
+.clearVisit {
+  color: var(--sunset-coral);
+}
+
+.saveVisit:hover,
+.clearVisit:hover {
+  text-decoration: underline;
 }
 
 .cursorBlink {
+  display: inline-block;
   width: 8px;
-  height: 14px;
+  height: 13px;
+  margin-left: 6px;
+  vertical-align: -2px;
   background: var(--sunset-honeydew);
   animation: blink 1s steps(1) infinite;
 }
@@ -148,7 +213,6 @@
 
 /* the week */
 .week {
-  grid-area: week;
   position: relative;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -178,26 +242,38 @@
 }
 
 .dayName {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
   height: 34px;
   font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
+  opacity: 0.3;
+  transition: opacity 0.3s;
+}
+
+.on .dayName {
+  opacity: 1;
 }
 
 .todayMark {
-  color: var(--red);
+  padding: 0 5px;
+  background: var(--sunset-sky);
+  font-weight: 400;
+  font-size: 10px;
 }
 
 .dayTrack {
   position: relative;
-  height: 400px;
+  height: min(400px, 52vh);
   border: 1.5px solid var(--ink);
+  background: var(--sunset-honeydew);
 }
 
 .today .dayTrack {
-  outline: 2px solid var(--red);
-  outline-offset: 3px;
+  background: color-mix(in srgb, var(--sunset-sky) 30%, var(--sunset-honeydew));
 }
 
 .hourLine {
@@ -212,18 +288,69 @@
   left: 4px;
   right: 4px;
   padding: 6px;
+  border: 0;
   background: var(--red);
   color: var(--sunset-honeydew);
   font-family: var(--font-mono);
   font-size: 11px;
   line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+  transform-origin: 50% 0;
+  transform: scaleY(0);
+  opacity: 0;
+  transition:
+    background 0.2s,
+    box-shadow 0.2s;
+}
+
+/* each day's block springs into existence: it overshoots and settles */
+.on .slot {
+  animation: spring 0.75s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+
+@keyframes spring {
+  0% {
+    transform: scale(0.6, 0);
+    opacity: 0;
+  }
+  35% {
+    transform: scale(1.06, 1.12);
+    opacity: 1;
+  }
+  55% {
+    transform: scale(0.97, 0.93);
+  }
+  75% {
+    transform: scale(1.01, 1.03);
+  }
+  100% {
+    transform: scale(1, 1);
+    opacity: 1;
+  }
+}
+
+.slot:hover {
+  background: var(--sunset-coral);
+  color: var(--ink);
+}
+
+.slotPicked,
+.slotPicked:hover {
+  background: var(--sunset-coral);
+  color: var(--ink);
+  box-shadow:
+    0 0 0 2px var(--ink),
+    4px 4px 0 2px var(--ink);
 }
 
 .nowLine {
   position: absolute;
   left: -6px;
   right: -6px;
+  z-index: 1;
   border-top: 2px solid var(--ink);
+  pointer-events: none;
 }
 
 .nowLine::before {
@@ -239,6 +366,7 @@
 
 /* ---------- channels ---------- */
 .channels {
+  --in: 1;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 24px;
@@ -248,9 +376,23 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 10px;
+  gap: 12px;
+  min-height: 170px;
   padding: 22px;
   border: 1.5px solid var(--ink);
+  box-shadow: 6px 6px 0 var(--ink);
+  opacity: var(--in);
+}
+
+/* they come in from opposite sides, following the scroll */
+.channelEmail {
+  background: var(--sunset-coral);
+  transform: translateX(calc((1 - var(--in)) * -60vw)) rotate(calc((1 - var(--in)) * -6deg));
+}
+
+.channelInsta {
+  background: var(--sunset-sky);
+  transform: translateX(calc((1 - var(--in)) * 60vw)) rotate(calc((1 - var(--in)) * 6deg));
 }
 
 .channelLink {
@@ -259,7 +401,7 @@
   font-stretch: var(--display-stretch);
   text-transform: uppercase;
   font-size: clamp(15px, 1.8vw, 22px);
-  color: var(--red);
+  color: var(--ink);
   text-decoration: none;
   overflow-wrap: anywhere;
 }
@@ -268,18 +410,23 @@
   text-decoration: underline;
 }
 
+.channelNote,
+.copy {
+  margin-top: auto;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
 .copy {
   padding: 0;
   border: 0;
   background: none;
-  font-family: var(--font-mono);
-  font-size: 12px;
   color: var(--ink);
   cursor: pointer;
 }
 
 .pitchNote {
-  margin-top: 22px;
+  margin-top: 36px;
   font-size: 15px;
 }
 
@@ -290,12 +437,21 @@
 
 /* ---------- small screens ---------- */
 @media (max-width: 760px) {
+  .officeWrap {
+    height: 200vh;
+  }
+
   .office {
     grid-template-columns: 1fr;
-    grid-template-areas:
-      "heart"
-      "read"
-      "week";
+    gap: 18px;
+  }
+
+  .readout {
+    font-size: 11.5px;
+  }
+
+  .readGap {
+    margin-top: 8px;
   }
 
   .week {
@@ -307,6 +463,10 @@
     width: 30px;
   }
 
+  .dayTrack {
+    height: min(330px, 40vh);
+  }
+
   .slot {
     left: 2px;
     right: 2px;
@@ -314,15 +474,27 @@
     font-size: 9px;
   }
 
-  .channels {
-    grid-template-columns: 1fr;
-  }
-
   .todayMark {
     display: none;
   }
 
+  .channels {
+    grid-template-columns: 1fr;
+  }
+
+  .channel {
+    min-height: 0;
+  }
+
   .corner {
     top: 30px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .on .slot {
+    animation: none;
+    transform: none;
+    opacity: 1;
   }
 }
