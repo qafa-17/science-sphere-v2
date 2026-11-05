@@ -163,6 +163,8 @@ export default function Flipbook({ pages, hotspots = [], title, toolbarStart }: 
   const frameRef = useRef<HTMLDivElement>(null);
   const bookRef = useRef<PageFlip | null>(null);
   const soundOnRef = useRef(true);
+  const turnRef = useRef<(dir: 1 | -1) => void>(() => {});
+  const queueRef = useRef(0); // turns waiting: + forwards, - backwards
 
   const [pageIndex, setPageIndex] = useState(0);
   const [landscape, setLandscape] = useState(true);
@@ -222,6 +224,12 @@ export default function Flipbook({ pages, hotspots = [], title, toolbarStart }: 
       // A click, arrow key, button or swipe puts the book into "flipping"...
       book.on("changeState", (e) => {
         if (e.data === "flipping" && soundOnRef.current) playPageTurn();
+        // a page has landed: start the next queued turn, if any
+        if (e.data === "read" && queueRef.current !== 0) {
+          const dir = queueRef.current > 0 ? 1 : -1;
+          queueRef.current -= dir;
+          window.setTimeout(() => turnRef.current(dir), 0);
+        }
       });
       book.on("changeOrientation", (e) => setLandscape(e.data === "landscape"));
       book.on("init", () => setLandscape(book.getOrientation() === "landscape"));
@@ -253,8 +261,26 @@ export default function Flipbook({ pages, hotspots = [], title, toolbarStart }: 
     };
   }, [pages, hotspots]);
 
-  const next = useCallback(() => bookRef.current?.flipNext(), []);
-  const prev = useCallback(() => bookRef.current?.flipPrev(), []);
+  // Quick presses queue up instead of cutting the turning page short: each
+  // flip finishes, then the next one starts. While more are waiting, pages
+  // turn a little faster, so holding an arrow key riffles through smoothly.
+  const turn = useCallback((dir: 1 | -1) => {
+    const book = bookRef.current;
+    if (!book) return;
+    if (book.getState() !== "read") {
+      // already turning: remember it (but not more than three ahead)
+      queueRef.current = Math.max(-3, Math.min(3, queueRef.current + dir));
+      return;
+    }
+    book.getSettings().flippingTime = queueRef.current !== 0 ? 480 : 800;
+    if (dir > 0) book.flipNext();
+    else book.flipPrev();
+  }, []);
+  useEffect(() => {
+    turnRef.current = turn;
+  }, [turn]);
+  const next = useCallback(() => turn(1), [turn]);
+  const prev = useCallback(() => turn(-1), [turn]);
 
   // Arrow keys turn pages too.
   useEffect(() => {

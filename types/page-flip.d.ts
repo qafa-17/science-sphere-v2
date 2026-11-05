@@ -21,6 +21,8 @@ declare module "page-flip" {
     on(event: "changeState", callback: (e: { data: FlipState }) => void): this;
     on(event: "init", callback: (e: { data: { page: number; mode: string } }) => void): this;
     getState(): FlipState;
+    /** the live settings; flippingTime can be changed between flips */
+    getSettings(): { flippingTime: number };
     /** internal, used to tell whether a dragged page will finish turning */
     getFlipController(): { getCalculation(): { getPosition(): { x: number; y: number } } | null };
     destroy(): void;
