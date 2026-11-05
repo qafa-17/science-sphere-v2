@@ -1,0 +1,200 @@
+/* ---------- the landing page: one long scroll from space to the sea ---------- */
+.journeyWrap {
+  position: relative;
+  height: 760vh;
+  background: #050a2e;
+  color: #eef2ff;
+}
+
+/* the screen holds still while the camera moves through the world */
+.diveStage {
+  position: sticky;
+  top: 56px;
+  height: calc(100svh - 56px);
+  overflow: hidden;
+}
+
+.canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* a finger on the canvas still scrolls the page */
+.scrollCanvas {
+  touch-action: pan-y;
+}
+
+.grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.06;
+  pointer-events: none;
+  background-repeat: repeat;
+}
+
+/* the words sit over the canvas but let the pointer through to it */
+.overlay {
+  position: absolute;
+  inset: 0;
+  padding: 28px 32px;
+  pointer-events: none;
+}
+
+.boot {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  opacity: 0.7;
+}
+
+.caret {
+  animation: blink 1.1s steps(2) infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* ---------- the title over the sphere ---------- */
+.diveTitle {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  text-align: center;
+  pointer-events: none;
+}
+
+.title {
+  font-size: clamp(40px, 7vw, 104px);
+  line-height: 0.92;
+  color: var(--space-lime);
+  text-shadow: 0 0 40px rgba(13, 6, 48, 0.6);
+}
+
+.scrollHint {
+  margin-top: 28px;
+  animation: nudge 1.6s ease-in-out infinite;
+}
+
+@keyframes nudge {
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+/* ---------- the cards: the issues in the night sky, the pitch meeting in the sea ---------- */
+.card {
+  position: absolute;
+  top: 50%;
+  width: min(380px, calc(100% - 32px));
+  margin-top: -150px;
+  padding: 24px 26px;
+  border: 1px solid rgba(200, 215, 255, 0.3);
+  border-radius: 4px;
+  background: rgba(7, 16, 52, 0.72);
+  backdrop-filter: blur(6px);
+  color: #eef2ff;
+}
+
+.cardLeft {
+  left: 40px;
+}
+
+.card h2 {
+  margin: 8px 0 16px;
+  font-size: 24px;
+}
+
+.card dl {
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  gap: 8px 12px;
+  margin: 0 0 20px;
+}
+
+.card dt {
+  padding-top: 3px;
+  opacity: 0.7;
+}
+
+.card dd {
+  margin: 0;
+}
+
+.card a {
+  color: inherit;
+}
+
+.cardButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.cardButton {
+  display: inline-flex;
+  align-items: center;
+  min-height: 42px;
+  padding: 0 18px;
+  border: 1px solid #eef2ff;
+  border-radius: 3px;
+  background: #eef2ff;
+  color: #0b1a52 !important;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.cardButtonGhost {
+  background: transparent;
+  color: #eef2ff !important;
+}
+
+.cardButtonGhost:hover {
+  background: rgba(238, 242, 255, 0.12);
+}
+
+/* the RSVP button before the form's link is in */
+.cardButtonOff {
+  border-style: dashed;
+  background: transparent;
+  color: rgba(238, 242, 255, 0.6) !important;
+  cursor: not-allowed;
+}
+
+.issueList {
+  list-style: none;
+  margin: 0 0 20px;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+.issueList li {
+  padding: 8px 0;
+  border-top: 1px solid rgba(200, 215, 255, 0.2);
+}
+
+@media (max-width: 600px) {
+  .overlay {
+    padding: 20px 16px;
+  }
+
+  .cardLeft {
+    left: 16px;
+  }
+}
