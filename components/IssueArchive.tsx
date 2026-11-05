@@ -35,10 +35,13 @@ export default function IssueArchive({ issues }: { issues: Issue[] }) {
     const n = files.length;
     let raf = 0;
     let shown = files.map(() => 0); // eased hover amount per file
+    let eased = -1; // the scroll progress, eased so mouse-wheel steps glide
 
     const frame = () => {
       const r = wrap.getBoundingClientRect();
-      const p = clamp(-r.top / Math.max(1, r.height - window.innerHeight));
+      const target = clamp(-r.top / Math.max(1, r.height - window.innerHeight));
+      eased = eased < 0 ? target : eased + (target - eased) * 0.14;
+      const p = eased;
       const W = stack.clientWidth - 36; // room for the last file's tab
       const H = stack.clientHeight;
       const coverW = H * 0.773;
@@ -49,7 +52,8 @@ export default function IssueArchive({ issues }: { issues: Issue[] }) {
 
       // each file slides out of the pile in turn as you scroll
       const widths = files.map((_, i) => {
-        const out = between(p, 0.08 + i * (0.6 / n), 0.08 + (i + 1) * (0.6 / n));
+        // spread over most of the scroll, so there's no long stretch where nothing moves
+        const out = between(p, 0.04 + i * (0.8 / n), 0.04 + (i + 1) * (0.8 / n));
         return closedW + (spreadW - closedW) * out;
       });
       shown = shown.map((v, i) => v + ((hoverRef.current === i ? 1 : 0) - v) * 0.18);

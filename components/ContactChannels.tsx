@@ -15,12 +15,16 @@ export default function ContactChannels({ email, instagram }: { email: string; i
     const el = ref.current!;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     let raf = 0;
+    let shown = -1; // eased, so the cards glide rather than jump with each wheel step
     const update = () => {
       raf = 0;
       const r = el.getBoundingClientRect();
       // 0 when the cards' top reaches the bottom of the screen, 1 by the time it's at 55%
-      const p = Math.max(0, Math.min(1, (window.innerHeight - r.top) / (window.innerHeight * 0.45)));
-      el.style.setProperty("--in", String(1 - (1 - p) ** 3));
+      const target = Math.max(0, Math.min(1, (window.innerHeight - r.top) / (window.innerHeight * 0.45)));
+      shown = shown < 0 ? target : shown + (target - shown) * 0.14;
+      if (Math.abs(target - shown) < 0.002) shown = target;
+      el.style.setProperty("--in", String(1 - (1 - shown) ** 3));
+      if (shown !== target) raf = requestAnimationFrame(update);
     };
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(update);

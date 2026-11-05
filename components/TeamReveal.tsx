@@ -110,27 +110,33 @@ export default function TeamReveal({ team }: { team: Member[] }) {
       lineRef.current!.style.strokeDasharray = `${total}`;
     };
 
+    let tip = -Infinity; // where the tip of the line is drawn, easing toward the target
+
     const frame = () => {
       raf = 0;
       if (!pts.length) return;
       const box = wrap.getBoundingClientRect();
-      // the tip of the line follows a point 60% of the way down the screen
+      // the tip of the line follows a point 70% of the way down the screen
       // ...but never past the next person until the last one has finished typing
       const limit = pts[Math.min(pts.length - 1, typedRef.current)]?.y ?? 0;
-      const tipY = Math.min(window.innerHeight * 0.7 - box.top, limit);
+      const target = Math.min(window.innerHeight * 0.7 - box.top, limit);
+      // glide rather than jump, so mouse-wheel steps and the wait for typing both look smooth
+      tip = tip === -Infinity ? target : tip + (target - tip) * 0.12;
+      if (Math.abs(target - tip) < 0.5) tip = target;
       let drawn = 0;
       let count = 0;
       for (let i = 0; i < pts.length; i++) {
-        if (tipY >= pts[i].y) count = i + 1;
+        if (tip >= pts[i].y) count = i + 1;
         if (i === 0) continue;
         const a = pts[i - 1];
         const b = pts[i];
         const seg = Math.hypot(b.x - a.x, b.y - a.y);
-        const k = Math.max(0, Math.min(1, (tipY - a.y) / (b.y - a.y)));
+        const k = Math.max(0, Math.min(1, (tip - a.y) / (b.y - a.y)));
         drawn += seg * k;
       }
       lineRef.current!.style.strokeDashoffset = `${total - drawn}`;
       setReached((r) => Math.max(r, count)); // once someone appears, they stay
+      if (tip !== target) raf = requestAnimationFrame(frame);
     };
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(frame);
