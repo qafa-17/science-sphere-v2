@@ -2,6 +2,8 @@
 // Later this moves into Supabase so editors can add issues from the dashboard,
 // but the shape of each issue stays the same.
 
+import { issue1Hotspots, issue2Hotspots } from "./issueLinks";
+
 export type Article = {
   title: string;
   by: string;
@@ -127,11 +129,33 @@ export const issues: Issue[] = [
     id: "2",
     number: 2,
     season: "Winter 2026",
-    colour: "plum", // TODO: Issue 2's real colour
+    colour: "green",
     tab: "#4C473E",
-    summary: "[Summary of Issue #2]",
-    articles: [],
-    pageCount: 0,
+    cover: "/issues/2/cover.webp",
+    summary:
+      "A green issue, inside and out: native plants bringing bees back to campus, the greenhouse hidden behind a blue door, and why film photography still wins hearts in a digital world. Plus the woman who mapped penicillin, insulin and vitamin B12, how your gut talks to your brain, an alumni chat with Jonah Lamoureux, and Little Science Sphere, a section for the young scientists in our lives.",
+    articles: [
+      {
+        title: "From Pixels to Grain",
+        by: "Renz Manipon",
+        hook: "Digital cameras are sharper, faster and cheaper. So why are people falling back in love with film?",
+        page: 13,
+      },
+      {
+        title: "MRU's Secret Garden",
+        by: "Regan Todd",
+        hook: "Life behind the blue door: a look inside the campus greenhouse most students walk right past.",
+        page: 19,
+      },
+      {
+        title: "The Architect of Atoms",
+        by: "Henna Mathouda",
+        hook: "Dorothy Crowfoot Hodgkin mapped penicillin, vitamin B12 and insulin, one atom at a time.",
+        page: 24,
+      },
+    ],
+    pageCount: 50,
+    hotspots: issue2Hotspots,
   },
   {
     id: "1",
@@ -139,9 +163,31 @@ export const issues: Issue[] = [
     season: "Fall 2025",
     colour: "sky",
     tab: "#2E5574",
-    summary: "[Summary of Issue #1]",
-    articles: [],
-    pageCount: 0,
+    cover: "/issues/1/cover.webp",
+    summary:
+      "Our very first issue follows students into the field and the lab: from the Canadian High Arctic to a German forest, from posture research at high altitude to a summer spent modelling viruses. Plus a device that listens to blood, why drawing helps you learn, advice from fourth-year students, useful campus resources, and an alumni chat with Caleb Marx.",
+    articles: [
+      {
+        title: "How Diverse Landscapes Shaped an Aspiring Scientist",
+        by: "Ashley Lawson",
+        hook: "From insects in the High Arctic to invasive evergreens in Germany's Black Forest: one student's path through fieldwork.",
+        page: 8,
+      },
+      {
+        title: "Up in the Air",
+        by: "Sama Ghods",
+        hook: "What happens to your balance at high altitude? A first research project, from cold email to the lab.",
+        page: 25,
+      },
+      {
+        title: "Listening to Blood",
+        by: "Henna Mathouda",
+        hook: "A device that hears malaria parasites through the skin, without taking a drop of blood.",
+        page: 22,
+      },
+    ],
+    pageCount: 36,
+    hotspots: issue1Hotspots,
   },
 ];
 
