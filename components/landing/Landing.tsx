@@ -94,7 +94,6 @@ export default function Landing({ issues }: { issues: Issue[] }) {
     }[] = [];
     let night: HTMLCanvasElement | null = null;
     let stars: { x: number; y: number; r: number; p: number }[] = [];
-    let eased = -1;
 
     const build = (w: number, h: number) => {
       ocean.resize(w, SURFACE * h, WORLD * h);
@@ -186,11 +185,7 @@ export default function Landing({ issues }: { issues: Issue[] }) {
       if (builtFor !== `${w}x${h}`) build(w, h);
       const at = (y: number) => y * h;
       const r = wrap.getBoundingClientRect();
-      const target = clamp(-r.top / (r.height - window.innerHeight + 56));
-      // eased, so mouse-wheel steps glide like on the other pages
-      eased =
-        eased < 0 ? target : eased + (target - eased) * Math.min(1, dt * 6);
-      const p = eased;
+      const p = clamp(-r.top / (r.height - window.innerHeight + 56));
       const cam = cameraAt(p) * h;
       const wp = { x: pointer.x, y: pointer.y + cam, inside: pointer.inside };
       const lean = pointer.inside ? pointer.x / w - 0.5 : 0;
