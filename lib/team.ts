@@ -1,5 +1,4 @@
 // The editors, for Meet the Team and their ID cards.
-// Fun facts in [brackets] are placeholders until each person sends theirs.
 
 export type Member = {
   id: string;
@@ -12,7 +11,6 @@ export type Member = {
   degree: string[];
   /** the back of the card, written like a classified file: label, then entry */
   bio: [string, string][];
-  fact: string;
   /** a made-up 6-digit ID number for the card */
   idNumber: string;
   /** a made-up 13-character serial for the back of the card */
@@ -41,7 +39,6 @@ export const team: Member[] = [
       ["BACKGROUND", "PhD, Neuroscience. Professor of Biology."],
       ["FIELD STATUS", "Adventure scientist"],
     ],
-    fact: "[Sarah's interesting fact]",
     idNumber: "104729",
     serial: "SS7K2Q9XH4M1B",
     photo: "/team/sarah-bust.webp",
@@ -60,7 +57,6 @@ export const team: Member[] = [
       ["ASSIGNMENT", "Physics and geography"],
       ["COVER JOB", "TELUS Spark"],
     ],
-    fact: "[Hadi's interesting fact]",
     idNumber: "238516",
     serial: "SS4F8R2LW9C3D",
     photo: "/team/hadi-bust.webp",
@@ -80,7 +76,6 @@ export const team: Member[] = [
       ["SECONDARY", "Communications minor"],
       ["PRIOR POSTING", "The Reflector"],
     ],
-    fact: "[Liam's interesting fact]",
     idNumber: "371094",
     serial: "SS9P1T6ZV2N8K",
     photo: "/team/liam-bust.webp",
@@ -101,7 +96,6 @@ export const team: Member[] = [
       ["PRIOR POSTING", "Etherae Magazine"],
       ["KNOWN FOR", "Building this website"],
     ],
-    fact: "[Qanita's interesting fact]",
     idNumber: "462803",
     serial: "SS3H7M5QJ1R6X",
     photo: "/team/qanita-bust.webp",

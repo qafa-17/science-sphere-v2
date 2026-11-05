@@ -19,8 +19,8 @@ function Barcode({ seed }: { seed: string }) {
 }
 
 /**
- * A staff ID badge on a lanyard. Hover (or tap) flips it over to show the bio
- * and an interesting fact on the back.
+ * A staff ID badge on a lanyard. Hover (or tap) flips it over to show the
+ * bio, written like a classified file, on the back.
  */
 export default function IdCard({ m }: { m: Member }) {
   const [flipped, setFlipped] = useState(false);
@@ -89,8 +89,6 @@ export default function IdCard({ m }: { m: Member }) {
                 <span className={styles.entryValue}>{value}</span>
               </span>
             ))}
-            <span className={styles.field}>INTERESTING FACT :</span>
-            <span className={styles.bio}>{m.fact}</span>
           </span>
           <span className={styles.serial}>{m.serial}</span>
         </span>
