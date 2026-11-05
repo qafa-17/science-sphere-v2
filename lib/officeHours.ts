@@ -27,7 +27,7 @@ export function openSpans(day: number) {
 }
 
 /** The day of the week (0 = Sunday) and minutes after midnight, in Calgary. */
-function nowInCalgary(now: Date) {
+export function nowInCalgary(now: Date) {
   const parts = new Intl.DateTimeFormat("en-CA", {
     timeZone: TIME_ZONE,
     weekday: "short",
