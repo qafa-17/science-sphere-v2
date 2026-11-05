@@ -49,12 +49,14 @@ export const team: Member[] = [
   },
   {
     id: "hadi",
-    name: "Hadi Jafry",
+    name: "Hadi Jafri",
     role: "editor. writer. socials.",
     expertise: ["physics", "geology", "geography"],
     degree: ["BSc in Interdisciplinary Science"],
     bio: [
       ["ASSIGNMENT", "Physics and geography"],
+      ["POST", "Socials. Questions welcome."],
+      ["COLLECTION", "Plant fossils, the oldest 380 million years old"],
       ["COVER JOB", "TELUS Spark"],
     ],
     idNumber: "238516",

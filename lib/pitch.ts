@@ -64,7 +64,7 @@ export const storyTypes: StoryType[] = [
 /** The editors and what they look after (from the PRD's team intros). */
 export const editors = {
   sarah: { name: "Sarah Hewitt", role: "Editor in Chief" },
-  hadi: { name: "Hadi Jafry", role: "Editor" },
+  hadi: { name: "Hadi Jafri", role: "Editor" },
   liam: { name: "Liam Rockliffe", role: "Editor" },
   qanita: { name: "Qanita Farrukh", role: "Editor" },
 } as const;
