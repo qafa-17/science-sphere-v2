@@ -16,7 +16,7 @@ export type Member = {
   idNumber: string;
   /** a made-up 13-character serial for the back of the card */
   serial: string;
-  /** colour head (top of head to chin), for the team page */
+  /** colour head and shoulders, for the team page (same scale as the ID card photo) */
   photo: string;
   /** colour head and shoulders, for the ID card */
   cardPhoto: string;
@@ -40,8 +40,8 @@ export const team: Member[] = [
     fact: "[Sarah's interesting fact]",
     idNumber: "104729",
     serial: "SS7K2Q9XH4M1B",
-    photo: "/team/sarah.webp",
-    cardPhoto: "/team/sarah-id.webp",
+    photo: "/team/sarah-bust.webp",
+    cardPhoto: "/team/sarah-idcard.webp",
     side: "left",
     faceAspect: 0.898,
     faceScale: 0.828,
@@ -57,8 +57,8 @@ export const team: Member[] = [
     fact: "[Hadi's interesting fact]",
     idNumber: "238516",
     serial: "SS4F8R2LW9C3D",
-    photo: "/team/hadi.webp",
-    cardPhoto: "/team/hadi-id.webp",
+    photo: "/team/hadi-bust.webp",
+    cardPhoto: "/team/hadi-idcard.webp",
     side: "right",
     faceAspect: 0.896,
     faceScale: 0.96,
@@ -74,8 +74,8 @@ export const team: Member[] = [
     fact: "[Liam's interesting fact]",
     idNumber: "371094",
     serial: "SS9P1T6ZV2N8K",
-    photo: "/team/liam.webp",
-    cardPhoto: "/team/liam-id.webp",
+    photo: "/team/liam-bust.webp",
+    cardPhoto: "/team/liam-idcard.webp",
     side: "left",
     faceAspect: 1.081,
     faceScale: 0.977,
@@ -91,8 +91,8 @@ export const team: Member[] = [
     fact: "[Qanita's interesting fact]",
     idNumber: "462803",
     serial: "SS3H7M5QJ1R6X",
-    photo: "/team/qanita.webp",
-    cardPhoto: "/team/qanita-id.webp",
+    photo: "/team/qanita-bust.webp",
+    cardPhoto: "/team/qanita-idcard.webp",
     side: "right",
     faceAspect: 1.092,
     faceScale: 1.0,

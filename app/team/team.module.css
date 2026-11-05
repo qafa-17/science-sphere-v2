@@ -110,8 +110,8 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  width: clamp(150px, 26vw, 250px);
-  height: clamp(150px, 26vw, 250px);
+  width: clamp(170px, 26vw, 260px);
+  height: clamp(190px, 29vw, 290px);
   opacity: 0;
   transform: translateY(30px) scale(0.92);
   transition:
@@ -120,8 +120,9 @@
 }
 
 .face img {
+  height: 100%;
   width: auto;
-  max-width: 100%;
+  max-width: none;
   object-fit: contain;
   animation: float 6s ease-in-out infinite;
 }
@@ -267,7 +268,7 @@
   }
   .face {
     width: 130px;
-    height: 130px;
+    height: 150px;
   }
   .role,
   .expertise {

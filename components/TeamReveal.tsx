@@ -6,7 +6,7 @@ import type { Member } from "@/lib/team";
 import styles from "@/app/team/team.module.css";
 
 /** Types its text out like a terminal once `go` turns on, then calls `done`. */
-function Typed({ text, go, speed = 28, onDone }: { text: string; go: boolean; speed?: number; onDone?: () => void }) {
+function Typed({ text, go, speed = 60, onDone }: { text: string; go: boolean; speed?: number; onDone?: () => void }) {
   const [n, setN] = useState(0);
   useEffect(() => {
     if (!go) return;
@@ -36,16 +36,20 @@ function Typed({ text, go, speed = 28, onDone }: { text: string; go: boolean; sp
   );
 }
 
-function Person({ m, shown, index }: { m: Member; shown: boolean; index: number }) {
+function Person({ m, shown, index, onTyped }: { m: Member; shown: boolean; index: number; onTyped: () => void }) {
   // name, then role, then subjects, one after another
   const [step, setStep] = useState(0);
+  useEffect(() => {
+    if (step === 3) onTyped();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step]);
   const expertise = m.expertise.join(" | ") + (m.expertise[m.expertise.length - 1].endsWith(".") ? "" : ".");
   const right = index % 2 === 1;
   return (
     <section className={`${styles.row} ${right ? styles.rowRight : ""} ${shown ? styles.shown : ""}`} aria-label={m.name}>
       <Link href={`/team/ids#${m.id}`} className={styles.face} aria-label={`${m.name}'s ID card`}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={m.photo} alt="" style={{ height: `${100 * m.faceScale}%` }} />
+        <img src={m.photo} alt="" />
       </Link>
       <div className={styles.info}>
         <span data-dot className={styles.dot} aria-hidden="true" />
@@ -54,11 +58,11 @@ function Person({ m, shown, index }: { m: Member; shown: boolean; index: number 
           {shown && step === 0 && <span className={styles.caret}>_</span>}
         </h2>
         <p className={styles.role}>
-          <Typed text={m.role} go={step >= 1} speed={20} onDone={() => setStep(2)} />
+          <Typed text={m.role} go={step >= 1} speed={45} onDone={() => setStep(2)} />
           {step === 1 && <span className={styles.caret}>_</span>}
         </p>
         <p className={styles.expertise}>
-          <Typed text={expertise} go={step >= 2} speed={20} onDone={() => setStep(3)} />
+          <Typed text={expertise} go={step >= 2} speed={45} onDone={() => setStep(3)} />
           {step === 2 && <span className={styles.caret}>_</span>}
         </p>
         <Link href={`/team/ids#${m.id}`} className={`${styles.more} ${step >= 3 ? styles.moreOn : ""}`}>
@@ -79,6 +83,14 @@ export default function TeamReveal({ team }: { team: Member[] }) {
   const lineRef = useRef<SVGPolylineElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const [reached, setReached] = useState(0); // how many people the line has reached
+  // how many people have finished typing: the line can't run on to the next
+  // person until the one before has fully written out
+  const [typed, setTyped] = useState(0);
+  const typedRef = useRef(0);
+  useEffect(() => {
+    typedRef.current = typed;
+    window.dispatchEvent(new Event("scroll"));
+  }, [typed]);
 
   useEffect(() => {
     const wrap = wrapRef.current!;
@@ -103,7 +115,9 @@ export default function TeamReveal({ team }: { team: Member[] }) {
       if (!pts.length) return;
       const box = wrap.getBoundingClientRect();
       // the tip of the line follows a point 60% of the way down the screen
-      const tipY = window.innerHeight * 0.6 - box.top;
+      // ...but never past the next person until the last one has finished typing
+      const limit = pts[Math.min(pts.length - 1, typedRef.current)]?.y ?? 0;
+      const tipY = Math.min(window.innerHeight * 0.7 - box.top, limit);
       let drawn = 0;
       let count = 0;
       for (let i = 0; i < pts.length; i++) {
@@ -143,7 +157,7 @@ export default function TeamReveal({ team }: { team: Member[] }) {
         <polyline ref={lineRef} />
       </svg>
       {team.map((m, i) => (
-        <Person key={m.id} m={m} index={i} shown={i < reached} />
+        <Person key={m.id} m={m} index={i} shown={i < reached} onTyped={() => setTyped((t) => Math.max(t, i + 1))} />
       ))}
     </div>
   );

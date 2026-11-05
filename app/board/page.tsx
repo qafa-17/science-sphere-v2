@@ -186,7 +186,7 @@ export default function BoardPage() {
         <Section
           n="04"
           title="CPU cursor"
-          note="About 15px, with 20 thin traces (five from each side). Over anything clickable they all leave the chip at once and finish forming in 0.3 seconds, then the pads pop in. Dark on light pages, light on dark ones. Phones and tablets don't get it."
+          note="About 15px, with 18 thin traces, different on every side. Over anything clickable they all leave the chip at once and finish forming in 0.3 seconds, then the pads pop in. Dark on light pages, light on dark ones. Phones and tablets don't get it."
         >
           <div className={styles.cursorDemo}>
             <figure>
