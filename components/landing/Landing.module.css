@@ -20,6 +20,7 @@
   width: 100%;
   height: 100%;
   display: block;
+  transform: translateZ(0); /* its own layer, so phones don't repaint it mid-scroll */
 }
 
 /* a finger on the canvas still scrolls the page */
@@ -187,6 +188,15 @@
 .issueList li {
   padding: 8px 0;
   border-top: 1px solid rgba(200, 215, 255, 0.2);
+}
+
+/* on phones and tablets, a blur behind the cards over a moving scene is heavy
+   and can flicker, so the cards are just a little more solid instead */
+@media (hover: none) {
+  .card {
+    backdrop-filter: none;
+    background: rgba(7, 16, 52, 0.88);
+  }
 }
 
 @media (max-width: 600px) {

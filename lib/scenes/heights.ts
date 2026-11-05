@@ -264,7 +264,9 @@ export function cloudBank(w: number, h: number, seed: number) {
     const x = w * (0.12 + rand() * 0.76);
     const r = h * (0.08 + rand() * 0.07) * (0.6 + hump(x) * 0.7);
     const y = Math.min(base - r * 0.35, top(x) + r * (0.9 + rand() * 1.8));
-    billows.push({ x: Math.max(r + 4, Math.min(w - r - 4, x)), y: Math.max(r + 4, y), r });
+    // keep clear of the sides, strokes and all, so no billow is sliced off at the canvas edge
+    const pad = r * 1.3 + 6;
+    billows.push({ x: Math.max(pad, Math.min(w - pad, x)), y: Math.max(r + 4, y), r });
   }
   for (let k = 0; k < 12; k++) {
     const r = h * (0.1 + rand() * 0.04);

@@ -51,8 +51,12 @@ export function runCanvas(
     dpr = Math.min(window.devicePixelRatio || 1, opts.maxDpr ?? 2);
     w = Math.max(1, Math.round(r.width));
     h = Math.max(1, Math.round(r.height));
-    canvas.width = Math.round(w * dpr);
-    canvas.height = Math.round(h * dpr);
+    // only touch the canvas size when it really changes: setting it wipes the
+    // canvas, which shows as a blink on phones while scrolling
+    const cw = Math.round(w * dpr);
+    const ch = Math.round(h * dpr);
+    if (canvas.width !== cw) canvas.width = cw;
+    if (canvas.height !== ch) canvas.height = ch;
     opts.onResize?.(w, h);
   };
 
