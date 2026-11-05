@@ -71,8 +71,8 @@
 .light {
   display: inline-flex;
   align-items: center;
+  align-self: flex-start;
   gap: 10px;
-  margin-top: 28px;
   padding: 6px 16px 6px 10px;
   border: 1.5px solid var(--ink);
   border-radius: 999px;
@@ -107,7 +107,6 @@
   position: relative;
   height: 230vh;
   margin: 0 -16px;
-  background: var(--sunset-peach);
 }
 
 .officeStage {
@@ -127,6 +126,12 @@
   grid-template-columns: minmax(240px, 320px) 1fr;
   gap: 28px 48px;
   align-items: start;
+}
+
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
 .readout {
@@ -164,11 +169,7 @@
 }
 
 .readOpen {
-  color: var(--sunset-sky);
-}
-
-.readClosed {
-  color: var(--sunset-coral);
+  color: #7cf29a;
 }
 
 .readHint {
@@ -182,12 +183,12 @@
   border: 0;
   background: none;
   font: inherit;
-  color: var(--sunset-sky);
+  color: var(--sunset-peach);
   cursor: pointer;
 }
 
 .clearVisit {
-  color: var(--sunset-coral);
+  color: rgb(246 255 234 / 0.7);
 }
 
 .saveVisit:hover,
@@ -259,21 +260,18 @@
 }
 
 .todayMark {
-  padding: 0 5px;
-  background: var(--sunset-sky);
-  font-weight: 400;
-  font-size: 10px;
+  color: var(--red);
 }
 
 .dayTrack {
   position: relative;
   height: min(400px, 52vh);
   border: 1.5px solid var(--ink);
-  background: var(--sunset-honeydew);
 }
 
 .today .dayTrack {
-  background: color-mix(in srgb, var(--sunset-sky) 30%, var(--sunset-honeydew));
+  outline: 2px solid var(--red);
+  outline-offset: 3px;
 }
 
 .hourLine {
@@ -331,14 +329,13 @@
 }
 
 .slot:hover {
-  background: var(--sunset-coral);
-  color: var(--ink);
+  background: #a82a2c;
 }
 
 .slotPicked,
 .slotPicked:hover {
-  background: var(--sunset-coral);
-  color: var(--ink);
+  background: var(--ink);
+  color: var(--sunset-honeydew);
   box-shadow:
     0 0 0 2px var(--ink),
     4px 4px 0 2px var(--ink);
@@ -380,18 +377,15 @@
   min-height: 170px;
   padding: 22px;
   border: 1.5px solid var(--ink);
-  box-shadow: 6px 6px 0 var(--ink);
   opacity: var(--in);
 }
 
 /* they come in from opposite sides, following the scroll */
 .channelEmail {
-  background: var(--sunset-coral);
   transform: translateX(calc((1 - var(--in)) * -60vw)) rotate(calc((1 - var(--in)) * -6deg));
 }
 
 .channelInsta {
-  background: var(--sunset-sky);
   transform: translateX(calc((1 - var(--in)) * 60vw)) rotate(calc((1 - var(--in)) * 6deg));
 }
 
@@ -401,7 +395,7 @@
   font-stretch: var(--display-stretch);
   text-transform: uppercase;
   font-size: clamp(15px, 1.8vw, 22px);
-  color: var(--ink);
+  color: var(--red);
   text-decoration: none;
   overflow-wrap: anywhere;
 }

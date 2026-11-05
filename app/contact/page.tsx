@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import ContactChannels from "@/components/ContactChannels";
-import ContactOffice, { OfficeLight } from "@/components/ContactOffice";
+import ContactOffice from "@/components/ContactOffice";
 import { MAIN_EMAIL } from "@/lib/pitch";
 import { OFFICE_ROOM } from "@/lib/officeHours";
 import styles from "./contact.module.css";
@@ -19,7 +19,6 @@ export default function ContactPage() {
         <span className={`${styles.corner} ${styles.cornerRight}`}>MRU</span>
         <p className={styles.small}>get in</p>
         <h1 className={styles.title}>Touch</h1>
-        <OfficeLight />
         <p className={`label ${styles.hint}`}>scroll ↓</p>
       </header>
 
