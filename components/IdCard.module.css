@@ -115,7 +115,7 @@
   flex: none;
   width: 66px;
   height: 66px;
-  margin-bottom: -2px;
+  margin-bottom: 6px;
 }
 
 .field {
@@ -220,7 +220,40 @@
   flex-direction: column;
   gap: 6px;
   flex: 1;
-  padding: 22px 22px 10px;
+  padding: 18px 22px 10px;
+}
+
+.fileHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 8px;
+  margin-bottom: 6px;
+  border-bottom: 1.5px dashed var(--ink);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+
+.stamp {
+  padding: 1px 6px;
+  border: 1.5px solid var(--sunset-tomato);
+  color: var(--sunset-tomato);
+  font-weight: 700;
+  transform: rotate(-4deg);
+}
+
+.entry {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin-bottom: 6px;
+}
+
+.entryValue {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.4;
 }
 
 .bio {

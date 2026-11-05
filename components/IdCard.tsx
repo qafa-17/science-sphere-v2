@@ -80,8 +80,15 @@ export default function IdCard({ m }: { m: Member }) {
         <span className={styles.back}>
           <span className={styles.stripe} aria-hidden="true" />
           <span className={styles.backBody}>
-            <span className={styles.field}>BIO :</span>
-            <span className={styles.bio}>{m.bio}</span>
+            <span className={styles.fileHead}>
+              FILE NO. {m.idNumber} <span className={styles.stamp}>CLASSIFIED</span>
+            </span>
+            {m.bio.map(([label, value]) => (
+              <span key={label} className={styles.entry}>
+                <span className={styles.field}>{label} :</span>
+                <span className={styles.entryValue}>{value}</span>
+              </span>
+            ))}
             <span className={styles.field}>INTERESTING FACT :</span>
             <span className={styles.bio}>{m.fact}</span>
           </span>

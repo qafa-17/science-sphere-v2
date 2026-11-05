@@ -11,7 +11,7 @@ export const PINS = [-10, -6, -2, 2, 6, 10];
 export type Pad = "dot" | "ring" | "chip";
 export type Trace = { points: [number, number][]; end: Pad };
 
-// 18 traces in all. They leave the chip straight,
+// 16 traces in all. They leave the chip straight,
 // bend outward together (so they fan out without crossing), then run on.
 const SIDES: { out: [number, number]; along: [number, number] }[] = [
   { out: [0, -1], along: [1, 0] }, // top
@@ -25,14 +25,14 @@ const SIDES: { out: [number, number]; along: [number, number] }[] = [
 // how long they run, and what they end in.
 type SideSpec = { pins: number[]; bend: number; spread: number; lengths: number[]; ends: Pad[] };
 const SIDE_SPECS: SideSpec[] = [
-  // top: three long traces fanning wide
-  { pins: [0, 2, 5], bend: 3, spread: 1.3, lengths: [26, 34, 22], ends: ["chip", "ring", "dot"] },
-  // right: five short, tight, straight-ish runs
-  { pins: [0, 1, 2, 3, 4], bend: 8, spread: 0.3, lengths: [8, 14, 6, 12, 9], ends: ["dot", "dot", "ring", "dot", "chip"] },
-  // bottom: six, alternating long and short, gentle fan
-  { pins: [0, 1, 2, 3, 4, 5], bend: 5, spread: 0.7, lengths: [18, 6, 24, 9, 20, 5], ends: ["ring", "dot", "dot", "chip", "dot", "dot"] },
-  // left: four, bending late and steeply, uneven
-  { pins: [1, 2, 4, 5], bend: 11, spread: 1.0, lengths: [16, 28, 10, 20], ends: ["dot", "chip", "ring", "dot"] },
+  // top: two very long traces, splayed wide apart
+  { pins: [0, 4], bend: 2, spread: 1.6, lengths: [30, 36], ends: ["chip", "ring"] },
+  // right: six short stubs, almost straight
+  { pins: [0, 1, 2, 3, 4, 5], bend: 3, spread: 0.15, lengths: [4, 9, 3, 7, 5, 11], ends: ["dot", "dot", "dot", "ring", "dot", "dot"] },
+  // bottom: five, bending far out and running medium lengths
+  { pins: [0, 1, 3, 4, 5], bend: 12, spread: 0.6, lengths: [12, 20, 6, 16, 10], ends: ["ring", "dot", "chip", "dot", "ring"] },
+  // left: three, fanning steeply in one direction, long and uneven
+  { pins: [2, 3, 5], bend: 6, spread: 1.2, lengths: [24, 12, 30], ends: ["dot", "chip", "dot"] },
 ];
 
 function buildTraces(): Trace[] {

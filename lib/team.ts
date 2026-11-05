@@ -10,7 +10,8 @@ export type Member = {
   expertise: string[];
   /** e.g. "BSc in Computer Science"; each item is its own line on the card */
   degree: string[];
-  bio: string;
+  /** the back of the card, written like a classified file: label, then entry */
+  bio: [string, string][];
   fact: string;
   /** a made-up 6-digit ID number for the card */
   idNumber: string;
@@ -35,8 +36,11 @@ export const team: Member[] = [
     role: "editor in chief.",
     expertise: ["admin", "inquiries"],
     degree: ["Professor of Biology", "PhD in Neuroscience"],
-    bio:
-      "Neuroscientist, Biology professor and self-described adventure scientist, usually found somewhere wild with a camera and a sketchbook. I started Science Sphere in 2025 because science deserves better stories than lab reports.",
+    bio: [
+      ["CLEARANCE", "Founder, est. 2025"],
+      ["BACKGROUND", "PhD, Neuroscience. Professor of Biology."],
+      ["FIELD STATUS", "Adventure scientist"],
+    ],
     fact: "[Sarah's interesting fact]",
     idNumber: "104729",
     serial: "SS7K2Q9XH4M1B",
@@ -52,8 +56,10 @@ export const team: Member[] = [
     role: "editor. writer. socials.",
     expertise: ["physics", "geology", "geography"],
     degree: ["BSc in Interdisciplinary Science"],
-    bio:
-      "Physics by day, geography by every other day. When I'm not studying how the Earth moves, I'm at TELUS Spark helping visitors fall in love with science.",
+    bio: [
+      ["ASSIGNMENT", "Physics and geography"],
+      ["COVER JOB", "TELUS Spark"],
+    ],
     fact: "[Hadi's interesting fact]",
     idNumber: "238516",
     serial: "SS4F8R2LW9C3D",
@@ -69,8 +75,11 @@ export const team: Member[] = [
     role: "editor. writer. designer.",
     expertise: ["chemistry", "biology", "environmental sci."],
     degree: ["BSc in Chemistry"],
-    bio:
-      "I pull molecules apart for a living (or at least for a degree in analytical biochemistry), then put the story back together with a minor in communications. Formerly of The Reflector.",
+    bio: [
+      ["SPECIALTY", "Analytical biochemistry"],
+      ["SECONDARY", "Communications minor"],
+      ["PRIOR POSTING", "The Reflector"],
+    ],
     fact: "[Liam's interesting fact]",
     idNumber: "371094",
     serial: "SS9P1T6ZV2N8K",
@@ -86,8 +95,12 @@ export const team: Member[] = [
     role: "editor. writer. designer.",
     expertise: ["computing", "math", "data sci."],
     degree: ["BSc in Computer Science"],
-    bio:
-      "I write code by day and stories by night, with a biology cognate to keep things interesting. Before Science Sphere, I worked at Etherae Magazine.",
+    bio: [
+      ["PRIMARY", "Computer science"],
+      ["COGNATE", "Biology"],
+      ["PRIOR POSTING", "Etherae Magazine"],
+      ["KNOWN FOR", "Building this website"],
+    ],
     fact: "[Qanita's interesting fact]",
     idNumber: "462803",
     serial: "SS3H7M5QJ1R6X",
