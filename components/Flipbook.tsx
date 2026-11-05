@@ -217,7 +217,11 @@ export default function Flipbook({ pages, hotspots = [], title, toolbarStart }: 
         setPageIndex(e.data);
         // turning the page stops anything that was playing
         for (const m of media) m.pause();
-        if (soundOnRef.current) playPageTurn();
+      });
+      // The sound plays the moment a page starts turning, not when it lands.
+      // A click, arrow key, button or swipe puts the book into "flipping"...
+      book.on("changeState", (e) => {
+        if (e.data === "flipping" && soundOnRef.current) playPageTurn();
       });
       book.on("changeOrientation", (e) => setLandscape(e.data === "landscape"));
       book.on("init", () => setLandscape(book.getOrientation() === "landscape"));
@@ -226,8 +230,22 @@ export default function Flipbook({ pages, hotspots = [], title, toolbarStart }: 
       bookRef.current = book;
     });
 
+    // ...but dragging a corner doesn't. So when a drag is let go, check whether
+    // the page is past the middle (it will finish turning) or will fall back.
+    const onRelease = () => {
+      const book = bookRef.current;
+      if (!book || book.getState() !== "user_fold" || !soundOnRef.current) return;
+      const at = book.getFlipController().getCalculation()?.getPosition();
+      if (at && at.x <= 0) playPageTurn();
+    };
+    // capture, so this runs before the flipbook handles the release itself
+    window.addEventListener("mouseup", onRelease, true);
+    window.addEventListener("touchend", onRelease, true);
+
     return () => {
       cancelled = true;
+      window.removeEventListener("mouseup", onRelease, true);
+      window.removeEventListener("touchend", onRelease, true);
       for (const m of media) m.pause();
       bookRef.current?.destroy();
       bookRef.current = null;

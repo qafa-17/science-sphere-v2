@@ -3,6 +3,7 @@
 declare module "page-flip" {
   export type FlipEvent = { data: number };
   export type OrientationEvent = { data: "portrait" | "landscape" };
+  export type FlipState = "user_fold" | "fold_corner" | "flipping" | "read";
 
   export class PageFlip {
     constructor(element: HTMLElement, settings: Record<string, unknown>);
@@ -17,7 +18,11 @@ declare module "page-flip" {
     getOrientation(): "portrait" | "landscape";
     on(event: "flip", callback: (e: FlipEvent) => void): this;
     on(event: "changeOrientation", callback: (e: OrientationEvent) => void): this;
+    on(event: "changeState", callback: (e: { data: FlipState }) => void): this;
     on(event: "init", callback: (e: { data: { page: number; mode: string } }) => void): this;
+    getState(): FlipState;
+    /** internal, used to tell whether a dragged page will finish turning */
+    getFlipController(): { getCalculation(): { getPosition(): { x: number; y: number } } | null };
     destroy(): void;
   }
 }
