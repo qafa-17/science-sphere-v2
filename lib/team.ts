@@ -1,5 +1,13 @@
 // The editors, for Meet the Team and their ID cards.
 
+/**
+ * Browsers and the host keep photos they've already loaded, so a replaced photo
+ * with the same file name can keep showing the old one. Bump this whenever any
+ * team photo changes, and everyone gets the new ones.
+ */
+const PHOTO_VERSION = "2026-11-05";
+const photoUrl = (path: string) => `${path}?v=${PHOTO_VERSION}`;
+
 export type Member = {
   id: string;
   name: string;
@@ -41,8 +49,8 @@ export const team: Member[] = [
     ],
     idNumber: "104729",
     serial: "SS7K2Q9XH4M1B",
-    photo: "/team/sarah-bust.webp",
-    cardPhoto: "/team/sarah-idcard.webp",
+    photo: photoUrl("/team/sarah-bust.webp"),
+    cardPhoto: photoUrl("/team/sarah-idcard.webp"),
     side: "left",
     faceAspect: 0.898,
     faceScale: 0.828,
@@ -61,8 +69,8 @@ export const team: Member[] = [
     ],
     idNumber: "238516",
     serial: "SS4F8R2LW9C3D",
-    photo: "/team/hadi-bust.webp",
-    cardPhoto: "/team/hadi-idcard.webp",
+    photo: photoUrl("/team/hadi-bust.webp"),
+    cardPhoto: photoUrl("/team/hadi-idcard.webp"),
     side: "right",
     faceAspect: 0.896,
     faceScale: 0.96,
@@ -80,8 +88,8 @@ export const team: Member[] = [
     ],
     idNumber: "371094",
     serial: "SS9P1T6ZV2N8K",
-    photo: "/team/liam-bust.webp",
-    cardPhoto: "/team/liam-idcard.webp",
+    photo: photoUrl("/team/liam-bust.webp"),
+    cardPhoto: photoUrl("/team/liam-idcard.webp"),
     side: "left",
     faceAspect: 1.081,
     faceScale: 0.977,
@@ -100,8 +108,8 @@ export const team: Member[] = [
     ],
     idNumber: "462803",
     serial: "SS3H7M5QJ1R6X",
-    photo: "/team/qanita-bust.webp",
-    cardPhoto: "/team/qanita-idcard.webp",
+    photo: photoUrl("/team/qanita-bust.webp"),
+    cardPhoto: photoUrl("/team/qanita-idcard.webp"),
     side: "right",
     faceAspect: 1.092,
     faceScale: 1.0,
