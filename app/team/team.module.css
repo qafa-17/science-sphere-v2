@@ -74,7 +74,7 @@
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 12vh;
+  gap: 18vh;
 }
 
 .lines {
@@ -264,7 +264,7 @@
 
 @media (max-width: 600px) {
   .people {
-    gap: 8vh;
+    gap: 12vh;
   }
   .face {
     width: 130px;

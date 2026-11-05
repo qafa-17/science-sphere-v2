@@ -118,11 +118,11 @@ export default function ContactOffice() {
         0,
         Math.min(1, -r.top / Math.max(1, r.height - window.innerHeight)),
       );
-      // the first block lands as the section arrives, then one every 17% of the
+      // the first block lands as the section arrives, then one every 16% of the
       // scroll; the last lands at about 70%, leaving a short hold to tap one
       const arrived = r.top < window.innerHeight * 0.35;
       setShown(
-        arrived ? Math.min(dayHours.length, 1 + Math.floor(p / 0.17)) : 0,
+        arrived ? Math.min(dayHours.length, 1 + Math.floor(p / 0.16)) : 0,
       );
     };
     const onScroll = () => {

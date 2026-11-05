@@ -40,7 +40,7 @@ export default function IssueArchive({ issues }: { issues: Issue[] }) {
     const frame = () => {
       const r = wrap.getBoundingClientRect();
       const target = clamp(-r.top / Math.max(1, r.height - window.innerHeight));
-      eased = eased < 0 ? target : eased + (target - eased) * 0.14;
+      eased = eased < 0 ? target : eased + (target - eased) * 0.1;
       const p = eased;
       const W = stack.clientWidth - 36; // room for the last file's tab
       const H = stack.clientHeight;

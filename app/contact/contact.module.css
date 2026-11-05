@@ -105,7 +105,7 @@
 /* ---------- office hours: a peach band that holds still while the days load ---------- */
 .officeWrap {
   position: relative;
-  height: 210vh;
+  height: 260vh;
   margin: 0 -16px;
 }
 
@@ -432,7 +432,7 @@
 /* ---------- small screens ---------- */
 @media (max-width: 760px) {
   .officeWrap {
-    height: 200vh;
+    height: 230vh;
   }
 
   .office {
