@@ -1,8 +1,11 @@
-// A page-turn "swish", made with code instead of a sound file.
-// It's a short burst of noise shaped like paper moving through the air,
-// so there's no audio file to license or download.
+// The page-turn sound, played each time a page flips in the reader.
+// The sound file is public/sounds/page-flip.mp3; swap that file to change it.
+
+const SRC = "/sounds/page-flip.mp3";
 
 let ctx: AudioContext | null = null;
+let sound: AudioBuffer | null = null;
+let loading: Promise<void> | null = null;
 
 function getContext(): AudioContext | null {
   if (typeof window === "undefined") return null;
@@ -18,34 +21,39 @@ function getContext(): AudioContext | null {
   return ctx;
 }
 
+/** Fetch and decode the sound once, so every flip plays straight away. */
+function load(audio: AudioContext) {
+  if (!loading) {
+    loading = fetch(SRC)
+      .then((r) => r.arrayBuffer())
+      .then((data) => audio.decodeAudioData(data))
+      .then((buffer) => {
+        sound = buffer;
+      })
+      .catch(() => {
+        loading = null; // try again next flip
+      });
+  }
+  return loading;
+}
+
+/** Get the sound ready ahead of the first flip (call when the reader opens). */
+export function preloadPageTurn() {
+  const audio = getContext();
+  if (audio) void load(audio);
+}
+
 export function playPageTurn() {
   const audio = getContext();
   if (!audio) return;
-
-  const now = audio.currentTime;
-  const length = 0.45; // seconds
-
-  // white noise
-  const buffer = audio.createBuffer(1, Math.floor(audio.sampleRate * length), audio.sampleRate);
-  const data = buffer.getChannelData(0);
-  for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
-  const noise = audio.createBufferSource();
-  noise.buffer = buffer;
-
-  // sweep a band-pass filter downwards: that's the "swish"
-  const filter = audio.createBiquadFilter();
-  filter.type = "bandpass";
-  filter.Q.value = 0.9;
-  filter.frequency.setValueAtTime(3200, now);
-  filter.frequency.exponentialRampToValueAtTime(700, now + length);
-
-  // fade in fast, fade out slowly
-  const gain = audio.createGain();
-  gain.gain.setValueAtTime(0.0001, now);
-  gain.gain.exponentialRampToValueAtTime(0.35, now + 0.04);
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + length);
-
-  noise.connect(filter).connect(gain).connect(audio.destination);
-  noise.start(now);
-  noise.stop(now + length);
+  const play = () => {
+    if (!sound) return;
+    // a new source each time, so quick flips can overlap
+    const source = audio.createBufferSource();
+    source.buffer = sound;
+    source.connect(audio.destination);
+    source.start();
+  };
+  if (sound) play();
+  else void load(audio).then(play);
 }

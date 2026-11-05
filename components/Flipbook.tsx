@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import type { PageFlip } from "page-flip";
 import type { Hotspot } from "@/lib/issues";
-import { playPageTurn } from "@/lib/pageTurnSound";
+import { playPageTurn, preloadPageTurn } from "@/lib/pageTurnSound";
 import styles from "./Flipbook.module.css";
 
 type Props = {
@@ -177,6 +177,7 @@ export default function Flipbook({ pages, hotspots = [], title, toolbarStart }: 
     const holder = holderRef.current;
     if (!holder) return;
 
+    preloadPageTurn(); // so the first flip isn't silent while the sound loads
     const startPage = pageFromAddress(pages.length);
     setPageIndex(startPage - 1);
 
