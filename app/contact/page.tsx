@@ -17,6 +17,8 @@ export default function ContactPage() {
       <header className={styles.head}>
         <span className={styles.corner}>{OFFICE_ROOM}</span>
         <span className={`${styles.corner} ${styles.cornerRight}`}>MRU</span>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/brand/logo-480.webp" alt="Science Sphere logo" className={styles.logo} width={160} height={159} />
         <p className={styles.small}>get in</p>
         <h1 className={styles.title}>Touch</h1>
         <p className={`label ${styles.hint}`}>scroll ↓</p>
