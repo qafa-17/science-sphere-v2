@@ -31,6 +31,34 @@
   font-weight: 700;
 }
 
+/* Mount Royal's logo sits on a small white plate so its own colours read on every page's bar */
+.divider {
+  width: 1px;
+  height: 26px;
+  margin: 0 12px;
+  background: var(--hdr-fg);
+  opacity: 0.4;
+}
+
+.partner {
+  display: flex;
+  align-items: center;
+  padding: 4px 7px;
+  border-radius: 4px;
+  background: #ffffff;
+  transition: transform 0.2s ease;
+}
+
+.partner:hover {
+  transform: translateY(-1px);
+}
+
+.partner img {
+  display: block;
+  width: auto;
+  height: 22px;
+}
+
 .nav {
   display: flex;
   align-items: center;
@@ -160,4 +188,13 @@
   }
 }
 
+/* on a narrow phone there isn't room for the name and both logos, so the two logos speak for it */
+@media (max-width: 440px) {
+  .brand span {
+    display: none;
+  }
 
+  .divider {
+    margin: 0 10px;
+  }
+}

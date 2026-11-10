@@ -57,6 +57,17 @@ export default function Header() {
           <img src="/brand/logo-bw-160.png" alt="" width={34} height={34} />
           <span>SCIENCE_SPHERE</span>
         </Link>
+        <span className={styles.divider} aria-hidden="true" />
+        <a
+          href="https://www.mtroyal.ca"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.partner}
+          aria-label="Mount Royal University (opens in a new tab)"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/brand/mru-logo-64.png" alt="" width={72} height={26} />
+        </a>
 
         <nav className={styles.nav} aria-label="Main">
           {links.map((l, i) => (

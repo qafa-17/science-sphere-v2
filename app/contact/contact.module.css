@@ -44,11 +44,12 @@
   right: 0;
 }
 
-/* the original colour logo, only on this page */
+/* the original colour logo, only on this page, under the channels */
 .logo {
-  width: clamp(120px, 16vw, 160px);
+  display: block;
+  width: min(340px, 80%);
   height: auto;
-  margin-bottom: 22px;
+  margin: 56px auto 0;
 }
 
 .small {

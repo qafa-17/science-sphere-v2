@@ -135,6 +135,65 @@
   stroke-linejoin: round;
 }
 
+/* a soundbite played from the magazine's own "listen here" graphic */
+.audioOverlay {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.audioOverlay:hover,
+.audioOverlay:focus-visible {
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 0 2px rgba(31, 42, 51, 0.5);
+}
+
+.audioBadge {
+  position: absolute;
+  right: -10px;
+  bottom: -10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 2px solid #ffffff;
+  background: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+}
+
+.audioBadge svg {
+  width: 14px;
+  height: 14px;
+  fill: #ffffff;
+}
+
+.iconPlay {
+  margin-left: 2px;
+}
+
+.iconPause,
+.playing .iconPlay {
+  display: none;
+}
+
+.playing .iconPause {
+  display: block;
+}
+
+.audioOverlay.playing {
+  animation: none;
+}
+
+.audioOverlay.playing .audioBadge {
+  animation: soundPulse 1s ease-in-out infinite;
+}
+
 .playing {
   animation: soundPulse 1s ease-in-out infinite;
 }

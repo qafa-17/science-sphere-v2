@@ -132,11 +132,20 @@ function buildPage(src: string, number: number, spots: Hotspot[], tools: PageToo
 
       const button = document.createElement("button");
       button.type = "button";
-      button.className = styles.audioButton;
+      button.className = spot.overlay ? styles.audioOverlay : styles.audioButton;
       button.setAttribute("aria-label", `Play soundbite: ${spot.label}`);
       button.setAttribute("aria-pressed", "false");
       button.title = spot.label;
-      button.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6L8 10H4z"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M18.5 6.5a8 8 0 0 1 0 11"/></svg>';
+      button.innerHTML = spot.overlay
+        ? // over the magazine's own graphic: just a small play/pause badge in its corner
+          '<span class="' +
+          styles.audioBadge +
+          '" aria-hidden="true"><svg class="' +
+          styles.iconPlay +
+          '" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><svg class="' +
+          styles.iconPause +
+          '" viewBox="0 0 24 24"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg></span>'
+        : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6L8 10H4z"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M18.5 6.5a8 8 0 0 1 0 11"/></svg>';
       const setPlaying = (on: boolean) => {
         button.setAttribute("aria-pressed", String(on));
         button.classList.toggle(styles.playing, on);

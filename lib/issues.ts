@@ -2,7 +2,7 @@
 // Later this moves into Supabase so editors can add issues from the dashboard,
 // but the shape of each issue stays the same.
 
-import { issue1Hotspots, issue2Hotspots } from "./issueLinks";
+import { issue1Hotspots, issue2Hotspots, issue3Hotspots } from "./issueLinks";
 
 export type Article = {
   title: string;
@@ -33,7 +33,15 @@ export type Hotspot =
   /** a video that plays right on the page, inside its box */
   | { kind: "video"; page: number; src: string; poster?: string; box: Box; label: string }
   /** a soundbite: a small play button on the page */
-  | { kind: "audio"; page: number; src: string; box: Box; label: string };
+  | {
+      kind: "audio";
+      page: number;
+      src: string;
+      box: Box;
+      label: string;
+      /** play from the magazine's own "listen here" graphic (an invisible button over it) instead of a round speaker button */
+      overlay?: boolean;
+    };
 
 /** The colours an issue can have. Each one is defined in app/globals.css. */
 export const issueColours = {
@@ -69,24 +77,6 @@ export type Issue = {
   hotspots?: Hotspot[];
 };
 
-// Issue 3's contents page (page 2): each line jumps to its article.
-const contentsBox = (top: number, bottom: number): Box => ({ x: 37, y: top - 1, w: 56, h: bottom - top + 2 });
-const issue3Contents: Hotspot[] = [
-  { to: 3, label: "Letter From the Editors", box: contentsBox(13.7, 15.3) },
-  { to: 4, label: "Join Science Sphere!", box: contentsBox(18.5, 20.1) },
-  { to: 5, label: "In The News", box: contentsBox(23.5, 25.0) },
-  { to: 7, label: "From Genes to Growth", box: contentsBox(29.0, 30.4) },
-  { to: 10, label: "Publish, Perish, Profit", box: contentsBox(34.2, 36.1) },
-  { to: 15, label: "Know-It-All", box: contentsBox(38.9, 40.5) },
-  { to: 16, label: "The Future of the Antibiotic Crisis", box: contentsBox(43.6, 45.5) },
-  { to: 20, label: "Alumni Corner with Holly Kinas", box: contentsBox(48.4, 50.1) },
-  { to: 22, label: "Reading Scientific Journal Articles", box: contentsBox(53.6, 55.6) },
-  { to: 24, label: "Ancient Herb, TikTok Hype", box: contentsBox(58.2, 60.2) },
-  { to: 29, label: "Student Recovery on Campus and Mental Health Resources", box: contentsBox(63.3, 67.3) },
-  { to: 32, label: "Redesigning Health Literacy for Kids", box: contentsBox(70.5, 72.6) },
-  { to: 35, label: "References", box: contentsBox(76.3, 78.6) },
-].map((entry) => ({ kind: "page" as const, page: 2, ...entry }));
-
 export const issues: Issue[] = [
   {
     id: "3",
@@ -114,16 +104,11 @@ export const issues: Issue[] = [
         title: "Ancient Herb, TikTok Hype",
         by: "Abdulwahid Chebbani",
         hook: "Ashwagandha is all over TikTok. What does the research actually say?",
-        page: 24,
+        page: 25,
       },
     ],
     pageCount: 36,
-    hotspots: [
-      ...issue3Contents,
-      // the QR codes on "Join Science Sphere!" become tappable on the website
-      { kind: "link", page: 4, href: "/pitch", label: "Get involved: pitch a story", box: { x: 78.5, y: 31.5, w: 17.5, h: 14 } },
-      { kind: "link", page: 4, href: "/issues", label: "Read our other issues", box: { x: 78.5, y: 57.2, w: 17.5, h: 14 } },
-    ],
+    hotspots: issue3Hotspots,
   },
   {
     id: "2",
@@ -155,7 +140,25 @@ export const issues: Issue[] = [
       },
     ],
     pageCount: 50,
-    hotspots: issue2Hotspots,
+    hotspots: [
+      ...issue2Hotspots,
+      {
+        kind: "video",
+        page: 23,
+        src: "/issues/media/greenhouse-tour.mp4",
+        poster: "/issues/media/greenhouse-tour.jpg",
+        label: "A sneak peek inside the greenhouse",
+        box: { x: 7, y: 8, w: 86, h: 37.4 },
+      },
+      {
+        kind: "video",
+        page: 30,
+        src: "/issues/media/lab-skills-pipetting.mp4",
+        poster: "/issues/media/lab-skills-pipetting.jpg",
+        label: "Lab Skills: pipetting with precision, with Dr. Nausheen Sadiq",
+        box: { x: 7, y: 7.5, w: 86, h: 37.4 },
+      },
+    ],
   },
   {
     id: "1",
@@ -187,7 +190,17 @@ export const issues: Issue[] = [
       },
     ],
     pageCount: 36,
-    hotspots: issue1Hotspots,
+    hotspots: [
+      ...issue1Hotspots,
+      {
+        kind: "audio",
+        page: 21,
+        src: "/issues/media/majd-daqqa-interview.mp3",
+        label: "Majd Daqqa on the FST IDEA Committee",
+        box: { x: 54.5, y: 30.5, w: 18, h: 7.5 },
+        overlay: true,
+      },
+    ],
   },
 ];
 
