@@ -1,7 +1,8 @@
 /* ---------- the landing page: one long scroll from space to the sea ---------- */
 .journeyWrap {
   position: relative;
-  height: 760vh;
+  /* 760vh of journey, plus the two pauses at the cards (DWELL in Landing.tsx: 0.22 more) */
+  height: 927vh;
   background: #050a2e;
   color: #eef2ff;
 }

@@ -64,6 +64,32 @@ const CARDS = {
 } as const;
 const CARDS_TOUCH = { ...CARDS, pitch: [0.7, 0.74, 1.1, 1.2] } as const;
 
+// Pauses: at each card, once it has formed, the story holds still for a stretch
+// of scrolling (len, in the same units as the timeline above) so it's hard to
+// scroll straight past. The page is made taller by the same amount (see the CSS).
+const DWELL: { at: number; len: number }[] = [
+  { at: 0.31, len: 0.12 }, // the issues, formed
+  { at: 0.84, len: 0.1 }, // the pitch meeting, formed
+];
+const DWELL_TOUCH: { at: number; len: number }[] = [
+  { at: 0.31, len: 0.12 },
+  { at: 0.78, len: 0.1 },
+];
+/** raw scroll (0..1 over the whole, taller page) to the story's timeline (0..1) */
+function storyAt(s: number, dwell: { at: number; len: number }[]) {
+  const total = 1 + dwell.reduce((sum, d) => sum + d.len, 0);
+  let u = s * total;
+  let p = 0;
+  for (const d of dwell) {
+    if (u <= d.at - p) return p + u;
+    u -= d.at - p;
+    p = d.at;
+    if (u <= d.len) return p; // holding still
+    u -= d.len;
+  }
+  return Math.min(1, p + u);
+}
+
 const code = (n: number) => String(n).padStart(3, "0");
 const tag = (season: string) => season.replace(/\s+/g, "").toUpperCase();
 
@@ -101,6 +127,7 @@ export default function Landing({ issues }: { issues: Issue[] }) {
     ).matches;
     const camera = touch ? CAMERA_TOUCH : CAMERA;
     const cardTimes = touch ? CARDS_TOUCH : CARDS;
+    const dwell = touch ? DWELL_TOUCH : DWELL;
     // the issues and pitch meeting cards, drawn as dots (see lib/scenes/particleCard.ts)
     const stage = canvasRef.current!.parentElement!;
     const dotCards = new Map<string, ParticleCard>([
@@ -262,7 +289,7 @@ export default function Landing({ issues }: { issues: Issue[] }) {
         if (builtFor !== `${w}x${h}`) build(w, h);
         const at = (y: number) => y * h;
         const r = wrap.getBoundingClientRect();
-        const p = clamp(-r.top / (r.height - window.innerHeight + 56));
+        const p = storyAt(clamp(-r.top / (r.height - window.innerHeight + 56)), dwell);
         const cam = cameraAt(p, camera) * h;
         const wp = { x: pointer.x, y: pointer.y + cam, inside: pointer.inside };
         const lean = pointer.inside ? pointer.x / w - 0.5 : 0;
