@@ -31,18 +31,12 @@
   font-weight: 700;
 }
 
-/* Mount Royal's logo sits on a small white plate so its own colours read on every page's bar */
-.divider {
-  width: 1px;
-  height: 26px;
-  margin: 0 12px;
-  background: var(--hdr-fg);
-  opacity: 0.4;
-}
-
+/* Mount Royal's logo, at the far right after the office status. It sits on a
+   small white plate so its own colours read on every page's bar. */
 .partner {
   display: flex;
   align-items: center;
+  margin-left: 18px;
   padding: 4px 7px;
   border-radius: 4px;
   background: #ffffff;
@@ -188,13 +182,20 @@
   }
 }
 
-/* on a narrow phone there isn't room for the name and both logos, so the two logos speak for it */
-@media (max-width: 440px) {
-  .brand span {
-    display: none;
+/* on phones it sits just before the menu button */
+@media (max-width: 720px) {
+  .partner {
+    margin-left: auto;
   }
 
-  .divider {
-    margin: 0 10px;
+  .menuButton {
+    margin-left: 16px;
+  }
+}
+
+/* on a narrow phone there isn't room for the name and both logos, so the two logos speak for it */
+@media (max-width: 400px) {
+  .brand span {
+    display: none;
   }
 }
