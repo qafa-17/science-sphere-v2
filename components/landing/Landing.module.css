@@ -97,30 +97,37 @@
 .card {
   position: absolute;
   top: 50%;
-  width: min(380px, calc(100% - 32px));
-  margin-top: -150px;
-  padding: 24px 26px;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: min(1040px, calc(100% - 32px));
+  min-height: min(72%, 640px);
+  padding: clamp(24px, 4vw, 56px);
   border: 1px solid rgba(200, 215, 255, 0.3);
   border-radius: 4px;
   background: rgba(7, 16, 52, 0.72);
   backdrop-filter: blur(6px);
   color: #eef2ff;
-}
-
-.cardLeft {
-  left: 40px;
+  translate: -50% -50%;
 }
 
 .card h2 {
-  margin: 8px 0 16px;
-  font-size: 24px;
+  margin: 10px 0 clamp(18px, 3vh, 32px);
+  font-size: clamp(34px, 6vw, 84px);
+  line-height: 0.95;
+}
+
+.card :global(.label) {
+  font-size: clamp(12px, 1.1vw, 14px);
 }
 
 .card dl {
   display: grid;
-  grid-template-columns: 70px 1fr;
-  gap: 8px 12px;
-  margin: 0 0 20px;
+  grid-template-columns: clamp(64px, 9vw, 110px) 1fr;
+  gap: 10px 16px;
+  margin: 0 0 clamp(20px, 4vh, 36px);
+  font-size: clamp(18px, 2vw, 26px);
 }
 
 .card dt {
@@ -136,6 +143,27 @@
   color: inherit;
 }
 
+/* the card drawn in dots (lib/scenes/particleCard.ts): the real card stays
+   for its links and for screen readers, but shows nothing itself */
+.dotMode .card {
+  border-color: transparent;
+  background: none;
+  backdrop-filter: none;
+}
+
+.dotMode .card,
+.dotMode .card * {
+  color: transparent !important;
+  text-decoration-color: transparent;
+  border-color: transparent !important;
+  background: transparent !important;
+}
+
+.dotMode .card a:focus-visible {
+  outline: 2px solid #eef2ff;
+  outline-offset: 4px;
+}
+
 .cardButtons {
   display: flex;
   flex-wrap: wrap;
@@ -145,14 +173,14 @@
 .cardButton {
   display: inline-flex;
   align-items: center;
-  min-height: 42px;
-  padding: 0 18px;
+  min-height: 50px;
+  padding: 0 22px;
   border: 1px solid #eef2ff;
   border-radius: 3px;
   background: #eef2ff;
   color: #0b1a52 !important;
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: clamp(13px, 1.2vw, 15px);
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -178,10 +206,10 @@
 
 .issueList {
   list-style: none;
-  margin: 0 0 20px;
+  margin: 0 0 clamp(20px, 4vh, 36px);
   padding: 0;
   font-family: var(--font-mono);
-  font-size: 14px;
+  font-size: clamp(16px, 1.8vw, 22px);
   text-transform: uppercase;
 }
 
@@ -204,7 +232,4 @@
     padding: 20px 16px;
   }
 
-  .cardLeft {
-    left: 16px;
-  }
 }

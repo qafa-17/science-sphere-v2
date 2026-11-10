@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { runCanvas, seeded } from "@/lib/canvasLoop";
+import { createParticleCard, type ParticleCard } from "@/lib/scenes/particleCard";
 import {
   cloudBank,
   grainDataUrl,
@@ -100,6 +101,40 @@ export default function Landing({ issues }: { issues: Issue[] }) {
     ).matches;
     const camera = touch ? CAMERA_TOUCH : CAMERA;
     const cardTimes = touch ? CARDS_TOUCH : CARDS;
+    // the issues and pitch meeting cards, drawn as dots (see lib/scenes/particleCard.ts)
+    const stage = canvasRef.current!.parentElement!;
+    const dotCards = new Map<string, ParticleCard>([
+      ["issues", createParticleCard()],
+      ["pitch", createParticleCard()],
+    ]);
+    let dotsBuiltFor = "";
+    let fontsReady = false;
+    void document.fonts.ready.then(() => (fontsReady = true));
+    const buildDots = () => {
+      const box = stage.getBoundingClientRect();
+      for (const [key, pc] of dotCards) {
+        const el = cards.get(key);
+        if (el) pc.build(el, box, 1);
+      }
+      wrap.classList.add(styles.dotMode);
+      dotsBuiltFor = `${Math.round(box.width)}x${Math.round(box.height)}`;
+    };
+    // the pointer anywhere over the stage (the cards sit on top of the canvas)
+    const finger = { x: -9999, y: -9999, inside: false };
+    const onMove = (e: PointerEvent) => {
+      const box = stage.getBoundingClientRect();
+      finger.x = e.clientX - box.left;
+      finger.y = e.clientY - box.top;
+      finger.inside = finger.x >= 0 && finger.y >= 0 && finger.x <= box.width && finger.y <= box.height;
+    };
+    const onUp = (e: PointerEvent) => {
+      if (e.pointerType !== "mouse") finger.inside = false;
+    };
+    const onLeave = () => (finger.inside = false);
+    window.addEventListener("pointermove", onMove, { passive: true });
+    window.addEventListener("pointerdown", onMove, { passive: true });
+    window.addEventListener("pointerup", onUp, { passive: true });
+    document.documentElement.addEventListener("pointerleave", onLeave);
     const ocean = createOcean();
     const sphere = createSphere();
     let skyGrad: CanvasGradient | null = null;
@@ -220,7 +255,7 @@ export default function Landing({ issues }: { issues: Issue[] }) {
       builtFor = `${w}x${h}`;
     };
 
-    return runCanvas(
+    const stop = runCanvas(
       canvasRef.current!,
       (f) => {
         const { ctx, w, h, t, dt, pointer } = f;
@@ -371,17 +406,37 @@ export default function Landing({ issues }: { issues: Issue[] }) {
         }
 
         // cards
+        const useDots = !f.reduced && fontsReady;
+        if (useDots) {
+          const sb = stage.getBoundingClientRect();
+          if (dotsBuiltFor !== `${Math.round(sb.width)}x${Math.round(sb.height)}`) buildDots();
+        }
         for (const [key, [a, b, c, d]] of Object.entries(cardTimes)) {
           const el = cards.get(key);
           if (!el) continue;
           const o = between(p, a, b) * (1 - between(p, c, d));
-          el.style.opacity = String(o);
-          el.style.transform = `translateY(${(1 - o) * 24}px)`;
+          const pc = dotCards.get(key);
+          if (pc && useDots) {
+            // the dots gather over a stretch of scrolling, then blow apart as you scroll on
+            pc.step(dt, between(p, a, b + (b - a) * 0.6), between(p, c, d), finger);
+            pc.draw(ctx);
+            el.style.opacity = "1";
+          } else {
+            el.style.opacity = String(o);
+            el.style.transform = `translateY(${(1 - o) * 24}px)`;
+          }
           el.style.visibility = o < 0.01 ? "hidden" : "visible";
         }
       },
       { maxDpr: touch ? 1.5 : 2 },
     );
+    return () => {
+      stop();
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerdown", onMove);
+      window.removeEventListener("pointerup", onUp);
+      document.documentElement.removeEventListener("pointerleave", onLeave);
+    };
   }, []);
 
   return (
@@ -409,21 +464,21 @@ export default function Landing({ issues }: { issues: Issue[] }) {
 
         <section
           data-card="pitch"
-          className={`${styles.card} ${styles.cardLeft}`}
+          className={styles.card}
           aria-label="This month's pitch meeting"
         >
-          <p className="label">
+          <p className="label" data-dots="dim">
             specimen {"//"} pitch_meeting {"//"}{" "}
             {meetingMonth(pitchMeeting.date)}
           </p>
-          <h2>This month&apos;s pitch meeting</h2>
+          <h2 data-dots="text">This month&apos;s pitch meeting</h2>
           <dl>
-            <dt className="label">day</dt>
-            <dd>{meetingDay(pitchMeeting.date)}</dd>
-            <dt className="label">time</dt>
-            <dd>{pitchMeeting.time}</dd>
-            <dt className="label">where</dt>
-            <dd>{pitchMeeting.where}</dd>
+            <dt className="label" data-dots="dim">day</dt>
+            <dd data-dots="text">{meetingDay(pitchMeeting.date)}</dd>
+            <dt className="label" data-dots="dim">time</dt>
+            <dd data-dots="text">{pitchMeeting.time}</dd>
+            <dt className="label" data-dots="dim">where</dt>
+            <dd data-dots="text">{pitchMeeting.where}</dd>
           </dl>
           <div className={styles.cardButtons}>
             {pitchMeeting.rsvpUrl ? (
@@ -432,6 +487,7 @@ export default function Landing({ issues }: { issues: Issue[] }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.cardButton}
+                data-dots="button"
               >
                 RSVP ↗
               </a>
@@ -439,6 +495,7 @@ export default function Landing({ issues }: { issues: Issue[] }) {
               <span
                 className={`${styles.cardButton} ${styles.cardButtonOff}`}
                 aria-disabled="true"
+                data-dots="button"
               >
                 RSVP opens soon
               </span>
@@ -446,6 +503,7 @@ export default function Landing({ issues }: { issues: Issue[] }) {
             <Link
               href="/pitch"
               className={`${styles.cardButton} ${styles.cardButtonGhost}`}
+              data-dots="button"
             >
               Pitch a story →
             </Link>
@@ -454,19 +512,19 @@ export default function Landing({ issues }: { issues: Issue[] }) {
 
         <section
           data-card="issues"
-          className={`${styles.card} ${styles.cardLeft}`}
+          className={styles.card}
           aria-label="Issues"
         >
-          <p className="label">
+          <p className="label" data-dots="dim">
             archive log {"//"} {issues.length} issues
           </p>
-          <h2>The issues</h2>
+          <h2 data-dots="text">The issues</h2>
           <ul className={styles.issueList}>
             {[...issues]
               .sort((a, b) => b.number - a.number)
               .map((i) => (
                 <li key={i.id}>
-                  <Link href={`/issues/${i.number}`}>
+                  <Link href={`/issues/${i.number}`} data-dots="text">
                     issue_{code(i.number)} {"//"} {tag(i.season)}
                   </Link>
                 </li>
@@ -475,6 +533,7 @@ export default function Landing({ issues }: { issues: Issue[] }) {
           <Link
             href="/issues"
             className={`${styles.cardButton} ${styles.cardButtonGhost}`}
+            data-dots="button"
           >
             Open the archive →
           </Link>
