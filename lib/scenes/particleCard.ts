@@ -123,8 +123,9 @@ export function createParticleCard(colour = "238,242,255"): ParticleCard {
   }
 
   /** dots along a rectangle's edge */
-  function sampleOutline(el: HTMLElement, stage: DOMRect, step: number, dim: boolean) {
-    const b = el.getBoundingClientRect();
+  function sampleOutline(el: HTMLElement, stage: DOMRect, step: number, dim: boolean, inset = 0) {
+    const r = el.getBoundingClientRect();
+    const b = { left: r.left + inset, top: r.top + inset, width: r.width - inset * 2, height: r.height - inset * 2 };
     const add = (x: number, y: number, d: boolean) => addDot(x, y, d, size);
     const x0 = b.left - stage.left;
     const y0 = b.top - stage.top;
@@ -157,7 +158,9 @@ export function createParticleCard(colour = "238,242,255"): ParticleCard {
       panel = { x: b.left - stage.left, y: b.top - stage.top, w: b.width, h: b.height };
       const fine = (px: number) => Math.max(1.25, Math.min(3, px / 10)) * scale;
       size = 1.5 * Math.min(1.3, scale);
+      // the card's border: two lines, a few pixels apart
       sampleOutline(el, stage, 3 * scale, true);
+      sampleOutline(el, stage, 3 * scale, true, 4);
       el.querySelectorAll<HTMLElement>("[data-dots]").forEach((part) => {
         const kind = part.dataset.dots;
         const fontPx = parseFloat(getComputedStyle(part).fontSize) || 16;

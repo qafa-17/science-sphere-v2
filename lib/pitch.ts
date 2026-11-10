@@ -1,8 +1,10 @@
 // Everything the Pitch a Story page needs: the kinds of story, the subjects
-// (and which editor each one goes to), formats, and the guide notes beside the form.
+// (and which editor looks after each one), formats, and the guide notes beside the form.
 // Wording comes from the Science Sphere Story Guide and "Writing A Science Sphere Magazine Article".
 
 export const MAIN_EMAIL = "sciencesphere@mtroyal.ca";
+/** Where every pitch is sent: only the magazine inbox (editors pick them up from there). */
+export const PITCH_TO = [MAIN_EMAIL];
 export const MAX_FILE_MB = 50;
 
 export type StoryType = {
@@ -71,7 +73,7 @@ export const editors = {
 
 export type EditorId = keyof typeof editors;
 
-/** Subject areas on the form, and the editor each one goes to (besides the main inbox). */
+/** Subject areas on the form, and the editor who looks after each one (for reference; every pitch is sent to PITCH_TO only). */
 export const subjects: { id: string; label: string; editor: EditorId }[] = [
   { id: "biology", label: "Biology", editor: "liam" },
   { id: "chemistry", label: "Chemistry", editor: "liam" },
@@ -108,8 +110,8 @@ export type Pitch = {
 
 /**
  * Sends a pitch. NOT CONNECTED YET: for now it only waits a moment and says it
- * worked. Once the backend is set up, this sends it to the main inbox and the
- * subject's editor, and emails the person a confirmation.
+ * worked. Once the backend is set up, this sends it to PITCH_TO (the magazine
+ * inbox only) and emails the person a confirmation.
  */
 export async function submitPitch(pitch: Pitch): Promise<{ ok: boolean }> {
   void pitch;

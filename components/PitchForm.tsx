@@ -43,7 +43,6 @@ function check(p: Pitch): Errors {
   if (p.formats.length === 0) e.formats = "Pick at least one format.";
   if (p.angle.trim().length < 20) e.angle = "Give us your pitch in a sentence or two.";
   if (p.why.trim().length < 20) e.why = "A sentence or two on why it fits Science Sphere.";
-  if (p.files.length === 0) e.files = "Upload at least one file. A document with a link in it is fine.";
   return e;
 }
 
@@ -295,11 +294,11 @@ export default function PitchForm() {
 
       <Row
         n="06"
-        title="Files"
+        title="Files (optional)"
         note={
           <p>
-            Whatever format you choose, upload something: a draft, sketch, photo or recording. If your work lives somewhere
-            else, a document with a link in it is fine. Keep each file under {MAX_FILE_MB}MB.
+            If you have something to show, add it: a draft, sketch, photo or recording. If your work lives somewhere else,
+            a document with a link in it is fine. Keep each file under {MAX_FILE_MB}MB.
           </p>
         }
       >

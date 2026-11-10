@@ -110,6 +110,8 @@
   backdrop-filter: blur(6px);
   color: #eef2ff;
   translate: -50% -50%;
+  /* hidden until the page's script places it, so it doesn't flash on reload */
+  visibility: hidden;
 }
 
 .card h2 {
