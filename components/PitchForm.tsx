@@ -3,14 +3,17 @@
 import Link from "next/link";
 import { type FormEvent, type ReactNode, useState } from "react";
 import {
+  MAX_FILES,
   MAX_FILE_MB,
   type Pitch,
+  type PitchErrors,
+  checkPitch,
   formats,
   storyTypes,
   subjects,
-  submitPitch,
   years,
 } from "@/lib/pitch";
+import { type Progress, submitPitch } from "@/lib/sendPitch";
 import styles from "./PitchForm.module.css";
 
 const empty: Pitch = {
@@ -28,21 +31,12 @@ const empty: Pitch = {
   files: [],
 };
 
-type Errors = Partial<Record<keyof Pitch, string>>;
+type Errors = PitchErrors;
 
 function check(p: Pitch): Errors {
-  const e: Errors = {};
-  if (!p.name.trim()) e.name = "Tell us your name.";
-  if (!/^\S+@\S+\.\S+$/.test(p.email.trim())) e.email = "We need an email we can reply to.";
-  if (!p.program.trim()) e.program = "Your degree and program, e.g. BSc, Biology.";
-  if (!p.year) e.year = "Pick your year.";
-  if (!p.type) e.type = "Pick the kind of story closest to yours.";
-  if (p.type === "idea" && !p.typeOther.trim()) e.typeOther = "Tell us what kind of idea it is.";
-  if (!p.subject) e.subject = "Pick a subject area.";
-  if (p.subject === "other" && !p.subjectOther.trim()) e.subjectOther = "Tell us the subject.";
-  if (p.formats.length === 0) e.formats = "Pick at least one format.";
-  if (p.angle.trim().length < 20) e.angle = "Give us your pitch in a sentence or two.";
-  if (p.why.trim().length < 20) e.why = "A sentence or two on why it fits Science Sphere.";
+  const e = checkPitch(p);
+  if (p.files.length > MAX_FILES) e.files = `Please attach at most ${MAX_FILES} files.`;
+  else if (p.files.some((f) => f.size > MAX_FILE_MB * 1024 * 1024)) e.files = `Each file must be under ${MAX_FILE_MB}MB. Put a link to bigger ones in your pitch instead.`;
   return e;
 }
 
@@ -72,6 +66,10 @@ export default function PitchForm() {
   const [errors, setErrors] = useState<Errors>({});
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [progress, setProgress] = useState<Progress | null>(null);
+  const [failure, setFailure] = useState("");
+  /** a box hidden from people: only robots fill it in */
+  const [website, setWebsite] = useState("");
 
   const set = <K extends keyof Pitch>(key: K, value: Pitch[K]) => {
     setP((old) => ({ ...old, [key]: value }));
@@ -92,11 +90,19 @@ export default function PitchForm() {
       return;
     }
     setSending(true);
-    const res = await submitPitch(p);
+    setFailure("");
+    const res = await submitPitch(p, website, setProgress);
     setSending(false);
     if (res.ok) {
       setSent(true);
       window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    setFailure(res.error);
+    if (res.fields) {
+      setErrors(res.fields);
+      const firstBad = Object.keys(res.fields)[0];
+      if (firstBad) document.getElementById(`f-${firstBad}`)?.focus();
     }
   };
 
@@ -129,6 +135,7 @@ export default function PitchForm() {
           onClick={() => {
             setP(empty);
             setSent(false);
+            setFailure("");
           }}
         >
           Pitch another story
@@ -139,6 +146,10 @@ export default function PitchForm() {
 
   return (
     <form className={styles.form} onSubmit={onSubmit} noValidate>
+      <label className={styles.trap} aria-hidden="true">
+        Leave this empty
+        <input tabIndex={-1} autoComplete="off" value={website} onChange={(e) => setWebsite(e.target.value)} name="website" />
+      </label>
       <Row
         n="01"
         title="About you"
@@ -298,12 +309,12 @@ export default function PitchForm() {
         note={
           <p>
             If you have something to show, add it: a draft, sketch, photo or recording. If your work lives somewhere else,
-            a document with a link in it is fine. Keep each file under {MAX_FILE_MB}MB.
+            a document with a link in it is fine. Up to {MAX_FILES} files, each under {MAX_FILE_MB}MB.
           </p>
         }
       >
         <label className={styles.drop} aria-invalid={!!errors.files}>
-          <input id="f-files" type="file" multiple aria-describedby={describedBy("files")} onChange={(e) => set("files", [...(e.target.files ?? [])])} />
+          <input id="f-files" type="file" multiple disabled={sending} aria-describedby={describedBy("files")} onChange={(e) => set("files", [...(e.target.files ?? [])])} />
           <span>{p.files.length ? `${p.files.length} file${p.files.length > 1 ? "s" : ""} chosen` : "Choose files"}</span>
           <span className="label">or drop them here</span>
         </label>
@@ -319,18 +330,23 @@ export default function PitchForm() {
         {err("files")}
         {bigFiles.length > 0 && (
           <p className={styles.warning}>
-            {bigFiles.map((f) => f.name).join(", ")} {bigFiles.length > 1 ? "are" : "is"} over {MAX_FILE_MB}MB. It may not send;
-            you can share a link instead in the angle box.
+            {bigFiles.map((f) => f.name).join(", ")} {bigFiles.length > 1 ? "are" : "is"} over {MAX_FILE_MB}MB, so it can&apos;t
+            be sent. Take it out, and put a link to it in your pitch instead.
           </p>
         )}
       </Row>
 
       <div className={styles.sendRow}>
         <button type="submit" className={styles.primary} disabled={sending}>
-          {sending ? "Sending…" : "Send my pitch →"}
+          {sending ? (progress ? `Uploading ${progress.count > 1 ? `${progress.index} of ${progress.count}` : "file"}… ${progress.percent}%` : "Sending…") : "Send my pitch →"}
         </button>
         <p className="label">we reply within a week</p>
       </div>
+      {failure && (
+        <p className={styles.failure} role="alert">
+          {failure}
+        </p>
+      )}
     </form>
   );
 }

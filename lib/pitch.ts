@@ -3,7 +3,7 @@
 // Wording comes from the Science Sphere Story Guide and "Writing A Science Sphere Magazine Article".
 
 export const MAIN_EMAIL = "sciencesphere@mtroyal.ca";
-/** Where every pitch is sent: only the magazine inbox (editors pick them up from there). */
+/** Where every pitch is emailed: only the magazine inbox (editors pick them up from there). Every pitch is also saved in Supabase. */
 export const PITCH_TO = [MAIN_EMAIL];
 export const MAX_FILE_MB = 50;
 
@@ -91,7 +91,8 @@ export const formats = ["Written", "Visual", "Audio", "Video"] as const;
 
 export const years = ["1st year", "2nd year", "3rd year", "4th year", "5th year or more", "Graduate student", "Alumni", "Not a student"];
 
-export type Pitch = {
+/** Everything typed into the form (the files travel separately, straight to storage). */
+export type PitchFields = {
   name: string;
   email: string;
   program: string;
@@ -105,16 +106,55 @@ export type Pitch = {
   formats: string[];
   angle: string;
   why: string;
-  files: File[];
 };
 
-/**
- * Sends a pitch. NOT CONNECTED YET: for now it only waits a moment and says it
- * worked. Once the backend is set up, this sends it to PITCH_TO (the magazine
- * inbox only) and emails the person a confirmation.
- */
-export async function submitPitch(pitch: Pitch): Promise<{ ok: boolean }> {
-  void pitch;
-  await new Promise((r) => setTimeout(r, 900));
-  return { ok: true };
+export type Pitch = PitchFields & { files: File[] };
+
+export const MAX_FILES = 10;
+
+/** Longest each box may be, so nobody can send a novel by accident (or on purpose). */
+export const MAX_LENGTH: Record<Exclude<keyof PitchFields, "formats">, number> = {
+  name: 120,
+  email: 200,
+  program: 160,
+  year: 40,
+  type: 40,
+  typeOther: 200,
+  subject: 40,
+  subjectOther: 200,
+  angle: 3000,
+  why: 3000,
+};
+
+export type PitchErrors = Partial<Record<keyof Pitch, string>>;
+
+/** What's missing or wrong. The form shows these, and the server checks again before saving. */
+export function checkPitch(p: PitchFields): PitchErrors {
+  const e: PitchErrors = {};
+  if (!p.name.trim()) e.name = "Tell us your name.";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(p.email.trim())) e.email = "We need an email we can reply to.";
+  if (!p.program.trim()) e.program = "Your degree and program, e.g. BSc, Biology.";
+  if (!years.includes(p.year)) e.year = "Pick your year.";
+  if (!storyTypes.some((t) => t.id === p.type)) e.type = "Pick the kind of story closest to yours.";
+  if (p.type === "idea" && !p.typeOther.trim()) e.typeOther = "Tell us what kind of idea it is.";
+  if (!subjects.some((s) => s.id === p.subject)) e.subject = "Pick a subject area.";
+  if (p.subject === "other" && !p.subjectOther.trim()) e.subjectOther = "Tell us the subject.";
+  if (p.formats.length === 0 || p.formats.some((f) => !(formats as readonly string[]).includes(f))) e.formats = "Pick at least one format.";
+  if (p.angle.trim().length < 20) e.angle = "Give us your pitch in a sentence or two.";
+  if (p.why.trim().length < 20) e.why = "A sentence or two on why it fits Science Sphere.";
+  for (const [k, max] of Object.entries(MAX_LENGTH) as [keyof typeof MAX_LENGTH, number][]) {
+    if (!e[k] && p[k].length > max) e[k] = `That's a bit long: please keep it under ${max} characters.`;
+  }
+  return e;
+}
+
+/** Labels for the email and the thank-you note, e.g. "Feature Article" and "Physics". */
+export function pitchLabels(p: PitchFields) {
+  const type = storyTypes.find((t) => t.id === p.type);
+  const subject = subjects.find((s) => s.id === p.subject);
+  return {
+    type: p.type === "idea" ? `${type?.name ?? "Another Idea"}: ${p.typeOther.trim()}` : (type?.name ?? p.type),
+    subject: p.subject === "other" ? p.subjectOther.trim() : (subject?.label ?? p.subject),
+    editor: subject ? editors[subject.editor] : undefined,
+  };
 }
