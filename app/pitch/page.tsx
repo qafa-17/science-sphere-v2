@@ -22,7 +22,8 @@ export default function PitchPage() {
           </p>
           <p className={styles.lede2}>Fill in the form below. Where it helps, a guide on the right shows you what we look for.</p>
         </header>
-        <PitchForm />
+        {/* until Supabase is set up on the live site, the form opens an email instead */}
+        <PitchForm byEmail={!(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY)} />
       </div>
     </main>
   );

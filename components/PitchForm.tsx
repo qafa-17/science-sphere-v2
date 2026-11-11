@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { type FormEvent, type ReactNode, useState } from "react";
+import { type FormEvent, type ReactNode, useEffect, useRef, useState } from "react";
 import {
+  MAIN_EMAIL,
   MAX_FILES,
   MAX_FILE_MB,
   type Pitch,
@@ -13,6 +14,7 @@ import {
   subjects,
   years,
 } from "@/lib/pitch";
+import { pitchMailto, pitchText } from "@/lib/pitchMailto";
 import { type Progress, submitPitch } from "@/lib/sendPitch";
 import styles from "./PitchForm.module.css";
 
@@ -61,11 +63,24 @@ function Row({ n, title, note, children }: { n: string; title: string; note?: Re
   );
 }
 
-export default function PitchForm() {
+/**
+ * byEmail: real sending isn't set up yet, so the button opens the person's
+ * email app with the pitch written out, addressed to the magazine inbox.
+ */
+export default function PitchForm({ byEmail = false }: { byEmail?: boolean }) {
   const [p, setP] = useState<Pitch>(empty);
   const [errors, setErrors] = useState<Errors>({});
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  /** the email app was opened (byEmail), rather than the pitch sent */
+  const [emailed, setEmailed] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const doneRef = useRef<HTMLDivElement>(null);
+
+  // after sending (or opening the email), bring the message into view, not just the top of the page
+  useEffect(() => {
+    if (sent || emailed) doneRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [sent, emailed]);
   const [progress, setProgress] = useState<Progress | null>(null);
   const [failure, setFailure] = useState("");
   /** a box hidden from people: only robots fill it in */
@@ -89,13 +104,19 @@ export default function PitchForm() {
       document.getElementById(`f-${first}`)?.focus();
       return;
     }
+    if (byEmail) {
+      // straight away, still inside the tap, or Safari on iPhone won't open it
+      window.location.href = pitchMailto(p);
+      setEmailed(true);
+      setCopied(false);
+      return;
+    }
     setSending(true);
     setFailure("");
     const res = await submitPitch(p, website, setProgress);
     setSending(false);
     if (res.ok) {
       setSent(true);
-      window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
     setFailure(res.error);
@@ -114,32 +135,84 @@ export default function PitchForm() {
     ) : null;
   const describedBy = (k: keyof Pitch) => (errors[k] ? `e-${k}` : undefined);
 
+  const firstName = p.name.trim().split(/\s+/)[0];
+  const anotherPitch = (
+    <button
+      type="button"
+      className={styles.secondary}
+      onClick={() => {
+        setP(empty);
+        setSent(false);
+        setEmailed(false);
+        setFailure("");
+      }}
+    >
+      Pitch another story
+    </button>
+  );
+  const specimen = (
+    <div className={styles.specimen}>
+      <p className="label">specimen // {p.type === "idea" ? p.typeOther : type?.name}</p>
+      <p className={styles.specimenTitle}>{p.angle.slice(0, 120)}</p>
+      <p className="label">
+        subject: {p.subject === "other" ? p.subjectOther : subject?.label} &nbsp; format: {p.formats.join(", ").toLowerCase()}
+      </p>
+    </div>
+  );
+
+  if (emailed) {
+    return (
+      <div className={styles.sent} role="status" ref={doneRef}>
+        <p className="label">almost there // {new Date().toLocaleDateString("en-CA")}</p>
+        <h2>Your email is ready, {firstName}!</h2>
+        <p>
+          Your email app should have opened with your pitch written out, addressed to <strong>{MAIN_EMAIL}</strong>. Press
+          Send there and it&apos;s on its way. We usually reply within a week.
+        </p>
+        {p.files.length > 0 && (
+          <p className={styles.warning}>
+            Attach your {p.files.length > 1 ? "files" : "file"} to that email before you send it:{" "}
+            <strong>{p.files.map((f) => f.name).join(", ")}</strong>
+          </p>
+        )}
+        {specimen}
+        <p>
+          Didn&apos;t open? Copy your pitch and email it to <a href={`mailto:${MAIN_EMAIL}`}>{MAIN_EMAIL}</a> yourself.
+        </p>
+        <div className={styles.sentButtons}>
+          <button
+            type="button"
+            className={styles.secondary}
+            onClick={async () => {
+              try {
+                await navigator.clipboard.writeText(pitchText(p));
+                setCopied(true);
+              } catch {
+                setCopied(false);
+              }
+            }}
+          >
+            {copied ? "Copied ✓" : "Copy my pitch"}
+          </button>
+          <a className={styles.secondary} href={pitchMailto(p)}>
+            Open my email again
+          </a>
+          {anotherPitch}
+        </div>
+      </div>
+    );
+  }
+
   if (sent) {
     return (
-      <div className={styles.sent} role="status">
+      <div className={styles.sent} role="status" ref={doneRef}>
         <p className="label">transmission received // {new Date().toLocaleDateString("en-CA")}</p>
-        <h2>Thank you, {p.name.split(" ")[0]}!</h2>
+        <h2>Thank you, {firstName}!</h2>
         <p>
           Your pitch is with the editors. We usually reply within a week, at <strong>{p.email}</strong>.
         </p>
-        <div className={styles.specimen}>
-          <p className="label">specimen // {p.type === "idea" ? p.typeOther : type?.name}</p>
-          <p className={styles.specimenTitle}>{p.angle.slice(0, 120)}</p>
-          <p className="label">
-            subject: {p.subject === "other" ? p.subjectOther : subject?.label} &nbsp; format: {p.formats.join(", ").toLowerCase()}
-          </p>
-        </div>
-        <button
-          type="button"
-          className={styles.secondary}
-          onClick={() => {
-            setP(empty);
-            setSent(false);
-            setFailure("");
-          }}
-        >
-          Pitch another story
-        </button>
+        {specimen}
+        {anotherPitch}
       </div>
     );
   }
@@ -340,7 +413,7 @@ export default function PitchForm() {
         <button type="submit" className={styles.primary} disabled={sending}>
           {sending ? (progress ? `Uploading ${progress.count > 1 ? `${progress.index} of ${progress.count}` : "file"}… ${progress.percent}%` : "Sending…") : "Send my pitch →"}
         </button>
-        <p className="label">we reply within a week</p>
+        <p className="label">{byEmail ? "opens your email app" : "we reply within a week"}</p>
       </div>
       {failure && (
         <p className={styles.failure} role="alert">
