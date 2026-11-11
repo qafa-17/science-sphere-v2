@@ -6,10 +6,23 @@ import "@fontsource/pixelify-sans/600.css";
 import "./globals.css";
 import CpuCursor from "@/components/CpuCursor";
 import Header from "@/components/Header";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/lib/site";
 
+// Each page sets its own title ("Issues"), and the template adds " · Science Sphere".
+// The share preview image is app/opengraph-image.png (every page uses it unless it has its own).
 export const metadata: Metadata = {
-  title: "Science Sphere",
-  description: "Science Sphere, the MRU science experience: a student science magazine at Mount Royal University.",
+  metadataBase: new URL(SITE_URL),
+  title: { default: `${SITE_NAME}: ${SITE_TAGLINE}`, template: `%s · ${SITE_NAME}` },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    locale: "en_CA",
+    title: `${SITE_NAME}: ${SITE_TAGLINE}`,
+    description: SITE_DESCRIPTION,
+  },
+  twitter: { card: "summary_large_image" },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

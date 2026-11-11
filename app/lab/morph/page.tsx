@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import LabShell from "@/components/lab/LabShell";
 import Morph from "@/components/lab/Morph";
 
-export const metadata: Metadata = { title: "Prototype 05 · Morphing · Science Sphere" };
+export const metadata: Metadata = { title: "Prototype 05 · Morphing" };
 
 export default function MorphPrototype() {
   return (
