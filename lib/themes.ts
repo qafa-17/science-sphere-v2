@@ -9,13 +9,15 @@ export const themes: Record<string, Theme> = {
   carousel: { id: "carousel", name: "Carousel", bg: "#210100", fg: "#FECE79", accent: "#E6A341" },
   sunset: { id: "sunset", name: "Sunset", bg: "#C93638", fg: "#F6FFEA", accent: "#FFDE96" },
   melon: { id: "melon", name: "Melon", bg: "#788417", fg: "#F6F1BC", accent: "#FDCB7B" },
+  logo: { id: "logo", name: "Logo", bg: "#1B4079", fg: "#DCE3EE", accent: "#FF6B9A" },
 };
 
 /** Which theme each part of the site uses. */
 export function themeFor(pathname: string): Theme {
   if (pathname === "/" || pathname.startsWith("/lab")) return themes.space;
   if (pathname.startsWith("/issues")) return themes.melon;
-  if (pathname.startsWith("/team") || pathname.startsWith("/contact")) return themes.sunset;
+  if (pathname.startsWith("/team")) return themes.sunset;
+  if (pathname.startsWith("/contact")) return themes.logo;
   if (pathname.startsWith("/pitch")) return themes.carousel;
   return themes.ink;
 }

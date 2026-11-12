@@ -49,6 +49,17 @@ export const palettes: Record<string, Palette> = {
       { name: "Orange Zest", hex: "#D9641F" },
     ],
   },
+  logo: {
+    id: "logo",
+    name: "Logo",
+    swatches: [
+      { name: "Mist", hex: "#DCE3EE" },
+      { name: "Orchid", hex: "#E58EF6" },
+      { name: "Pink", hex: "#FF6B9A" },
+      { name: "Navy", hex: "#1B4079" },
+      { name: "Night", hex: "#0B1A33" },
+    ],
+  },
 };
 
 /** Which palette each page uses. */
@@ -57,7 +68,7 @@ export const pagePalettes: { page: string; path: string; palette: string; why: s
   { page: "Issues", path: "/issues", palette: "melon", why: "fresh, earthy, matches the folder tabs" },
   { page: "Meet the Team", path: "/team", palette: "sunset", why: "honeydew ID cards, tomato-red dots" },
   { page: "Pitch a Story", path: "/pitch", palette: "carousel", why: "warm and rich, like a spotlight" },
-  { page: "Contact", path: "/contact", palette: "sunset", why: "warm, with a red beating heart" },
+  { page: "Contact", path: "/contact", palette: "logo", why: "the logo colours: mist page, navy bar and highlights" },
 ];
 
 export function rgb(hex: string) {

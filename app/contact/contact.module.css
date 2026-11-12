@@ -1,6 +1,6 @@
 .page {
-  --bg: var(--sunset-honeydew);
-  --red: var(--sunset-tomato);
+  --bg: var(--logo-mist);
+  --accent: var(--logo-navy); /* option A: the logo colours */
   position: relative;
   background: var(--bg);
   overflow: clip; /* not hidden: hidden would stop the office hours from holding still */
@@ -89,9 +89,9 @@
 }
 
 .lightOpen {
-  border-color: var(--red);
-  background: var(--red);
-  color: var(--sunset-honeydew);
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--logo-mist);
 }
 
 .lightRoom {
@@ -145,7 +145,7 @@
 .readout {
   padding: 14px 16px;
   background: var(--ink);
-  color: var(--sunset-honeydew);
+  color: var(--logo-mist);
   font-family: var(--font-mono);
   font-size: 12.5px;
 }
@@ -210,7 +210,7 @@
   height: 13px;
   margin-left: 6px;
   vertical-align: -2px;
-  background: var(--sunset-honeydew);
+  background: var(--logo-mist);
   animation: blink 1s steps(1) infinite;
 }
 
@@ -268,7 +268,7 @@
 }
 
 .todayMark {
-  color: var(--red);
+  color: var(--accent);
 }
 
 .dayTrack {
@@ -278,7 +278,7 @@
 }
 
 .today .dayTrack {
-  outline: 2px solid var(--red);
+  outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
 
@@ -295,8 +295,8 @@
   right: 4px;
   padding: 6px;
   border: 0;
-  background: var(--red);
-  color: var(--sunset-honeydew);
+  background: var(--accent);
+  color: var(--logo-mist);
   font-family: var(--font-mono);
   font-size: 11px;
   line-height: 1.35;
@@ -337,13 +337,13 @@
 }
 
 .slot:hover {
-  background: #a82a2c;
+  background: #13305c; /* a darker navy */
 }
 
 .slotPicked,
 .slotPicked:hover {
   background: var(--ink);
-  color: var(--sunset-honeydew);
+  color: var(--logo-mist);
   box-shadow:
     0 0 0 2px var(--ink),
     4px 4px 0 2px var(--ink);
@@ -403,7 +403,7 @@
   font-stretch: var(--display-stretch);
   text-transform: uppercase;
   font-size: clamp(15px, 1.8vw, 22px);
-  color: var(--red);
+  color: var(--accent);
   text-decoration: none;
   overflow-wrap: anywhere;
 }
@@ -433,7 +433,7 @@
 }
 
 .pitchNote a {
-  color: var(--red);
+  color: var(--accent);
   font-weight: 700;
 }
 
