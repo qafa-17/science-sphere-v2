@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Flipbook from "@/components/Flipbook";
 import { getIssue, issues, pageImages } from "@/lib/issues";
-import { pageMeta } from "@/lib/site";
 import styles from "./reader.module.css";
 
 // Build a page for every issue ahead of time.
@@ -14,14 +13,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps<"/issues/[id]">): Promise<Metadata> {
   const { id } = await params;
   const issue = getIssue(id);
-  if (!issue) return { title: "Issue not found" };
-  return pageMeta({
-    title: `Issue #${issue.number} · ${issue.season}`,
-    description: issue.summary,
-    path: `/issues/${issue.id}`,
-    // made from the cover by scripts/og-images.mjs (share previews need a PNG or JPG, not the cover's WebP)
-    image: `/og/issue-${issue.id}.png`,
-  });
+  return { title: issue ? `Issue #${issue.number} · Science Sphere` : "Issue not found" };
 }
 
 export default async function IssueReaderPage({ params }: PageProps<"/issues/[id]">) {

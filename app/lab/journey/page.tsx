@@ -3,7 +3,7 @@ import Journey from "@/components/lab/Journey";
 import { Switcher } from "@/components/lab/LabShell";
 import styles from "@/components/lab/Lab.module.css";
 
-export const metadata: Metadata = { title: "Prototype 06 · The journey" };
+export const metadata: Metadata = { title: "Prototype 06 · The journey · Science Sphere" };
 
 export default function JourneyPrototype() {
   return (

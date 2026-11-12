@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import LabShell from "@/components/lab/LabShell";
 import SphereCanvas from "@/components/lab/SphereCanvas";
 
-export const metadata: Metadata = { title: "Prototype 01 · Sphere" };
+export const metadata: Metadata = { title: "Prototype 01 · Sphere · Science Sphere" };
 
 export default function SpherePrototype() {
   return (

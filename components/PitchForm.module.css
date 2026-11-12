@@ -346,25 +346,6 @@
   }
 }
 
-/* when sending didn't work */
-.failure {
-  margin: 18px 0 0;
-  padding: 12px 14px;
-  border-left: 4px solid var(--carousel-garnet);
-  background: #fde3d9;
-  font-size: 15px;
-  font-weight: 600;
-}
-
-/* the box only robots see (and fill in) */
-.trap {
-  position: absolute;
-  left: -10000px;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-}
-
 /* the buttons under "your email is ready" */
 .sentButtons {
   display: flex;

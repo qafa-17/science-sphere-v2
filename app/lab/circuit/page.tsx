@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import CircuitCanvas from "@/components/lab/CircuitCanvas";
 import LabShell from "@/components/lab/LabShell";
 
-export const metadata: Metadata = { title: "Prototype 03 · Circuit" };
+export const metadata: Metadata = { title: "Prototype 03 · Circuit · Science Sphere" };
 
 export default function CircuitPrototype() {
   return (

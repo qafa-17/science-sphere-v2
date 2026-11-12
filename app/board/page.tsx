@@ -6,7 +6,7 @@ import { themes } from "@/lib/themes";
 import { pagePalettes, palettes, rgb, textOn } from "@/lib/palettes";
 import styles from "./board.module.css";
 
-export const metadata: Metadata = { title: "Look & Feel" };
+export const metadata: Metadata = { title: "Look & Feel · Science Sphere" };
 
 function Star({ colour }: { colour: string }) {
   return (

@@ -4,18 +4,14 @@ import Link from "next/link";
 import { type FormEvent, type ReactNode, useEffect, useRef, useState } from "react";
 import {
   MAIN_EMAIL,
-  MAX_FILES,
   MAX_FILE_MB,
   type Pitch,
-  type PitchErrors,
-  checkPitch,
   formats,
   storyTypes,
   subjects,
   years,
 } from "@/lib/pitch";
 import { pitchMailto, pitchText } from "@/lib/pitchMailto";
-import { type Progress, submitPitch } from "@/lib/sendPitch";
 import styles from "./PitchForm.module.css";
 
 const empty: Pitch = {
@@ -33,12 +29,21 @@ const empty: Pitch = {
   files: [],
 };
 
-type Errors = PitchErrors;
+type Errors = Partial<Record<keyof Pitch, string>>;
 
 function check(p: Pitch): Errors {
-  const e = checkPitch(p);
-  if (p.files.length > MAX_FILES) e.files = `Please attach at most ${MAX_FILES} files.`;
-  else if (p.files.some((f) => f.size > MAX_FILE_MB * 1024 * 1024)) e.files = `Each file must be under ${MAX_FILE_MB}MB. Put a link to bigger ones in your pitch instead.`;
+  const e: Errors = {};
+  if (!p.name.trim()) e.name = "Tell us your name.";
+  if (!/^\S+@\S+\.\S+$/.test(p.email.trim())) e.email = "We need an email we can reply to.";
+  if (!p.program.trim()) e.program = "Your degree and program, e.g. BSc, Biology.";
+  if (!p.year) e.year = "Pick your year.";
+  if (!p.type) e.type = "Pick the kind of story closest to yours.";
+  if (p.type === "idea" && !p.typeOther.trim()) e.typeOther = "Tell us what kind of idea it is.";
+  if (!p.subject) e.subject = "Pick a subject area.";
+  if (p.subject === "other" && !p.subjectOther.trim()) e.subjectOther = "Tell us the subject.";
+  if (p.formats.length === 0) e.formats = "Pick at least one format.";
+  if (p.angle.trim().length < 20) e.angle = "Give us your pitch in a sentence or two.";
+  if (p.why.trim().length < 20) e.why = "A sentence or two on why it fits Science Sphere.";
   return e;
 }
 
@@ -63,28 +68,18 @@ function Row({ n, title, note, children }: { n: string; title: string; note?: Re
   );
 }
 
-/**
- * byEmail: real sending isn't set up yet, so the button opens the person's
- * email app with the pitch written out, addressed to the magazine inbox.
- */
-export default function PitchForm({ byEmail = false }: { byEmail?: boolean }) {
+export default function PitchForm() {
   const [p, setP] = useState<Pitch>(empty);
   const [errors, setErrors] = useState<Errors>({});
-  const [sending, setSending] = useState(false);
-  const [sent, setSent] = useState(false);
-  /** the email app was opened (byEmail), rather than the pitch sent */
+  /** the email app was opened with the pitch in it */
   const [emailed, setEmailed] = useState(false);
   const [copied, setCopied] = useState(false);
   const doneRef = useRef<HTMLDivElement>(null);
 
-  // after sending (or opening the email), bring the message into view, not just the top of the page
+  // bring the "your email is ready" message into view (not just the top of the page)
   useEffect(() => {
-    if (sent || emailed) doneRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }, [sent, emailed]);
-  const [progress, setProgress] = useState<Progress | null>(null);
-  const [failure, setFailure] = useState("");
-  /** a box hidden from people: only robots fill it in */
-  const [website, setWebsite] = useState("");
+    if (emailed) doneRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [emailed]);
 
   const set = <K extends keyof Pitch>(key: K, value: Pitch[K]) => {
     setP((old) => ({ ...old, [key]: value }));
@@ -95,7 +90,7 @@ export default function PitchForm({ byEmail = false }: { byEmail?: boolean }) {
   const subject = subjects.find((s) => s.id === p.subject);
   const bigFiles = p.files.filter((f) => f.size > MAX_FILE_MB * 1024 * 1024);
 
-  const onSubmit = async (e: FormEvent) => {
+  const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     const found = check(p);
     setErrors(found);
@@ -104,27 +99,10 @@ export default function PitchForm({ byEmail = false }: { byEmail?: boolean }) {
       document.getElementById(`f-${first}`)?.focus();
       return;
     }
-    if (byEmail) {
-      // straight away, still inside the tap, or Safari on iPhone won't open it
-      window.location.href = pitchMailto(p);
-      setEmailed(true);
-      setCopied(false);
-      return;
-    }
-    setSending(true);
-    setFailure("");
-    const res = await submitPitch(p, website, setProgress);
-    setSending(false);
-    if (res.ok) {
-      setSent(true);
-      return;
-    }
-    setFailure(res.error);
-    if (res.fields) {
-      setErrors(res.fields);
-      const firstBad = Object.keys(res.fields)[0];
-      if (firstBad) document.getElementById(`f-${firstBad}`)?.focus();
-    }
+    // open the email straight away, still inside the tap, or Safari on iPhone won't open it
+    window.location.href = pitchMailto(p);
+    setEmailed(true);
+    setCopied(false);
   };
 
   const err = (k: keyof Pitch) =>
@@ -135,36 +113,11 @@ export default function PitchForm({ byEmail = false }: { byEmail?: boolean }) {
     ) : null;
   const describedBy = (k: keyof Pitch) => (errors[k] ? `e-${k}` : undefined);
 
-  const firstName = p.name.trim().split(/\s+/)[0];
-  const anotherPitch = (
-    <button
-      type="button"
-      className={styles.secondary}
-      onClick={() => {
-        setP(empty);
-        setSent(false);
-        setEmailed(false);
-        setFailure("");
-      }}
-    >
-      Pitch another story
-    </button>
-  );
-  const specimen = (
-    <div className={styles.specimen}>
-      <p className="label">specimen // {p.type === "idea" ? p.typeOther : type?.name}</p>
-      <p className={styles.specimenTitle}>{p.angle.slice(0, 120)}</p>
-      <p className="label">
-        subject: {p.subject === "other" ? p.subjectOther : subject?.label} &nbsp; format: {p.formats.join(", ").toLowerCase()}
-      </p>
-    </div>
-  );
-
   if (emailed) {
     return (
       <div className={styles.sent} role="status" ref={doneRef}>
         <p className="label">almost there // {new Date().toLocaleDateString("en-CA")}</p>
-        <h2>Your email is ready, {firstName}!</h2>
+        <h2>Your email is ready, {p.name.trim().split(/\s+/)[0]}!</h2>
         <p>
           Your email app should have opened with your pitch written out, addressed to <strong>{MAIN_EMAIL}</strong>. Press
           Send there and it&apos;s on its way. We usually reply within a week.
@@ -175,7 +128,13 @@ export default function PitchForm({ byEmail = false }: { byEmail?: boolean }) {
             <strong>{p.files.map((f) => f.name).join(", ")}</strong>
           </p>
         )}
-        {specimen}
+        <div className={styles.specimen}>
+          <p className="label">specimen // {p.type === "idea" ? p.typeOther : type?.name}</p>
+          <p className={styles.specimenTitle}>{p.angle.slice(0, 120)}</p>
+          <p className="label">
+            subject: {p.subject === "other" ? p.subjectOther : subject?.label} &nbsp; format: {p.formats.join(", ").toLowerCase()}
+          </p>
+        </div>
         <p>
           Didn&apos;t open? Copy your pitch and email it to <a href={`mailto:${MAIN_EMAIL}`}>{MAIN_EMAIL}</a> yourself.
         </p>
@@ -197,32 +156,23 @@ export default function PitchForm({ byEmail = false }: { byEmail?: boolean }) {
           <a className={styles.secondary} href={pitchMailto(p)}>
             Open my email again
           </a>
-          {anotherPitch}
+          <button
+            type="button"
+            className={styles.secondary}
+            onClick={() => {
+              setP(empty);
+              setEmailed(false);
+            }}
+          >
+            Pitch another story
+          </button>
         </div>
-      </div>
-    );
-  }
-
-  if (sent) {
-    return (
-      <div className={styles.sent} role="status" ref={doneRef}>
-        <p className="label">transmission received // {new Date().toLocaleDateString("en-CA")}</p>
-        <h2>Thank you, {firstName}!</h2>
-        <p>
-          Your pitch is with the editors. We usually reply within a week, at <strong>{p.email}</strong>.
-        </p>
-        {specimen}
-        {anotherPitch}
       </div>
     );
   }
 
   return (
     <form className={styles.form} onSubmit={onSubmit} noValidate>
-      <label className={styles.trap} aria-hidden="true">
-        Leave this empty
-        <input tabIndex={-1} autoComplete="off" value={website} onChange={(e) => setWebsite(e.target.value)} name="website" />
-      </label>
       <Row
         n="01"
         title="About you"
@@ -382,12 +332,12 @@ export default function PitchForm({ byEmail = false }: { byEmail?: boolean }) {
         note={
           <p>
             If you have something to show, add it: a draft, sketch, photo or recording. If your work lives somewhere else,
-            a document with a link in it is fine. Up to {MAX_FILES} files, each under {MAX_FILE_MB}MB.
+            a document with a link in it is fine. Keep each file under {MAX_FILE_MB}MB.
           </p>
         }
       >
         <label className={styles.drop} aria-invalid={!!errors.files}>
-          <input id="f-files" type="file" multiple disabled={sending} aria-describedby={describedBy("files")} onChange={(e) => set("files", [...(e.target.files ?? [])])} />
+          <input id="f-files" type="file" multiple aria-describedby={describedBy("files")} onChange={(e) => set("files", [...(e.target.files ?? [])])} />
           <span>{p.files.length ? `${p.files.length} file${p.files.length > 1 ? "s" : ""} chosen` : "Choose files"}</span>
           <span className="label">or drop them here</span>
         </label>
@@ -403,23 +353,18 @@ export default function PitchForm({ byEmail = false }: { byEmail?: boolean }) {
         {err("files")}
         {bigFiles.length > 0 && (
           <p className={styles.warning}>
-            {bigFiles.map((f) => f.name).join(", ")} {bigFiles.length > 1 ? "are" : "is"} over {MAX_FILE_MB}MB, so it can&apos;t
-            be sent. Take it out, and put a link to it in your pitch instead.
+            {bigFiles.map((f) => f.name).join(", ")} {bigFiles.length > 1 ? "are" : "is"} over {MAX_FILE_MB}MB. It may not send;
+            you can share a link instead in the angle box.
           </p>
         )}
       </Row>
 
       <div className={styles.sendRow}>
-        <button type="submit" className={styles.primary} disabled={sending}>
-          {sending ? (progress ? `Uploading ${progress.count > 1 ? `${progress.index} of ${progress.count}` : "file"}… ${progress.percent}%` : "Sending…") : "Send my pitch →"}
+        <button type="submit" className={styles.primary}>
+          Send my pitch →
         </button>
-        <p className="label">{byEmail ? "opens your email app" : "we reply within a week"}</p>
+        <p className="label">opens your email app</p>
       </div>
-      {failure && (
-        <p className={styles.failure} role="alert">
-          {failure}
-        </p>
-      )}
     </form>
   );
 }

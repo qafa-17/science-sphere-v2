@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
-import { pageMeta } from "@/lib/site";
 import PitchForm from "@/components/PitchForm";
 import styles from "./pitch.module.css";
 
-export const metadata: Metadata = pageMeta({
-  title: "Pitch a Story",
+export const metadata: Metadata = {
+  title: "Pitch a Story · Science Sphere",
   description: "Write, draw, film or record something about science for Science Sphere, MRU's student science magazine.",
-  path: "/pitch",
-});
+};
 
 export default function PitchPage() {
   return (
@@ -22,8 +20,7 @@ export default function PitchPage() {
           </p>
           <p className={styles.lede2}>Fill in the form below. Where it helps, a guide on the right shows you what we look for.</p>
         </header>
-        {/* until Supabase is set up on the live site, the form opens an email instead */}
-        <PitchForm byEmail={!(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY)} />
+        <PitchForm />
       </div>
     </main>
   );

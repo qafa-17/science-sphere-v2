@@ -1,15 +1,12 @@
 import type { Metadata } from "next";
-import { pageMeta } from "@/lib/site";
 import Link from "next/link";
 import IdCard from "@/components/IdCard";
 import { team } from "@/lib/team";
 import styles from "./ids.module.css";
 
-export const metadata: Metadata = pageMeta({
-  title: "ID Cards · Meet the Team",
-  description: "Flip through the Science Sphere editors' ID cards: who they are, what they study and what they look after.",
-  path: "/team/ids",
-});
+export const metadata: Metadata = {
+  title: "ID Cards · Meet the Team · Science Sphere",
+};
 
 export default function IdsPage() {
   return (

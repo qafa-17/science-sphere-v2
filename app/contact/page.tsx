@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { pageMeta } from "@/lib/site";
 import Link from "next/link";
 import ContactChannels from "@/components/ContactChannels";
 import ContactOffice from "@/components/ContactOffice";
@@ -7,11 +6,10 @@ import { MAIN_EMAIL } from "@/lib/pitch";
 import { OFFICE_ROOM } from "@/lib/officeHours";
 import styles from "./contact.module.css";
 
-export const metadata: Metadata = pageMeta({
-  title: "Contact",
+export const metadata: Metadata = {
+  title: "Contact · Science Sphere",
   description: "Office hours, email and Instagram for Science Sphere, MRU's student science magazine.",
-  path: "/contact",
-});
+};
 
 export default function ContactPage() {
   return (

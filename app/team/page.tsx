@@ -1,14 +1,12 @@
 import type { Metadata } from "next";
-import { pageMeta } from "@/lib/site";
 import TeamReveal from "@/components/TeamReveal";
 import { team } from "@/lib/team";
 import styles from "./team.module.css";
 
-export const metadata: Metadata = pageMeta({
-  title: "Meet the Team",
+export const metadata: Metadata = {
+  title: "Meet the Team · Science Sphere",
   description: "The students who make Science Sphere, MRU's student science magazine.",
-  path: "/team",
-});
+};
 
 export default function TeamPage() {
   return (

@@ -3,7 +3,7 @@ import Dive from "@/components/lab/Dive";
 import { Switcher } from "@/components/lab/LabShell";
 import styles from "@/components/lab/Lab.module.css";
 
-export const metadata: Metadata = { title: "Prototype 04 · The dive" };
+export const metadata: Metadata = { title: "Prototype 04 · The dive · Science Sphere" };
 
 export default function DivePrototype() {
   return (
