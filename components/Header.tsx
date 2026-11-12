@@ -74,7 +74,7 @@ export default function Header() {
             <>
               <span>CGY {readout.time}</span>
               <Link href="/contact" className={styles.status}>
-                <Heart size={17} beating={readout.open} />
+                <Heart size={24} beating={readout.open} />
                 {readout.open ? "Office open" : "Office closed"}
               </Link>
             </>

@@ -45,7 +45,7 @@ export function OfficeLight() {
       className={`${styles.light} ${status?.open ? styles.lightOpen : ""}`}
       role="status"
     >
-      <Heart size={20} beating={!!status?.open} />
+      <Heart size={30} beating={!!status?.open} />
       {status ? status.text : "Checking the office..."}
       {status?.open && (
         <span className={styles.lightRoom}>in {OFFICE_ROOM}</span>
