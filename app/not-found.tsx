@@ -4,7 +4,7 @@ import styles from "./not-found.module.css";
 
 export const metadata: Metadata = { title: "Page not found" };
 
-// Shown for any address that doesn't exist (and for the workshop pages on the published site).
+// Shown for any address that doesn't exist.
 export default function NotFound() {
   return (
     <main className={styles.page}>

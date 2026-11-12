@@ -25,12 +25,10 @@ When there are new changes: stop it with <kbd>Ctrl</kbd> + <kbd>C</kbd>, then `g
 
 ## Where things are
 
-- `/board` is the look and feel board: palettes, type, buttons, cursor, logo, heart
-- `/lab/sphere`, `/lab/sky`, `/lab/circuit` are the three landing-page prototypes; `/lab/dive` and `/lab/morph` combine them; `/lab/journey` goes from the sphere down to the sea
-- `lib/scenes/` the sky, sphere and circuit drawings, shared by all the prototypes
+- `components/landing/` the landing page; `lib/scenes/` its drawings (night sky and mountains, sphere, ocean, particle cards)
 - `/issues` is the archive: files fan out as you scroll, hover pulls one out, click opens it in the reader below (with zoom and full screen)
 - `/issues/3` still opens Issue 3 on its own page, e.g. for links like `/issues/3?page=16`
-- `lib/palettes.ts` the colour palettes, and which page uses which
+- `lib/themes.ts` the top bar's colours on each page
 - `lib/team.ts` the editors: role, expertise, degree, bio, fun fact, ID numbers (bios and degrees are placeholders)
 - `/team` the poster-style team page; `/team/ids` the flipping ID cards
 - `lib/pitch.ts` story types, subjects and which editor gets them, formats. For now, Send opens the person's email app with the pitch filled in, addressed to the magazine inbox (`lib/pitchMailto.ts`)

@@ -14,7 +14,7 @@ export const themes: Record<string, Theme> = {
 
 /** Which theme each part of the site uses. */
 export function themeFor(pathname: string): Theme {
-  if (pathname === "/" || pathname.startsWith("/lab")) return themes.space;
+  if (pathname === "/") return themes.space;
   if (pathname.startsWith("/issues")) return themes.melon;
   if (pathname.startsWith("/team")) return themes.sunset;
   if (pathname.startsWith("/contact")) return themes.logo;

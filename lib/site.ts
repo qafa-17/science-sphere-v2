@@ -7,7 +7,7 @@ export const SITE_TAGLINE = "The MRU Science Experience";
 export const SITE_DESCRIPTION =
   "Science Sphere, the MRU science experience: Mount Royal University's student science magazine. Read every issue, pitch a story, meet the team.";
 
-/** The public pages, for the sitemap. The look and feel board and the lab prototypes are left out on purpose. */
+/** The pages listed in the sitemap (the issues are added from lib/issues.ts). */
 export const publicPaths = ["/", "/issues", "/pitch", "/team", "/team/ids", "/contact"];
 
 /**
