@@ -12,7 +12,7 @@ import {
 } from "@/lib/scenes/heights";
 import { createOcean } from "@/lib/scenes/ocean";
 import { createSphere } from "@/lib/scenes/sphere";
-import { type Issue } from "@/lib/issues";
+import { type Issue, latestIssues } from "@/lib/issues";
 import { meetingDay, meetingMonth, pitchMeeting } from "@/lib/pitchMeeting";
 import BootLine from "./BootLine";
 import styles from "./Landing.module.css";
@@ -547,15 +547,14 @@ export default function Landing({ issues }: { issues: Issue[] }) {
           </p>
           <h2 data-dots="text">The issues</h2>
           <ul className={styles.issueList}>
-            {[...issues]
-              .sort((a, b) => b.number - a.number)
-              .map((i) => (
-                <li key={i.id}>
-                  <Link href={`/issues/${i.number}`} data-dots="text">
-                    issue_{code(i.number)} {"//"} {tag(i.season)}
-                  </Link>
-                </li>
-              ))}
+            {/* only the newest three; the Issues page has them all */}
+            {latestIssues(issues, 3).map((i) => (
+              <li key={i.id}>
+                <Link href={`/issues/${i.id}`} data-dots="text">
+                  issue_{code(i.number)} {"//"} {tag(i.season)}
+                </Link>
+              </li>
+            ))}
           </ul>
           <Link
             href="/issues"

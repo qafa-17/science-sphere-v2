@@ -215,3 +215,11 @@ export function pageImages(issue: Issue): string[] {
     (_, i) => `/issues/${issue.id}/page-${String(i + 1).padStart(2, "0")}.webp`,
   );
 }
+
+/** The newest issues first, only ones whose pages are uploaded. The landing page shows the first three. */
+export function latestIssues(list: Issue[], count = 3) {
+  return list
+    .filter((issue) => issue.pageCount > 0)
+    .sort((a, b) => b.number - a.number)
+    .slice(0, count);
+}
