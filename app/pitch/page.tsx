@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/site";
 import PitchForm from "@/components/PitchForm";
 import styles from "./pitch.module.css";
 
-export const metadata: Metadata = {
-  title: "Pitch a Story · Science Sphere",
+export const metadata: Metadata = pageMeta({
+  title: "Pitch a Story",
   description: "Write, draw, film or record something about science for Science Sphere, MRU's student science magazine.",
-};
+  path: "/pitch",
+});
 
 export default function PitchPage() {
   return (
