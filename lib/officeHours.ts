@@ -2,7 +2,14 @@
 // the timetable and the "open now" badge all update.
 
 export const OFFICE_ROOM = "B231B";
-export const TIME_ZONE = "America/Edmonton"; // Calgary
+/**
+ * Calgary time. Alberta no longer changes its clocks, so it's UTC-6 all year.
+ * ("Etc/GMT+6" is the standard name for UTC-6; the sign is backwards on purpose.)
+ * Not "America/Edmonton": browsers and phones still move that back an hour in November.
+ */
+export const TIME_ZONE = "Etc/GMT+6";
+/** Hours to add to Calgary time to get UTC. */
+export const UTC_OFFSET_HOURS = 6;
 
 /** Office hours each weekday (minutes after midnight). 1 = Monday ... 5 = Friday. */
 export const dayHours: { day: number; name: string; start: number; end: number }[] = [

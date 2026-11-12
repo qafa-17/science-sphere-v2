@@ -5,6 +5,7 @@ import Heart from "@/components/Heart";
 import {
   OFFICE_ROOM,
   TIME_ZONE,
+  UTC_OFFSET_HOURS,
   dayHours,
   formatTime,
   nowInCalgary,
@@ -70,8 +71,12 @@ function visitFile(slot: Slot, now: Date) {
     .map(Number);
   const date = new Date(Date.UTC(ymd[0], ymd[1] - 1, ymd[2] + ahead));
   const d = date.toISOString().slice(0, 10).replace(/-/g, "");
-  const t = (m: number) =>
-    `${String(Math.floor(m / 60)).padStart(2, "0")}${String(m % 60).padStart(2, "0")}00`;
+  // written in UTC, so calendar apps that still think Alberta changes its clocks get it right
+  const utc = (m: number) =>
+    new Date(Date.UTC(ymd[0], ymd[1] - 1, ymd[2] + ahead, UTC_OFFSET_HOURS, m))
+      .toISOString()
+      .replace(/[-:]/g, "")
+      .slice(0, 15) + "Z";
   const stamp = now.toISOString().replace(/[-:]/g, "").slice(0, 15) + "Z";
   return [
     "BEGIN:VCALENDAR",
@@ -80,8 +85,8 @@ function visitFile(slot: Slot, now: Date) {
     "BEGIN:VEVENT",
     `UID:${d}-${slot.day}@science-sphere`,
     `DTSTAMP:${stamp}`,
-    `DTSTART;TZID=${TIME_ZONE}:${d}T${t(slot.start)}`,
-    `DTEND;TZID=${TIME_ZONE}:${d}T${t(slot.end)}`,
+    `DTSTART:${utc(slot.start)}`,
+    `DTEND:${utc(slot.end)}`,
     "SUMMARY:Science Sphere office hours",
     `LOCATION:${OFFICE_ROOM}\\, Mount Royal University`,
     "END:VEVENT",
